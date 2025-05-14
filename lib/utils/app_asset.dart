@@ -1,0 +1,30 @@
+class AppAsset {
+  AppAsset._();
+  static const logo = 'assets/images/logo.png';
+  static const arrowBack = 'assets/images/arrow_back.svg';
+  static const avatar = 'assets/images/avatar.png';
+  static const blood = 'assets/images/blood.svg';
+  static const dashboard = 'assets/images/dashboard.svg';
+  static const documentOutline = 'assets/images/document_outline.svg';
+  static const documentThumb = 'assets/images/document_thumb.svg';
+  static const drop = 'assets/images/drop.svg';
+  static const freshFlavors = 'assets/images/fresh_flavors.png';
+  static const heart = 'assets/images/heart.svg';
+  static const home = 'assets/images/home.svg';
+  static const location = 'assets/images/location.svg';
+  static const mealKit = 'assets/images/meal_kit.png';
+  static const menu = 'assets/images/menu.svg';
+  static const noNotification = 'assets/images/no_notification.svg';
+  static const notification = 'assets/images/notification.svg';
+  static const opportunity = 'assets/images/opportunity.svg';
+  static const orderDetails = 'assets/images/order_details.svg';
+  static const people = 'assets/images/people.svg';
+  static const pet = 'assets/images/pet.svg';
+  static const selectedCheck = 'assets/images/selected_check.svg';
+  static const settings = 'assets/images/settings.svg';
+  static const share = 'assets/images/share.svg';
+  static const treats = 'assets/images/treats.png';
+  static const tweaked = 'assets/images/tweaked.png';
+  static const unselectedCheck = 'assets/images/unselected_check.svg';
+  static const orderShipped = 'assets/images/order_shipped.png';
+}

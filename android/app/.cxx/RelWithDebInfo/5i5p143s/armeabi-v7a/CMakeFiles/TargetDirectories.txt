@@ -1,0 +1,2 @@
+/Users/dreamworld/Documents/flutter_projects/more_mito_app-main/android/app/.cxx/RelWithDebInfo/5i5p143s/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/dreamworld/Documents/flutter_projects/more_mito_app-main/android/app/.cxx/RelWithDebInfo/5i5p143s/armeabi-v7a/CMakeFiles/rebuild_cache.dir
