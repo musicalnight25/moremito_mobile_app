@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,11 @@ class LoginScreen extends StatelessWidget {
   var controller = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      controller.usernameController.text = "shubham";
+      controller.passwordController.text = "Hello@#7777#";
+    }
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,

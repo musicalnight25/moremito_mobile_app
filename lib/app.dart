@@ -93,7 +93,7 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
                 ),
               ),
             ),
-            dialogTheme: DialogTheme(
+            dialogTheme: DialogThemeData(
               backgroundColor: Colors.white, // Set dialog background color
               titleTextStyle: AppTextStyle.normalBold18, // Set title color
               contentTextStyle: TextStyle(
@@ -167,7 +167,7 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
               ),
             ).copyWith(surface: primaryWhite),
             scaffoldBackgroundColor: Colors.white,
-            dialogTheme: DialogTheme(
+            dialogTheme: DialogThemeData(
               backgroundColor: Colors.white, // Set dialog background color
               titleTextStyle: AppTextStyle.normalBold18, // Set title color
               contentTextStyle: TextStyle(
