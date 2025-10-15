@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
@@ -26,7 +27,18 @@ class LoginController extends GetxController {
 
   RxInt currentQuestionIndex = 0.obs;
 
-  Future<void> getSurveyQuestions(BuildContext context) async {
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Only prefill in debug mode — safe here
+    if (kDebugMode) {
+      usernameController.text = "shubham";
+      passwordController.text = "Hello@#7777#";
+    }
+  }
+
+  Future<void> getSurveyQuestions(BuildContext? context) async {
     isLoading.value = true;
     try {
       var response = await _networkRepository.getSurveyQuestions(context);

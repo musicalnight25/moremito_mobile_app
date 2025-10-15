@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 
 class FullScreenImageViewer extends StatelessWidget {
   final String imageUrl;
@@ -19,12 +18,14 @@ class FullScreenImageViewer extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: PhotoView(
-          imageProvider: NetworkImage(imageUrl),
-          backgroundDecoration: const BoxDecoration(color: Colors.black),
-          minScale: PhotoViewComputedScale.contained,
-          maxScale: PhotoViewComputedScale.covered * 2.0,
-          heroAttributes: PhotoViewHeroAttributes(tag: imageUrl),
+        child: SafeArea(
+          child: PhotoView(
+            imageProvider: NetworkImage(imageUrl),
+            backgroundDecoration: const BoxDecoration(color: Colors.black),
+            minScale: PhotoViewComputedScale.contained,
+            maxScale: PhotoViewComputedScale.covered * 2.0,
+            heroAttributes: PhotoViewHeroAttributes(tag: imageUrl),
+          ),
         ),
       ),
     );

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -13,50 +12,96 @@ import 'package:more_mitro_app/app.dart';
 import 'package:more_mitro_app/service/fcm_service.dart';
 import 'package:more_mitro_app/service/network_dio.dart';
 import 'package:more_mitro_app/utils/app_constants.dart';
+import 'package:more_mitro_app/utils/preferences_util.dart';
 
-import 'utils/preferences_util.dart';
+Future<void> _backgroundMessageHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  log("Handling background message: ${message.messageId}");
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   HttpOverrides.global = MyHttpOverrides();
   await PreferencesUtil.init();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
-  });
   await Firebase.initializeApp();
+
+  // Register background handler
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+
+  // Set notification display options for foreground messages (iOS)
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
-  // Get the FCM token
-  // if (Platform.isAndroid) {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  String? token = await messaging.getToken();
-  log("FCM Token----: $token");
-  // }
+  // Handle Notification Permission and FCM token
+  await _initializeFirebaseMessaging();
+
+  // Set app-wide headers
   await NetworkDioHttp.setDynamicHeader(endPoint: AppConstants.apiEndPoint);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-  ));
+
+  // UI settings
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+
+  // Initialize services
   await Get.putAsync(() => FcmService().init());
   Get.put(() => FcmService().handleBackground());
   await Hive.initFlutter();
   await Hive.openBox('contactsBox');
-  initializeDateFormatting('en_IN', null).then((_) {
-    runApp(const MoreMitoApp());
-  });
+
+  // Initialize localization and start app
+  await initializeDateFormatting('en_IN', null);
+
+  // Enable fullscreen / edge-to-edge
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  // Make status bar transparent
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
+  runApp(const MoreMitoApp());
 }
 
-Future<void> _backgroundMessageHandler(RemoteMessage message) async {
-  // You can perform any custom logic here when a notification is received in the background
-  print("Handling background message: ${message.messageId}");
+Future<void> _initializeFirebaseMessaging() async {
+  final messaging = FirebaseMessaging.instance;
+
+  if (Platform.isIOS) {
+    // Request iOS notification permission
+    final settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    log('User granted permission: ${settings.authorizationStatus}');
+
+    // Wait for APNs token (real device only)
+    final apnsToken = await messaging.getAPNSToken();
+    log("APNs Token: $apnsToken");
+
+    if (apnsToken == null) {
+      log("⚠️ APNs token not yet available (likely simulator).");
+      return;
+    }
+  }
+
+  // Get the FCM token
+  try {
+    final fcmToken = await messaging.getToken();
+    log("✅ FCM Token: $fcmToken");
+  } catch (e) {
+    log("❌ Error getting FCM token: $e");
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {

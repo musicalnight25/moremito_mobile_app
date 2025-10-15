@@ -34,17 +34,20 @@ class _CommonWebViewState extends State<CommonWebView> {
         title: widget.title,
         visibleBackButton: true,
       ),
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-        initialSettings: InAppWebViewSettings(
-          javaScriptEnabled: true,
+      body: SafeArea(
+        child: InAppWebView(
+          initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+          initialSettings: InAppWebViewSettings(
+            javaScriptEnabled: true,
+          ),
+          onWebViewCreated: (controller) {
+            _webViewController = controller;
+          },
+          onLoadStop: (controller, url) =>
+              debugPrint('Page finished loading: $url'),
+          onConsoleMessage: (controller, message) =>
+              debugPrint(message.message),
         ),
-        onWebViewCreated: (controller) {
-          _webViewController = controller;
-        },
-        onLoadStop: (controller, url) =>
-            debugPrint('Page finished loading: $url'),
-        onConsoleMessage: (controller, message) => debugPrint(message.message),
       ),
     );
   }

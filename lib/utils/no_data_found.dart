@@ -16,17 +16,19 @@ class _NoDataFoundState extends State<NoDataFound> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center, // Centers content vertically
-        children: [
-          Lottie.asset('assets/json/nodata.json'),
-          Text(
-            "Oops! No ${widget.title ?? "Data"} Available",
-            style: AppTextStyle.normalBold16
-                .copyWith(color: lightBlackColor.withOpacity(.4)),
-          )
-        ],
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Centers content vertically
+          children: [
+            Lottie.asset('assets/json/nodata.json'),
+            Text(
+              "Oops! No ${widget.title ?? "Data"} Available",
+              style: AppTextStyle.normalBold16
+                  .copyWith(color: lightBlackColor.withOpacity(.4)),
+            )
+          ],
+        ),
       ),
     );
   }

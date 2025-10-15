@@ -66,45 +66,47 @@ class CommonBottomSheet extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon ?? Icons.error_outline,
-              size: 40.sp,
-            ),
-            height15,
-            Text(
-              title,
-              style: AppTextStyle.normalBold24,
-            ),
-            height10,
-            contentWidget,
-            height15,
-            customWidget ??
-                PrimaryTextButton(
-                  title: confirmButtonTitle,
-                  onPressed: onConfirm,
-                  buttonColor: confirmButtonColor ?? primaryColor,
-                  textColor: confirmButtonTextColor ?? primaryWhite,
-                ),
-            if (showCancelButton ?? false) ...[
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon ?? Icons.error_outline,
+                size: 40.sp,
+              ),
+              height15,
+              Text(
+                title,
+                style: AppTextStyle.normalBold24,
+              ),
               height10,
-              TextButton(
-                onPressed: onCancel ?? () => Get.back(),
-                child: Text(
-                  cancelButtonTitle ?? "Cancel",
-                  style: AppTextStyle.normalBold16.copyWith(
-                    color: cancelButtonTextColor ?? redColor,
-                    decoration: TextDecoration.underline,
+              contentWidget,
+              height15,
+              customWidget ??
+                  PrimaryTextButton(
+                    title: confirmButtonTitle,
+                    onPressed: onConfirm,
+                    buttonColor: confirmButtonColor ?? primaryColor,
+                    textColor: confirmButtonTextColor ?? primaryWhite,
+                  ),
+              if (showCancelButton ?? false) ...[
+                height10,
+                TextButton(
+                  onPressed: onCancel ?? () => Get.back(),
+                  child: Text(
+                    cancelButtonTitle ?? "Cancel",
+                    style: AppTextStyle.normalBold16.copyWith(
+                      color: cancelButtonTextColor ?? redColor,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
-              ),
+              ],
+              height10,
             ],
-            height10,
-          ],
+          ),
         ),
       ),
     );

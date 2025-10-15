@@ -158,92 +158,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         label: "Categories",
       ),
       BottomNavigationBarItem(
-        icon: Obx(() => Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SvgPicture.asset(
-                  AppAsset.notification,
-                  fit: BoxFit.scaleDown,
-                  height: 24.sp,
-                  width: 24.sp,
-                  color: primaryBlack,
-                ),
-                if ((homeController
-                            .dashboardModel.value?.unreadNotificationCount ??
-                        0) >
-                    0)
-                  Positioned(
-                    right: -6,
-                    top: -6,
-                    child: Container(
-                      padding: EdgeInsets.all(4.sp),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 18.sp,
-                        minHeight: 18.sp,
-                      ),
-                      child: Text(
-                        (homeController.dashboardModel.value
-                                    ?.unreadNotificationCount ??
-                                0)
-                            .toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            )),
-        activeIcon: Obx(() => Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SvgPicture.asset(
-                  AppAsset.notification,
-                  fit: BoxFit.scaleDown,
-                  height: 24.sp,
-                  width: 24.sp,
-                  color: redColor,
-                ),
-                if ((homeController
-                            .dashboardModel.value?.unreadNotificationCount ??
-                        0) >
-                    0)
-                  Positioned(
-                    right: -6,
-                    top: -6,
-                    child: Container(
-                      padding: EdgeInsets.all(4.sp),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 18.sp,
-                        minHeight: 18.sp,
-                      ),
-                      child: Text(
-                        (homeController.dashboardModel.value
-                                    ?.unreadNotificationCount ??
-                                0)
-                            .toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            )),
+        icon: _buildNotificationIcon(),
+        activeIcon: _buildNotificationIcon(),
         label: "Notification",
       ),
       BottomNavigationBarItem(
@@ -264,5 +180,54 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         label: "Setting",
       ),
     ];
+  }
+
+  Widget _buildNotificationIcon() {
+    return Obx(() {
+      int unreadCount =
+          homeController.dashboardModel.value?.unreadNotificationCount ?? 0;
+      String displayCount = unreadCount > 99 ? '99+' : unreadCount.toString();
+
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SvgPicture.asset(
+            AppAsset.notification,
+            fit: BoxFit.scaleDown,
+            height: 24.sp,
+            width: 24.sp,
+            color: selectedIndex.value == 2 ? redColor : primaryBlack,
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              right: -6.sp,
+              top: -6.sp,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6.sp, vertical: 2.sp),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+                constraints: BoxConstraints(
+                  minWidth: 18.sp,
+                  minHeight: 18.sp,
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    displayCount,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    });
   }
 }

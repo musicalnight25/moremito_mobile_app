@@ -33,43 +33,45 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: CommonAppBar(),
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: Obx(() {
-          final user = homeController.dashboardModel.value;
-          if (user == null && homeController.isLoading.value == false) {
-            return NoDataFound();
-          }
-          if (user == null) {
-            return SizedBox();
-          }
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ShadowContainerWidget(
-              blurRadius: 0,
-              borderColor: disableButtonColor,
-              borderWidth: .9,
-              widget: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: ProfileCardContent(
-                      name:
-                          '${homeController.dashboardModel.value?.name ?? "-"} (${homeController.dashboardModel.value?.userName ?? "-"})',
-                      rank:
-                          '${homeController.dashboardModel.value?.currentRank ?? '-'}',
+      body: SafeArea(
+        child: Center(
+          child: Obx(() {
+            final user = homeController.dashboardModel.value;
+            if (user == null && homeController.isLoading.value == false) {
+              return NoDataFound();
+            }
+            if (user == null) {
+              return SizedBox();
+            }
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ShadowContainerWidget(
+                blurRadius: 0,
+                borderColor: disableButtonColor,
+                borderWidth: .9,
+                widget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: ProfileCardContent(
+                        name:
+                            '${homeController.dashboardModel.value?.name ?? "-"} (${homeController.dashboardModel.value?.userName ?? "-"})',
+                        rank:
+                            '${homeController.dashboardModel.value?.currentRank ?? '-'}',
+                      ),
                     ),
-                  ),
-                  customHeight(24),
-                  Obx(() => homeController.dashboardModel.value != null
-                      ? MembershipInfo(
-                          data: homeController.dashboardModel.value!)
-                      : SizedBox())
-                ],
+                    customHeight(24),
+                    Obx(() => homeController.dashboardModel.value != null
+                        ? MembershipInfo(
+                            data: homeController.dashboardModel.value!)
+                        : SizedBox())
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }

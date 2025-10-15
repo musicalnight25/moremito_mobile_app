@@ -21,7 +21,7 @@ class HomeController extends GetxController {
   Future<void> getDashboard() async {
     isLoading.value = true;
     try {
-      var response = await _networkRepository.getDashboard(Get.context);
+      var response = await _networkRepository.getDashboard(null);
       if (response != null) {
         final model = dashboardResponseModelFromJson(json.encode(response));
         if (model.status == true) {

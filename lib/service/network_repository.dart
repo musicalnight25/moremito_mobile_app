@@ -48,7 +48,7 @@ class NetworkRepository {
       postRequest(null, AppConstants.registerDeviceToken, data: data);
   Future<dynamic> saveSurvey(BuildContext context, var data) =>
       postRequest(context, AppConstants.saveSurvey, data: data);
-  Future<dynamic> getSurveyQuestions(BuildContext context) =>
+  Future<dynamic> getSurveyQuestions(BuildContext? context) =>
       getRequest(context, AppConstants.getSurveyQuestions);
   Future<dynamic> getCategoriesList() =>
       getRequest(null, AppConstants.getCategories);

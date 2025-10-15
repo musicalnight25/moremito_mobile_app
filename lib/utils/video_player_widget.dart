@@ -64,9 +64,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     if (_isLoading ||
         _chewieController == null ||
         !_videoPlayerController!.value.isInitialized) {
-      return _buildShimmerEffect();
+      return SafeArea(child: _buildShimmerEffect());
     }
-    return Chewie(controller: _chewieController!);
+    return SafeArea(child: Chewie(controller: _chewieController!));
   }
 
   Widget _buildShimmerEffect() {

@@ -109,52 +109,54 @@ class _DocumentViewerWidgetState extends State<DocumentViewerWidget>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: InkWell(
-        onTap: _openDocument,
-        onLongPress: () => _showOptions(context),
-        borderRadius: BorderRadius.circular(16.r),
-        child: Container(
-          padding: EdgeInsets.all(16.sp),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.r),
-            gradient: LinearGradient(
-              colors: [
-                primaryColor.withOpacity(.8),
-                primaryBlack.withOpacity(.9)
+    return SafeArea(
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: InkWell(
+          onTap: _openDocument,
+          onLongPress: () => _showOptions(context),
+          borderRadius: BorderRadius.circular(16.r),
+          child: Container(
+            padding: EdgeInsets.all(16.sp),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.r),
+              gradient: LinearGradient(
+                colors: [
+                  primaryColor.withOpacity(.8),
+                  primaryBlack.withOpacity(.9)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                  offset: Offset(0, 3),
+                ),
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                spreadRadius: 2,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _getFileIcon(widget.filePath),
-                size: 60.sp,
-                color: Colors.white,
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                widget.fileName ?? "Open Document",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _getFileIcon(widget.filePath),
+                  size: 60.sp,
                   color: Colors.white,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                SizedBox(height: 8.h),
+                Text(
+                  widget.fileName ?? "Open Document",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),

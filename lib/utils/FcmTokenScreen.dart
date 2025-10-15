@@ -38,31 +38,33 @@ class _FcmTokenScreenState extends State<FcmTokenScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("FCM Token")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              "Your Device Token:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            _loading
-                ? Center(child: CircularProgressIndicator())
-                : SelectableText(
-              _fcmToken ?? "Failed to fetch token",
-              style: TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _copyToClipboard,
-              icon: Icon(Icons.copy),
-              label: Text("Copy Token"),
-            ),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: Text("FCM Token")),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                "Your Device Token:",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              _loading
+                  ? Center(child: CircularProgressIndicator())
+                  : SelectableText(
+                      _fcmToken ?? "Failed to fetch token",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: _copyToClipboard,
+                icon: Icon(Icons.copy),
+                label: Text("Copy Token"),
+              ),
+            ],
+          ),
         ),
       ),
     );

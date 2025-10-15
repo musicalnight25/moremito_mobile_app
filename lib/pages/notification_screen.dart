@@ -37,136 +37,141 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       appBar: CommonAppBar(),
       backgroundColor: Colors.transparent,
-      body: Obx(
-        () => controller.notificationList.isEmpty &&
-                controller.isLoading.value == false
-            ? NoDataFound(
-                title: "Notification",
-              )
-            : ListView(
-                padding: EdgeInsets.symmetric(horizontal: 16.sp),
-                children: [
-                  height20,
-                  Text(
-                    "Notifications",
-                    style: AppTextStyle.normalExtraBold,
-                  ),
-                  customHeight(12),
-                  Obx(
-                    () => controller.notificationList.isEmpty
-                        ? NoNotificationWidget()
-                        : ListView(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            children:
-                                controller.notificationList.map((element) {
-                              return GestureDetector(
-                                onTap: () {
-                                  controller.notificationDetails.value = null;
-                                  controller.notificationDetails.refresh();
-                                  Get.to(() => NotificationDetailsScreen(
-                                        notificationId: element.id.toString(),
-                                      ));
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: 12.sp),
-                                  child: ShadowContainerWidget(
-                                      padding: 0,
-                                      radius: 8.sp,
-                                      blurRadius: 0,
-                                      borderWidth: 1.sp,
-                                      widget: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8.sp, vertical: 12.sp),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            if (element.icon != null)
-                                              Icon(
-                                                element.icon,
-                                                color: primaryColor,
-                                                size: 32,
-                                              ),
-                                            // Image.asset(
-                                            //   element.image!,
-                                            //   height: 32.sp,
-                                            //   width: 32.sp,
-                                            // ),
-                                            customWidth(12),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      if (element.createdOn !=
-                                                          null)
-                                                        Text(
-                                                          CommonMethod
-                                                              .formatTimeIsoDateString(
-                                                                  element
-                                                                      .createdOn!
-                                                                      .toIso8601String()),
-                                                          style: AppTextStyle
-                                                              .normalRegular12
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Colors
-                                                                      .grey),
-                                                          maxLines: 1,
-                                                        )
-                                                    ],
-                                                  ),
-                                                  customHeight(6),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          element.title ?? "",
-                                                          style: AppTextStyle
-                                                              .normalBold16
-                                                              .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w600,
+      body: SafeArea(
+        child: Obx(
+          () => controller.notificationList.isEmpty &&
+                  controller.isLoading.value == false
+              ? NoDataFound(
+                  title: "Notification",
+                )
+              : ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                  children: [
+                    height20,
+                    Text(
+                      "Notifications",
+                      style: AppTextStyle.normalExtraBold,
+                    ),
+                    customHeight(12),
+                    Obx(
+                      () => controller.notificationList.isEmpty
+                          ? NoNotificationWidget()
+                          : ListView(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              children:
+                                  controller.notificationList.map((element) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    controller.notificationDetails.value = null;
+                                    controller.notificationDetails.refresh();
+                                    Get.to(() => NotificationDetailsScreen(
+                                          notificationId: element.id.toString(),
+                                        ));
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 12.sp),
+                                    child: ShadowContainerWidget(
+                                        padding: 0,
+                                        radius: 8.sp,
+                                        blurRadius: 0,
+                                        borderWidth: 1.sp,
+                                        widget: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8.sp,
+                                              vertical: 12.sp),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (element.icon != null)
+                                                Icon(
+                                                  element.icon,
+                                                  color: primaryColor,
+                                                  size: 32,
+                                                ),
+                                              // Image.asset(
+                                              //   element.image!,
+                                              //   height: 32.sp,
+                                              //   width: 32.sp,
+                                              // ),
+                                              customWidth(12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        if (element.createdOn !=
+                                                            null)
+                                                          Text(
+                                                            CommonMethod
+                                                                .formatTimeIsoDateString(element
+                                                                    .createdOn!
+                                                                    .toIso8601String()),
+                                                            style: AppTextStyle
+                                                                .normalRegular12
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Colors
+                                                                        .grey),
+                                                            maxLines: 1,
+                                                          )
+                                                      ],
+                                                    ),
+                                                    customHeight(6),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            element.title ?? "",
+                                                            style: AppTextStyle
+                                                                .normalBold16
+                                                                .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  customHeight(4),
-                                                  Text(
-                                                    element.body ?? "",
-                                                    style: AppTextStyle
-                                                        .normalRegular14
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color:
-                                                                Colors.black54),
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                  ),
-                ],
-              ),
+                                                      ],
+                                                    ),
+                                                    customHeight(4),
+                                                    Text(
+                                                      element.body ?? "",
+                                                      style: AppTextStyle
+                                                          .normalRegular14
+                                                          .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color: Colors
+                                                                  .black54),
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

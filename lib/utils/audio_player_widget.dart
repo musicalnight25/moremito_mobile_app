@@ -74,73 +74,78 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [primaryColor.withOpacity(.8), primaryBlack.withOpacity(.9)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return SafeArea(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              primaryColor.withOpacity(.8),
+              primaryBlack.withOpacity(.9)
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SliderTheme(
-            data: SliderThemeData(
-              trackHeight: 4.h,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SliderTheme(
+              data: SliderThemeData(
+                trackHeight: 4.h,
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
+              ),
+              child: Slider(
+                min: 0,
+                max: _duration.inSeconds.toDouble(),
+                value: _position.inSeconds.toDouble(),
+                onChanged: (value) => _seekTo(Duration(seconds: value.toInt())),
+                activeColor: Colors.white,
+                inactiveColor: Colors.white38,
+              ),
             ),
-            child: Slider(
-              min: 0,
-              max: _duration.inSeconds.toDouble(),
-              value: _position.inSeconds.toDouble(),
-              onChanged: (value) => _seekTo(Duration(seconds: value.toInt())),
-              activeColor: Colors.white,
-              inactiveColor: Colors.white38,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(_formatDuration(_position),
-                    style: AppTextStyle.normalBold14
-                        .copyWith(color: Colors.white)),
-                Text(_formatDuration(_duration),
-                    style: AppTextStyle.normalBold14
-                        .copyWith(color: Colors.white)),
-              ],
-            ),
-          ),
-          SizedBox(height: 8.h),
-          GestureDetector(
-            onTap: _togglePlayPause,
-            child: Container(
-              padding: EdgeInsets.all(8.sp),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryWhite.withOpacity(.8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                    offset: Offset(0, 3),
-                  ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_formatDuration(_position),
+                      style: AppTextStyle.normalBold14
+                          .copyWith(color: Colors.white)),
+                  Text(_formatDuration(_duration),
+                      style: AppTextStyle.normalBold14
+                          .copyWith(color: Colors.white)),
                 ],
               ),
-              child: AnimatedIcon(
-                icon: AnimatedIcons.play_pause,
-                progress: _animationController,
-                size: 36.sp,
-                color: primaryBlack,
+            ),
+            SizedBox(height: 8.h),
+            GestureDetector(
+              onTap: _togglePlayPause,
+              child: Container(
+                padding: EdgeInsets.all(8.sp),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: primaryWhite.withOpacity(.8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: AnimatedIcon(
+                  icon: AnimatedIcons.play_pause,
+                  progress: _animationController,
+                  size: 36.sp,
+                  color: primaryBlack,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

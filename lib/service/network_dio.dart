@@ -39,6 +39,7 @@ class NetworkDioHttp {
       connectTimeout: 5000,
       headers: headers,
     );
+    _dio.interceptors.clear();
 
     _dio.interceptors.addAll([
       InterceptorsWrapper(
@@ -240,13 +241,20 @@ class NetworkDioHttp {
     required String url,
     required dynamic data,
     Function(int, int)? onSendProgress,
+    bool includeAuthHeader = true, // ✅ new flag
   }) async {
+    final headers = includeAuthHeader
+        ? await _getHeaders()
+        : {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          };
     return _request(
       context: context,
       url: url,
       request: () async => _dio.post(url,
           data: data,
-          options: Options(headers: await _getHeaders()),
+          options: Options(headers: headers),
           onSendProgress: onSendProgress),
     );
   }

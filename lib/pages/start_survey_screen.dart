@@ -45,7 +45,7 @@ class StartSurveyScreen extends StatelessWidget {
                 title: "Start Survey",
                 onPressed: () {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    controller.getSurveyQuestions(context);
+                    controller.getSurveyQuestions(null);
                   });
                   Get.to(() => SurveyScreen());
                 }),
