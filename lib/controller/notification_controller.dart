@@ -36,8 +36,8 @@ class NotificationController extends GetxController {
     isLoading.value = true;
 
     try {
-      var response = await _networkRepository.getNotificationDetail(
-          context, notificationId);
+      var response =
+          await _networkRepository.getNotificationDetail(null, notificationId);
       if (response != null) {
         final model =
             notificationDetailResponseModelFromJson(json.encode(response));

@@ -10,6 +10,7 @@ import 'package:more_mitro_app/utils/common_method.dart';
 
 import '../model/login_model.dart';
 import '../model/survey_questions_model.dart';
+import '../service/error_logger.dart';
 import '../utils/preferences_util.dart';
 
 class LoginController extends GetxController {
@@ -18,20 +19,14 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
   RxBool isLoading = false.obs;
 
-  // Store selected answers in a list of maps (QuestionId, AnswerId)
   RxList<Map<String, int>> selectedAnswersList = <Map<String, int>>[].obs;
-
-  // Store the list of survey questions
   RxList<SurveyQuestionsModel> surveyQuestionsList =
       <SurveyQuestionsModel>[].obs;
-
   RxInt currentQuestionIndex = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-
-    // Only prefill in debug mode — safe here
     if (kDebugMode) {
       usernameController.text = "shubham";
       passwordController.text = "Hello@#7777#";
@@ -51,8 +46,14 @@ class LoginController extends GetxController {
               .assignAll(surveyQuestionsResponseModel.data ?? []);
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error in getSurveyQuestions: $e");
+      await ErrorLogger.logErrorToServer(
+        pageType: "Survey",
+        actionType: "GetSurveyQuestions",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -62,12 +63,17 @@ class LoginController extends GetxController {
     try {
       await _networkRepository.logout(context);
       debugPrint("User logged out successfully.");
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error in logout: $e");
+      await ErrorLogger.logErrorToServer(
+        pageType: "Logout",
+        actionType: "LogoutRequest",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
     }
   }
 
-  // Handle login with username and password
   Future<void> loginWithPassword(BuildContext context) async {
     final data = {
       'UserName': usernameController.text.trim(),
@@ -85,21 +91,38 @@ class LoginController extends GetxController {
           await PreferencesUtil.saveUserToken(loginUserModel);
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error in loginWithPassword: $e");
       CommonMethod.getXSnackBar(
-          "Login Failed", "Please check your credentials.", redColor);
+        "Login Failed",
+        "Please check your credentials.",
+        redColor,
+      );
+
+      // ✅ Log the error to backend
+      await ErrorLogger.logErrorToServer(
+        pageType: "Login",
+        actionType: "LoginBtnClick",
+        errorMessage1: e.toString(),
+        errorMessage2: "Login Failed",
+        errorMessage3: stack.toString(),
+      );
     }
   }
 
-  // Register device token for notifications
   Future<void> registerDeviceToken() async {
     try {
       var token = await CommonMethod.getDeviceToken();
       final data = {'DeviceToken': token};
       await _networkRepository.registerDeviceToken(data);
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error in registerDeviceToken: $e");
+      await ErrorLogger.logErrorToServer(
+        pageType: "DeviceToken",
+        actionType: "RegisterToken",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
     }
   }
 
@@ -122,16 +145,23 @@ class LoginController extends GetxController {
             "Your survey has been successfully submitted.", greenColor);
       } else {
         CommonMethod.getXSnackBar(
-            "Error",
-            "There was an issue submitting your survey. Please try again.",
-            redColor);
+          "Error",
+          "There was an issue submitting your survey. Please try again.",
+          redColor,
+        );
       }
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error in saveSurvey: $e");
+      await ErrorLogger.logErrorToServer(
+        pageType: "Survey",
+        actionType: "SaveSurvey",
+        errorMessage1: e.toString(),
+        errorMessage2: "Survey save failed",
+        errorMessage3: stack.toString(),
+      );
     }
   }
 
-  // Add selected answer to the list
   void selectAnswer(int questionId, int answerId) {
     final existingIndex = selectedAnswersList
         .indexWhere((item) => item['QuestionId'] == questionId);

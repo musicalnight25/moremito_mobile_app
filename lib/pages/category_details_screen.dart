@@ -25,16 +25,20 @@ class CategoryDetailsScreen extends StatefulWidget {
 }
 
 class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
-  var controller = Get.put(CategoriesController());
+  final controller = Get.put(CategoriesController());
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getSubCategoriesFiles(
-          context, widget.data.subCategoryId ?? "6");
-    });
-    // controller.getSubCategoriesFiles(context, '6');
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getSubCategoriesFiles(null, widget.data.subCategoryId ?? "0");
+    });
+  }
+
+  /// Pull-to-refresh function
+  Future<void> _onRefresh() async {
+    await controller.getSubCategoriesFiles(
+        null, widget.data.subCategoryId ?? "0");
   }
 
   @override
@@ -47,67 +51,67 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
       ),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          List<CategoryFileModel> bestCategories = controller.categoriesFileList
-              .where((e) => e.isPopular == true)
-              .toList();
-          List<CategoryFileModel> remainingCategories = controller
-              .categoriesFileList
-              .where((e) => e.isPopular == false)
-              .toList();
+          final allFiles = controller.categoriesFileList;
+          final bestCategories =
+              allFiles.where((e) => e.isPopular == true).toList();
+          final remainingCategories =
+              allFiles.where((e) => e.isPopular == false).toList();
 
-          if (controller.categoriesFileList.isEmpty &&
-              controller.isLoading.value == false) {
-            return NoDataFound(
-              title: "Files",
-            );
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          if (controller.categoriesFileList.isEmpty) {
-            return SizedBox();
+          if (allFiles.isEmpty) {
+            return NoDataFound(title: "Files");
           }
 
-          return ListView(
-            padding: EdgeInsets.symmetric(horizontal: 16.sp),
-            children: [
-              height20,
-              Text(
-                widget.data?.subCategoryName ?? "-",
-                style: AppTextStyle.normalExtraBold,
-              ),
-              height20,
-              if (bestCategories.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Best Categories',
-                        style: AppTextStyle.normalBold16
-                            .copyWith(color: lightBlackColor)),
-                    customHeight(12),
-                    Column(
-                      children: bestCategories.map((element) {
-                        return buildFileViewWidget(element);
-                      }).toList(),
-                    ),
-                  ],
+          return RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: primaryColor,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+              children: [
+                height20,
+                Text(
+                  widget.data.subCategoryName ?? "-",
+                  style: AppTextStyle.normalExtraBold,
                 ),
-              if (remainingCategories.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    height20,
-                    Text('Remaining Categories',
-                        style: AppTextStyle.normalBold16
-                            .copyWith(color: lightBlackColor)),
-                    customHeight(12),
-                    Column(
-                      children: remainingCategories.map((element) {
-                        return buildFileViewWidget(element);
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              height20,
-            ],
+                height20,
+                if (bestCategories.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Best Categories',
+                          style: AppTextStyle.normalBold16
+                              .copyWith(color: lightBlackColor)),
+                      customHeight(12),
+                      Column(
+                        children: bestCategories
+                            .map((element) => buildFileViewWidget(element))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                if (remainingCategories.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      height20,
+                      Text('Remaining Categories',
+                          style: AppTextStyle.normalBold16
+                              .copyWith(color: lightBlackColor)),
+                      customHeight(12),
+                      Column(
+                        children: remainingCategories
+                            .map((element) => buildFileViewWidget(element))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                height20,
+              ],
+            ),
           );
         }),
       ),
@@ -143,11 +147,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                         ? Icons.photo_outlined
                         : isAudio
                             ? CupertinoIcons.music_note_2
-                            :
-                            // isPDF
-                            //                 ? Icons.picture_as_pdf_outlined
-                            //                 :
-                            CupertinoIcons.doc_text),
+                            : CupertinoIcons.doc_text),
                 customWidth(8),
                 Expanded(
                   child: Text(
@@ -161,34 +161,6 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                 Icon(isVideo || isAudio
                     ? CupertinoIcons.play_circle
                     : CupertinoIcons.eye),
-                // SizedBox(
-                //   width: Get.width,
-                //   height: 54.sp,
-                //   child: data.filePath != null && GetUtils.isVideo(data.filePath!)
-                //       ? VideoPlayerWidget(videoUrl: data.filePath!)
-                //       : GetUtils.isImage(data.filePath!)
-                //           ? NetworkImageWidget(
-                //               imageUrl: data.filePath!, fit: BoxFit.cover)
-                //           : GetUtils.isAudio(data.filePath!) ||
-                //                   data.fileType == '.m4a'
-                //               ? AudioPlayerWidget(audioUrl: data.filePath!)
-                //               : GetUtils.isPDF(data.filePath!) ||
-                //                       GetUtils.isWord(data.filePath!)
-                //                   ? GestureDetector(
-                //                       onTap: () {
-                //                         Get.to(() => CommonWebView(
-                //                               url:
-                //                                   "https://docs.google.com/gview?embedded=true&url=${data.filePath!}",
-                //                               title: data.fileName ??
-                //                                   "Document Name",
-                //                             ));
-                //                       },
-                //                       child: Icon(Icons.picture_as_pdf,
-                //                           size: 60.sp, color: hintGreyColor),
-                //                     )
-                //                   : Icon(Icons.insert_drive_file,
-                //                       size: 60.sp, color: hintGreyColor),
-                // ),
               ],
             ),
           ),
@@ -199,8 +171,8 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
 }
 
 void shareFile(CategoryFileModel data) {
-  final String subject = "File has been shared by Shubham!";
-  final String body = """
+  const subject = "File has been shared by Shubham!";
+  final body = """
 Dear User,
 
 File has been shared by Shubham (Shubham Kumar):

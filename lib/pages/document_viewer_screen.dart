@@ -33,16 +33,23 @@ class DocumentViewerScreen extends StatefulWidget {
 }
 
 class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
-  var controller = Get.put(CategoriesController());
-  final ContactController contactController = Get.put(ContactController());
-  TextEditingController nameTextController = TextEditingController();
-  TextEditingController messageTextController = TextEditingController();
+  final controller = Get.put(CategoriesController());
+  final contactController = Get.put(ContactController());
+  final TextEditingController nameTextController = TextEditingController();
+  final TextEditingController messageTextController = TextEditingController();
 
   @override
   void initState() {
-    // controller.getSubCategoriesFiles(widget.data.categoryId ?? "0");
-    // controller.getSubCategoriesFiles('6');
     super.initState();
+  }
+
+  /// Pull-to-refresh functionality
+  Future<void> _onRefresh() async {
+    // Refresh document/file details from the API
+    await controller.getSubCategoriesFiles(
+      null,
+      widget.data.id ?? "0",
+    );
   }
 
   @override
@@ -50,26 +57,25 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: CommonAppBar(
-        visibleBackButton: true,
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [],
-      ),
+      appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 16.sp),
-          children: [
-            height20,
-            Text(
-              widget.data?.fileName ?? "-",
-              style: AppTextStyle.normalExtraBold,
-            ),
-            height20,
-            buildFileViewWidget(widget.data),
-            height20,
-          ],
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: primaryColor,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 16.sp),
+            children: [
+              height20,
+              Text(
+                widget.data.fileName ?? "-",
+                style: AppTextStyle.normalExtraBold,
+              ),
+              height20,
+              buildFileViewWidget(widget.data),
+              height20,
+            ],
+          ),
         ),
       ),
     );
@@ -132,7 +138,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            // customHeight(4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -180,7 +185,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         ),
                       ),
                     );
-                    // await controller.shareFile(data);
                   },
                   icon: SvgPicture.asset(
                     AppAsset.share,
@@ -229,9 +233,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             onPressed: () async {
                               if (nameTextController.text.isEmpty) {
                                 return CommonMethod.getXSnackBar(
-                                    "Error",
-                                    "Please enter name, email, or phone number...",
-                                    redColor);
+                                  "Error",
+                                  "Please enter name, email, or phone number...",
+                                  redColor,
+                                );
                               }
                               generatedLinkText.value =
                                   await controller.generateLink(
@@ -240,7 +245,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                           SharedTo: nameTextController.text) ??
                                       "";
                               final String message =
-                                  "Dear ${nameTextController.text},\n\n${homeController.dashboardModel.value?.userName ?? "A colleague"} (${homeController.dashboardModel.value?.name ?? "someone"}) has shared a file with you.\n\n📂 File Access Link:\n${generatedLinkText}\n\nIf you have any questions or need further assistance, please don't hesitate to reach out.\n\nBest regards,\n${homeController.dashboardModel.value?.name ?? "The Support Team"}";
+                                  "Dear ${nameTextController.text},\n\n${homeController.dashboardModel.value?.userName ?? "A colleague"} has shared a file with you.\n\n📂 File Access Link:\n${generatedLinkText.value}\n\nBest regards,\n${homeController.dashboardModel.value?.name ?? "Support Team"}";
 
                               messageTextController.text = message;
                             },
@@ -263,9 +268,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             ),
             Obx(
               () => generatedLinkText.value.isEmpty
-                  ? SizedBox(
-                      height: 10,
-                    )
+                  ? const SizedBox(height: 10)
                   : Column(
                       children: [
                         Padding(
@@ -287,14 +290,14 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                   if (messageTextController.text.isEmpty) {
                                     CommonMethod.getXSnackBar(
                                         "Error",
-                                        "Please enter personalized message..",
+                                        "Please enter personalized message.",
                                         redColor);
                                     return;
                                   }
                                   if (nameTextController.text.isEmpty) {
                                     CommonMethod.getXSnackBar(
                                         "Error",
-                                        "Please enter name, email or phone...",
+                                        "Please enter recipient details.",
                                         redColor);
                                     return;
                                   }

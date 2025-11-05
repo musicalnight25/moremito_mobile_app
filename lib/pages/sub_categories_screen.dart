@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/model/categories_model.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
+import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 
 import '../controller/categories_controller.dart';
@@ -14,14 +15,14 @@ import 'category_details_screen.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
   final CategoryModel data;
-  SubCategoriesScreen({Key? key, required this.data}) : super(key: key);
+  const SubCategoriesScreen({Key? key, required this.data}) : super(key: key);
 
   @override
   State<SubCategoriesScreen> createState() => _SubCategoriesScreenState();
 }
 
 class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
-  var controller = Get.put(CategoriesController());
+  final controller = Get.put(CategoriesController());
 
   @override
   void initState() {
@@ -29,6 +30,11 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getSubCategories(context, widget.data.categoryId ?? "0");
     });
+  }
+
+  /// Function to handle pull-to-refresh
+  Future<void> _onRefresh() async {
+    await controller.getSubCategories(null, widget.data.categoryId ?? "0");
   }
 
   @override
@@ -41,47 +47,41 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
       ),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          // List<CategoryModel> bestCategories = controller.subCategoriesList
-          //     .where((e) => e.isPopular == true)
-          //     .toList();
-          // List<CategoryModel> remainingCategories = controller.subCategoriesList
-          //     .where((e) => e.isPopular == false)
-          //     .toList();
-          List<CategoryModel> bestCategories =
+          List<CategoryModel> subCategories =
               controller.subCategoriesList.value;
 
-          if (bestCategories.isEmpty && controller.isLoading.value == false) {
-            return NoDataFound();
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          if (bestCategories.isEmpty) {
-            return SizedBox();
+          if (subCategories.isEmpty) {
+            return NoDataFound(title: 'Subcategories');
           }
 
-          return ListView(
-            children: [
-              // if (bestCategories.isNotEmpty)
-              buildSubCategory(
-                // title: "Best Categories",
-                title: widget.data.categoryName ?? "-",
-                subCategoriesList: bestCategories,
-              ),
-              // if (remainingCategories.isNotEmpty)
-              //   buildSubCategory(
-              //     title: "Remaining Categories",
-              //     subCategoriesList: remainingCategories,
-              //   ),
-            ],
+          return RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: primaryColor,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                buildSubCategory(
+                  title: widget.data.categoryName ?? "-",
+                  subCategoriesList: subCategories,
+                ),
+              ],
+            ),
           );
         }),
       ),
     );
   }
 
-  Widget buildSubCategory(
-      {required String title, required List<CategoryModel> subCategoriesList}) {
+  Widget buildSubCategory({
+    required String title,
+    required List<CategoryModel> subCategoriesList,
+  }) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,7 +90,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
           customHeight(12),
           GridView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 200,
               mainAxisSpacing: 10.sp,
@@ -102,11 +102,9 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
               final subCategory = subCategoriesList[subIndex];
               return GestureDetector(
                 onTap: () {
-                  controller.categoriesFileList.value.clear();
+                  controller.categoriesFileList.clear();
                   controller.categoriesFileList.refresh();
-                  Get.to(() => CategoryDetailsScreen(
-                        data: subCategory,
-                      ));
+                  Get.to(() => CategoryDetailsScreen(data: subCategory));
                 },
                 child: CommonCategoryWidget(
                   category: subCategory,
@@ -116,7 +114,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
               );
             },
           ),
-          height20
+          height20,
         ],
       ),
     );

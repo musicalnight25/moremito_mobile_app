@@ -7,42 +7,50 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/login_screen.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/pages/start_survey_screen.dart';
+import 'package:more_mitro_app/service/pop_up_service.dart';
 
 import 'utils/app_text_style.dart';
 import 'utils/colors.dart';
 import 'utils/preferences_util.dart';
 
+// ------------------------------------------------------------
+// Notification streams
+// ------------------------------------------------------------
 final StreamController<String?> selectNotificationStream =
     StreamController<String?>.broadcast();
 final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
     StreamController<ReceivedNotification>.broadcast();
 
 class ReceivedNotification {
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+
   ReceivedNotification({
     required this.id,
     required this.title,
     required this.body,
     required this.payload,
   });
-
-  final int id;
-  final String? title;
-  final String? body;
-  final String? payload;
 }
 
+// ------------------------------------------------------------
+// Root App Widget
+// ------------------------------------------------------------
 class MoreMitoApp extends StatefulWidget {
   const MoreMitoApp({Key? key}) : super(key: key);
 
   @override
-  _MoreMitoAppState createState() => _MoreMitoAppState();
+  State<MoreMitoApp> createState() => _MoreMitoAppState();
 }
 
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>(debugLabel: "navigator");
 
 class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
-  late FirebaseMessaging messaging;
+  late final FirebaseMessaging messaging;
+  bool _popupShown = false;
 
   @override
   void initState() {
@@ -55,185 +63,129 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     selectNotificationStream.close();
-
+    didReceiveLocalNotificationStream.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final deviceWidth = constraints.maxWidth;
-      final deviceHeight = constraints.maxHeight;
-      const baseWidth = 360.0;
-      const baseHeight = 800.0;
-      final scaleFactorWidth = deviceWidth / baseWidth;
-      final scaleFactorHeight = deviceHeight / baseHeight;
-      final designSize = Size(
-        baseWidth * scaleFactorWidth.clamp(1.0, 2.0),
-        baseHeight * scaleFactorHeight.clamp(1.0, 2.0),
-      );
-      return ScreenUtilInit(
-        designSize: designSize,
-        minTextAdapt: true,
-        fontSizeResolver: (fontSize, instance) {
-          final display = View.of(context).display;
-          final screenSize = display.size / display.devicePixelRatio;
-          final scaleWidth = screenSize.width / designSize.width;
-          return fontSize * scaleWidth;
-        },
-        splitScreenMode: true,
-        builder: (BuildContext context, Widget? child) {
-          return GetMaterialApp(
-            useInheritedMediaQuery: true,
-            fallbackLocale: const Locale('en', 'US'),
-            defaultTransition: Transition.fadeIn,
-            navigatorKey: navigatorKey,
-            title: 'MoreMito',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primaryColor: primaryBlack,
-              hintColor: primaryBlack,
-              useMaterial3: true,
-              fontFamily: "Manrope",
-              iconTheme: IconThemeData(color: primaryBlack, size: 24),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  textStyle: TextStyle(
-                    fontSize: 16.sp, // Larger font size for TextButton
-                    fontWeight: FontWeight.w600, // Semi-bold text
-                  ),
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final deviceWidth = constraints.maxWidth;
+        final deviceHeight = constraints.maxHeight;
+
+        // Fixed base sizes
+        const baseWidth = 360.0;
+        const baseHeight = 800.0;
+
+        final designSize = Size(baseWidth, baseHeight);
+
+        return ScreenUtilInit(
+          designSize: designSize,
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (_, __) {
+            // ✅ At this point ScreenUtil is initialized
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!_popupShown) {
+                _popupShown = true;
+                PopupService.runAppChecks();
+              }
+            });
+
+            return GetMaterialApp(
+              navigatorKey: navigatorKey,
+              title: 'MoreMito',
+              debugShowCheckedModeBanner: false,
+              useInheritedMediaQuery: true,
+              fallbackLocale: const Locale('en', 'US'),
+              defaultTransition: Transition.fadeIn,
+              themeMode: ThemeMode.light,
+              theme: _buildThemeData(),
+              darkTheme: _buildThemeData(),
+              home: FutureBuilder<Widget>(
+                future: _getInitialPage(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (snapshot.hasData) {
+                    return snapshot.data!;
+                  } else {
+                    return const Scaffold(
+                      body: Center(child: Text("Something went wrong")),
+                    );
+                  }
+                },
               ),
-              dialogTheme: DialogThemeData(
-                backgroundColor: Colors.white, // Set dialog background color
-                titleTextStyle: AppTextStyle.normalBold18, // Set title color
-                contentTextStyle: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16.sp,
-                ), // Set content color
-              ),
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: MaterialColor(
-                  primaryBlack.value,
-                  {
-                    50: primaryBlack,
-                    100: primaryBlack,
-                    200: primaryBlack,
-                    300: primaryBlack,
-                    400: primaryBlack,
-                    500: primaryBlack,
-                    600: primaryBlack,
-                    700: primaryBlack,
-                    800: primaryBlack,
-                    900: primaryBlack,
-                  },
-                ),
-              ).copyWith(surface: primaryWhite),
-              scaffoldBackgroundColor: Colors.white,
-              textTheme: TextTheme(
-                displayLarge: AppTextStyle.normalBold32,
-                displayMedium: AppTextStyle.normalBold28,
-                displaySmall: AppTextStyle.normalBold24,
-                headlineMedium: AppTextStyle.normalBold20,
-                headlineSmall: AppTextStyle.normalBold18,
-                titleLarge: AppTextStyle.normalBold16,
-                titleMedium: AppTextStyle.normalBold14,
-                titleSmall: AppTextStyle.normalBold12,
-                bodyLarge: AppTextStyle.normalRegular18,
-                bodyMedium: AppTextStyle.normalRegular16,
-                bodySmall: AppTextStyle.normalRegular14,
-                labelLarge: AppTextStyle.normalBold10,
-                labelMedium: AppTextStyle.normalRegular12,
-                labelSmall: AppTextStyle.normalRegular8,
-              ),
-            ),
-            darkTheme: ThemeData(
-              primaryColor: primaryBlack,
-              hintColor: primaryBlack,
-              fontFamily: "Manrope",
-              iconTheme: IconThemeData(color: primaryBlack, size: 24),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  textStyle: TextStyle(
-                    fontSize: 16.sp, // Larger font size for TextButton
-                    fontWeight: FontWeight.w600, // Semi-bold text
-                  ),
-                ),
-              ),
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: MaterialColor(
-                  primaryBlack.value,
-                  {
-                    50: primaryBlack,
-                    100: primaryBlack,
-                    200: primaryBlack,
-                    300: primaryBlack,
-                    400: primaryBlack,
-                    500: primaryBlack,
-                    600: primaryBlack,
-                    700: primaryBlack,
-                    800: primaryBlack,
-                    900: primaryBlack,
-                  },
-                ),
-              ).copyWith(surface: primaryWhite),
-              scaffoldBackgroundColor: Colors.white,
-              dialogTheme: DialogThemeData(
-                backgroundColor: Colors.white, // Set dialog background color
-                titleTextStyle: AppTextStyle.normalBold18, // Set title color
-                contentTextStyle: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16.sp,
-                ), // Set content color
-              ),
-              textTheme: TextTheme(
-                displayLarge: AppTextStyle.normalBold32,
-                displayMedium: AppTextStyle.normalBold28,
-                displaySmall: AppTextStyle.normalBold24,
-                headlineMedium: AppTextStyle.normalBold20,
-                headlineSmall: AppTextStyle.normalBold18,
-                titleLarge: AppTextStyle.normalBold16,
-                titleMedium: AppTextStyle.normalBold14,
-                titleSmall: AppTextStyle.normalBold12,
-                bodyLarge: AppTextStyle.normalRegular18,
-                bodyMedium: AppTextStyle.normalRegular16,
-                bodySmall: AppTextStyle.normalRegular14,
-                labelLarge: AppTextStyle.normalBold10,
-                labelMedium: AppTextStyle.normalRegular12,
-                labelSmall: AppTextStyle.normalRegular8,
-              ),
-            ),
-            themeMode: ThemeMode.light,
-            home: FutureBuilder<Widget>(
-              future: _getInitialPage(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  );
-                } else if (snapshot.hasData) {
-                  return snapshot.data!;
-                } else {
-                  return Placeholder(); // Default fallback
-                }
-              },
-            ),
-          );
-        },
-      );
-    });
+            );
+          },
+        );
+      },
+    );
+  }
+
+  ThemeData _buildThemeData() {
+    return ThemeData(
+      useMaterial3: true,
+      primaryColor: primaryBlack,
+      hintColor: primaryBlack,
+      fontFamily: "Manrope",
+      scaffoldBackgroundColor: Colors.white,
+      iconTheme: const IconThemeData(color: primaryBlack, size: 24),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          textStyle: AppTextStyle.normalSemiBold16,
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        titleTextStyle: AppTextStyle.normalBold18,
+        contentTextStyle: AppTextStyle.normalRegular16,
+      ),
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: MaterialColor(
+          primaryBlack.value,
+          const {
+            50: primaryBlack,
+            100: primaryBlack,
+            200: primaryBlack,
+            300: primaryBlack,
+            400: primaryBlack,
+            500: primaryBlack,
+            600: primaryBlack,
+            700: primaryBlack,
+            800: primaryBlack,
+            900: primaryBlack,
+          },
+        ),
+      ).copyWith(surface: primaryWhite),
+      textTheme: TextTheme(
+        displayLarge: AppTextStyle.normalBold32,
+        displayMedium: AppTextStyle.normalBold28,
+        displaySmall: AppTextStyle.normalBold24,
+        headlineMedium: AppTextStyle.normalBold20,
+        headlineSmall: AppTextStyle.normalBold18,
+        titleLarge: AppTextStyle.normalBold16,
+        titleMedium: AppTextStyle.normalBold14,
+        titleSmall: AppTextStyle.normalBold12,
+        bodyLarge: AppTextStyle.normalRegular18,
+        bodyMedium: AppTextStyle.normalRegular16,
+        bodySmall: AppTextStyle.normalRegular14,
+        labelLarge: AppTextStyle.normalBold10,
+        labelMedium: AppTextStyle.normalRegular12,
+        labelSmall: AppTextStyle.normalRegular8,
+      ),
+    );
   }
 
   Future<Widget> _getInitialPage() async {
-    String? userToken = await PreferencesUtil.getUserToken() ?? null;
-    bool isSurveyCompleted = await PreferencesUtil.getIsSurveyCompleted();
+    final userToken = await PreferencesUtil.getUserToken();
+    final isSurveyCompleted = await PreferencesUtil.getIsSurveyCompleted();
 
     if (userToken != null) {
-      if (isSurveyCompleted) {
-        return MainHomeScreen();
-      } else {
-        return StartSurveyScreen();
-      }
+      return isSurveyCompleted ? MainHomeScreen() : StartSurveyScreen();
     } else {
       return LoginScreen();
     }

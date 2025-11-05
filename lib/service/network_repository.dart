@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:more_mitro_app/service/network_dio.dart';
 import 'package:more_mitro_app/utils/app_constants.dart';
@@ -57,12 +59,12 @@ class NetworkRepository {
   Future<dynamic> getNotification() =>
       getRequest(null, AppConstants.getNotification);
   Future<dynamic> getNotificationDetail(
-          BuildContext context, String notificationId) =>
+          BuildContext? context, String notificationId) =>
       getRequest(context, AppConstants.getNotificationDetail + notificationId);
-  Future<dynamic> getSubCategories(BuildContext context, String categoryID) =>
+  Future<dynamic> getSubCategories(BuildContext? context, String categoryID) =>
       getRequest(context, AppConstants.getSubCategories + categoryID);
   Future<dynamic> getSubCategoriesFiles(
-          BuildContext context, String categoryID) =>
+          BuildContext? context, String categoryID) =>
       getRequest(context, AppConstants.getSubCategoriesFiles + categoryID);
   Future<dynamic> mobileSaveFileShare(BuildContext context, var data) =>
       postRequest(context, AppConstants.mobileSaveFileShare, data: data);
@@ -104,6 +106,8 @@ class NetworkRepository {
 
   String _extractErrorMessage(dynamic body) {
     if (body is Map<String, dynamic>) {
+      if (body.containsKey('Message')) return body['Message'];
+
       if (body.containsKey('message')) return body['message'];
       if (body.containsKey('errors') &&
           body['errors'] is Map<String, dynamic>) {
@@ -117,6 +121,7 @@ class NetworkRepository {
   }
 
   void _showErrorDialog(String message) {
+    log("--------message------$message");
     if (message.isNotEmpty) {
       CommonMethod.getXSnackBar("Error", message, redColor);
     }

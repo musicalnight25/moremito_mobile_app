@@ -19,15 +19,16 @@ Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   log("Handling background message: ${message.messageId}");
 }
 
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HttpOverrides.global = MyHttpOverrides();
-  await PreferencesUtil.init();
-  await Firebase.initializeApp();
-
-  // Register background handler
+  await PreferencesUtil
+      .init(); // ✅ Register background handler before Firebase.initializeApp()
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+  await Firebase.initializeApp();
 
   // Set notification display options for foreground messages (iOS)
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(

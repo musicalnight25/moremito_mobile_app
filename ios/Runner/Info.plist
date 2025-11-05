@@ -1,95 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>MoreMito App</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>more_mito_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
 	<dict>
-		<!-- Performance -->
-		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<!-- App basic info -->
-		<key>CFBundleDevelopmentRegion</key>
-		<string>$(DEVELOPMENT_LANGUAGE)</string>
-		<key>CFBundleDisplayName</key>
-		<string>MoreMito App</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleName</key>
-		<string>more_mito_app</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(FLUTTER_BUILD_NAME)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleVersion</key>
-		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<!-- Firebase push notification environment -->
-		<key>aps-environment</key>
-		<string>development</string>
-		<!-- Networking (allow all, typically for dev) -->
-		<key>NSAppTransportSecurity</key>
-		<dict>
-			<key>NSAllowsArbitraryLoads</key>
-			<true/>
-		</dict>
-		<!-- Permissions -->
-		<key>NSContactsUsageDescription</key>
-		<string>We need access to your contacts to select a contact.</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>We need access to your photos.</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>We need access to the microphone for voice input.</string>
-		<key>NSCameraUsageDescription</key>
-		<string>We need access to your camera for scanning QR codes.</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>We need your location for better services.</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>We need your location for tracking purposes.</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>We need your location even when the app is in the background.</string>
-		<key>NSUserNotificationUsageDescription</key>
-		<string>We need notification permission to send alerts.</string>
-		<!-- Input & background -->
-		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true/>
-		<key>ITSAppUsesNonExemptEncryption</key>
-        <false/>
-
-		<key>UIBackgroundModes</key>
-		<array>
-			<!-- Add modes if needed: fetch, remote-notification, audio -->
-		</array>
-		<!-- Launch screen & main storyboard -->
-		<key>UILaunchStoryboardName</key>
-		<string>LaunchScreen</string>
-		<key>UIMainStoryboardFile</key>
-		<string>Main</string>
-		<!-- ✅ Fullscreen mode -->
-		<key>UIRequiresFullScreen</key>
-		<true/>
-		<!-- Hide status bar -->
-		<key>UIStatusBarHidden</key>
-		<false/>
-		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false/>
-		<!-- Orientation -->
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>UISupportedInterfaceOrientations~ipad</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationPortraitUpsideDown</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera for scanning QR codes.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We need access to your contacts to select a contact.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location even when the app is in the background.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location for tracking purposes.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location for better services.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to the microphone for voice input.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photos.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We need notification permission to send alerts.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
 </plist>

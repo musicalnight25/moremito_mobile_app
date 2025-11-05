@@ -34,7 +34,8 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<void> getSubCategories(BuildContext context, String categoryID) async {
+  Future<void> getSubCategories(
+      BuildContext? context, String categoryID) async {
     isLoading.value = true;
     try {
       var response =
@@ -53,7 +54,7 @@ class CategoriesController extends GetxController {
   }
 
   Future<void> getSubCategoriesFiles(
-      BuildContext context, String categoryID) async {
+      BuildContext? context, String categoryID) async {
     isLoading.value = true;
     try {
       var response =

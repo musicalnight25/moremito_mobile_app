@@ -27,4 +27,5 @@ class AppAsset {
   static const tweaked = 'assets/images/tweaked.png';
   static const unselectedCheck = 'assets/images/unselected_check.svg';
   static const orderShipped = 'assets/images/order_shipped.png';
+  static const update = 'assets/json/update.json';
 }

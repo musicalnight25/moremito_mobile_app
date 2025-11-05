@@ -1,99 +1,153 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/state_manager.dart';
-import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
+import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/notification_details_screen.dart';
 
 import '../utils/colors.dart';
 
 class FcmService extends GetxService {
-  //pre-config
   final AndroidNotificationChannel channel = const AndroidNotificationChannel(
-      'notification_id', // id
-      'NotificationName', // name
-      description: 'notifications',
-      importance: Importance.max,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('notification_sound'),
-      enableVibration: true,
-      audioAttributesUsage: AudioAttributesUsage.notification);
+    'notification_id',
+    'NotificationName',
+    description: 'notifications',
+    importance: Importance.max,
+    playSound: true,
+    sound: RawResourceAndroidNotificationSound('notification_sound'),
+    enableVibration: true,
+    audioAttributesUsage: AudioAttributesUsage.notification,
+  );
 
-  //init local notification
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-//Print Fcm Token
-  Future<String?> getToken() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    String? token = await messaging.getToken();
-    print(token);
-    return token;
-  }
-
-  //Display Notification
-  displayNotification(RemoteNotification notification) {
+  // 🔔 Display notification with payload
+  void displayNotification(
+      RemoteNotification notification, Map<String, dynamic> data) {
     flutterLocalNotificationsPlugin.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'notification_id',
-            channel.name,
-            color: primaryColor,
-            importance: Importance.max,
-            colorized: true,
-            playSound: true,
-            icon: '@mipmap/ic_launcher',
-            sound:
-                const RawResourceAndroidNotificationSound('notification_sound'),
-          ),
-        ));
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          color: primaryColor,
+          importance: Importance.max,
+          playSound: true,
+          icon: '@mipmap/ic_launcher',
+          sound:
+              const RawResourceAndroidNotificationSound('notification_sound'),
+        ),
+      ),
+      payload: jsonEncode(data), // ✅ store structured JSON
+    );
   }
 
-  //Background
-  Future<void> _fcmBackgroundHandler(RemoteMessage message) async {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-    if (notification != null && android != null) {
-      displayNotification(notification);
+  // 🚀 Unified handler for navigation after tapping notification
+  Future<void> _handleNotificationNavigation(Map<String, dynamic> data) async {
+    log("🔔 Notification clicked with data: $data");
+
+    try {
+      // if (data.containsKey('type')) {
+      //   switch (data['type']) {
+      //     case 'offer':
+      //       // Get.to(() => OfferDetailScreen(offerId: data['id']));
+      //       break;
+      //     case 'chat':
+      //       // Get.to(() => ChatScreen(chatId: data['id']));
+      //       break;
+      //     default:
+      //       Get.to(() => NotificationDetailsScreen(notificationId: data['id']));
+      //   }
+      // } else
+      if (data.containsKey('id')) {
+        Get.to(() => NotificationDetailsScreen(notificationId: data['id']));
+      }
+    } catch (e) {
+      log('⚠️ Navigation error: $e');
     }
   }
 
-  handleBackground() {
-    //BackGround Handler
-    FirebaseMessaging.onBackgroundMessage(_fcmBackgroundHandler);
+  // 💤 Background FCM message handler
+  static Future<void> fcmBackgroundHandler(RemoteMessage message) async {
+    await Firebase.initializeApp();
+    final notification = message.notification;
+    final android = message.notification?.android;
+    if (notification != null && android != null) {
+      final service = FcmService();
+      service.displayNotification(notification, message.data);
+    }
   }
 
-  handleForeground() {
-    //Foreground Handler
+  void handleBackground() {
+    FirebaseMessaging.onBackgroundMessage(FcmService.fcmBackgroundHandler);
+  }
+
+  // 📱 Foreground FCM message handler
+  void handleForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
+      final notification = message.notification;
+      final android = message.notification?.android;
       if (notification != null && android != null) {
-        displayNotification(notification);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          homeController.getDashboard();
-        });
+        displayNotification(notification, message.data);
       }
     });
   }
 
-  Future<FcmService> init() async {
-    print('$runtimeType is ready!');
+  // 🧭 Handle notification taps (local + remote)
+  void setupNotificationClickHandler() {
+    // 1️⃣ When app is opened from background (tap FCM)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotificationNavigation(message.data);
+    });
 
-    await Firebase.initializeApp(
-        //options: DefaultFirebaseOptions.currentPlatform,
-        );
+    // 2️⃣ When app is opened from terminated state
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        _handleNotificationNavigation(message.data);
+      }
+    });
+
+    // 3️⃣ When user taps a local notification (foreground)
+    flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null) {
+          try {
+            final Map<String, dynamic> data =
+                Map<String, dynamic>.from(jsonDecode(response.payload!));
+            log('📦 Local notification payload: $data');
+            _handleNotificationNavigation(data);
+          } catch (e) {
+            log('⚠️ Failed to decode payload: $e');
+          }
+        }
+      },
+    );
+  }
+
+  // 🚀 Initialize FCM service
+  Future<FcmService> init() async {
+    log('$runtimeType initialized!');
+    await Firebase.initializeApp();
+
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
-    //
+
+    handleBackground();
     handleForeground();
-    //Token
-    //getToken();
+    setupNotificationClickHandler();
     return this;
   }
 }

@@ -16,7 +16,7 @@ import '../utils/common_method.dart';
 
 class NotificationDetailsScreen extends StatefulWidget {
   final String notificationId;
-  NotificationDetailsScreen({Key? key, required this.notificationId})
+  const NotificationDetailsScreen({Key? key, required this.notificationId})
       : super(key: key);
 
   @override
@@ -33,7 +33,10 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getNotificationDetail(context, widget.notificationId);
     });
-    // controller.getNotificationDetail(context, '36');
+  }
+
+  Future<void> _onRefresh() async {
+    await controller.getNotificationDetail(context, widget.notificationId);
   }
 
   @override
@@ -43,34 +46,40 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
-        child: Obx(
-          () => controller.notificationDetails.value == null &&
-                  controller.isLoading.value == false
-              ? NoDataFound(
-                  title: "Notification Details",
-                )
-              : SingleChildScrollView(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 6.sp, vertical: 20.sp),
-                  child: Column(
-                    children: [
-                      Obx(() {
-                        final data = controller.notificationDetails.value;
-                        if (data == null) return SizedBox();
-
-                        final autoShip = data.autoShipComing;
-                        final messageDetails = data.messageDetails;
-
-                        if (autoShip != null) {
-                          return _buildAutoShipDetails(autoShip);
-                        } else if (messageDetails != null) {
-                          return _buildMessageDetails(messageDetails);
-                        }
-                        return SizedBox();
-                      }),
-                    ],
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: primaryColor,
+          backgroundColor: Colors.white,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 6.sp, vertical: 20.sp),
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 150.h),
+                    child: const CircularProgressIndicator(),
                   ),
-                ),
+                );
+              }
+
+              final data = controller.notificationDetails.value;
+              if (data == null) {
+                return NoDataFound(title: "Notification Details");
+              }
+
+              final autoShip = data.autoShipComing;
+              final messageDetails = data.messageDetails;
+
+              if (autoShip != null) {
+                return _buildAutoShipDetails(autoShip);
+              } else if (messageDetails != null) {
+                return _buildMessageDetails(messageDetails);
+              }
+
+              return NoDataFound(title: "Notification Details");
+            }),
+          ),
         ),
       ),
     );
@@ -99,7 +108,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
         padding: EdgeInsets.all(14.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -116,7 +124,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
             Text(
               notificationDate != null
                   ? CommonMethod.formatTimeIsoDateString(
-                      notificationDate!.toIso8601String())
+                      notificationDate.toIso8601String())
                   : '',
               style:
                   AppTextStyle.normalRegular12.copyWith(color: textGreyColor),
@@ -152,7 +160,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           padding: EdgeInsets.all(14.sp),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if ((messageDetails.message ?? '').isNotEmpty)
                 Text(
@@ -186,7 +193,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
 
   Widget _buildOrderInfo(String orderId) {
     return orderId == "0"
-        ? SizedBox()
+        ? const SizedBox()
         : Container(
             margin: EdgeInsets.only(bottom: 20.sp),
             color: primaryWhite,
@@ -207,7 +214,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
   }
 
   Widget _buildShippingInfo(ShippingAddress? address) {
-    if (address == null) return SizedBox();
+    if (address == null) return const SizedBox();
     return Container(
       color: primaryWhite,
       padding: EdgeInsets.all(10.sp),
@@ -218,14 +225,9 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
               color: primaryBlack, height: 16.sp, width: 16.sp),
           customWidth(6),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                    '${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}',
-                    style: AppTextStyle.normalRegular14
-                        .copyWith(color: primaryBlack)),
-              ],
+            child: Text(
+              '${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}',
+              style: AppTextStyle.normalRegular14.copyWith(color: primaryBlack),
             ),
           ),
         ],
@@ -234,7 +236,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
   }
 
   Widget _buildProductList(List<ProductList>? products) {
-    if (products == null || products.isEmpty) return SizedBox();
+    if (products == null || products.isEmpty) return const SizedBox();
     return Container(
       color: primaryWhite,
       padding: EdgeInsets.all(14.sp),
@@ -247,11 +249,8 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           height08,
           ...products.map((product) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Text(
@@ -260,18 +259,15 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
                               .copyWith(color: primaryBlack),
                         ),
                       ),
-                      customWidth(16),
                       Text('\$ ${product.price.toStringAsFixed(2)}',
                           style: AppTextStyle.normalSemiBold14
-                              .copyWith(color: primaryBlack, height: 1.8)),
+                              .copyWith(color: primaryBlack)),
                     ],
                   ),
                   height05,
                   Text('Quantity: ${product.quantity}',
-                      style: AppTextStyle.normalRegular12.copyWith(
-                          color: textGreyColor,
-                          fontWeight: FontWeight.w400,
-                          height: 1)),
+                      style: AppTextStyle.normalRegular12
+                          .copyWith(color: textGreyColor)),
                   height15,
                 ],
               )),
@@ -302,8 +298,8 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
         children: [
           Expanded(
             child: Text(label,
-                style: AppTextStyle.normalRegular12.copyWith(
-                    color: textGreyColor, fontWeight: FontWeight.w400)),
+                style: AppTextStyle.normalRegular12
+                    .copyWith(color: textGreyColor)),
           ),
           Text('\$ ${value.toStringAsFixed(2)}',
               style: isTotal

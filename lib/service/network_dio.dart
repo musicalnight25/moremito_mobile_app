@@ -11,6 +11,7 @@ import '../utils/common_method.dart';
 import '../utils/internet_error.dart';
 import '../utils/preferences_util.dart';
 import '../utils/process_indicator.dart';
+import 'error_logger.dart';
 import 'network_repository.dart';
 
 class NetworkDioHttp {
@@ -51,7 +52,7 @@ class NetworkDioHttp {
           handler.next(response);
         },
         onError: (DioError error, ErrorInterceptorHandler handler) async {
-          if (kDebugMode) logError(error);
+          logError(error);
           if (_isConnectionError(error)) _showInternetErrorOverlay(Get.context);
           if (error.response?.statusCode == 401)
             await _handleUnauthorizedError();
@@ -85,6 +86,15 @@ class NetworkDioHttp {
       error.requestOptions.data,
     );
     log("❌ Error:\n${curlCommand}\n");
+
+    // 🧠 Log to backend for debugging
+    ErrorLogger.logErrorToServer(
+      pageType: "NetworkDioHttp",
+      actionType: error.requestOptions.path,
+      errorMessage1: error.message,
+      errorMessage2: error.response?.data.toString(),
+      errorMessage3: curlCommand,
+    );
     if (error.response != null) {
       logResponse(error.response!);
     }
