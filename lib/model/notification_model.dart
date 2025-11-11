@@ -48,6 +48,7 @@ class NotificationModel {
   String? body;
   DateTime? createdOn;
   String? notificationType;
+  bool? isRead;
   IconData? icon;
 
   NotificationModel({
@@ -57,6 +58,7 @@ class NotificationModel {
     this.createdOn,
     this.notificationType,
     this.icon,
+    this.isRead,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class NotificationModel {
       icon: getNotificationIcon(json["NotificationType"]),
       title: json["Title"]!,
       body: json["Body"],
+      isRead: json["IsRead"],
       createdOn:
           json["CreatedOn"] == null ? null : DateTime.parse(json["CreatedOn"]),
       notificationType: json["NotificationType"]!,
@@ -75,6 +78,7 @@ class NotificationModel {
         "Id": id,
         "Title": title,
         "Body": body,
+        "IsRead": isRead,
         "CreatedOn": createdOn?.toIso8601String(),
         "NotificationType": notificationType,
       };

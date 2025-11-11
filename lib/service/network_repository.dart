@@ -8,13 +8,13 @@ import 'package:more_mitro_app/utils/common_method.dart';
 
 class NetworkRepository {
   static final NetworkRepository _instance = NetworkRepository._internal();
-
   factory NetworkRepository() => _instance;
-
   NetworkRepository._internal();
 
   FocusNode searchFocus = FocusNode();
-  // bool isSessionExpired = false;
+
+  // Prevent showing multiple session expiry alerts
+  bool _isSessionExpiredShown = false;
 
   Future<dynamic> postRequest(BuildContext? context, String endpoint,
       {var data}) async {
@@ -42,6 +42,7 @@ class NetworkRepository {
     }
   }
 
+  // ---------- API METHODS ----------
   Future<dynamic> loginWithPassword(BuildContext context, var data) =>
       postRequest(context, AppConstants.loginWithPassword, data: data);
   Future<dynamic> logout(BuildContext context) =>
@@ -71,6 +72,8 @@ class NetworkRepository {
   Future<dynamic> generateLink(BuildContext context, var data) =>
       postRequest(context, AppConstants.generateLink, data: data);
 
+  // ---------- INTERNAL HANDLERS ----------
+
   dynamic _processResponse(Map<String, dynamic> response) {
     final statusCode = response['statusCode'] ?? 0;
     final body = response['body'];
@@ -92,22 +95,26 @@ class NetworkRepository {
   }
 
   void _handleSessionExpiry() {
-    // if (!isSessionExpired) {
-    // isSessionExpired = true;
+    if (_isSessionExpiredShown) return; // ✅ Prevent multiple calls
+
+    _isSessionExpiredShown = true;
+
     CommonMethod.getXSnackBar(
       "🔐 Access Denied!",
       "Either your session took a time warp ⏳ or your credentials don’t match our secret codes! 🔑 Try logging in again.",
       redColor,
     );
 
-    CommonMethod.logOutUser();
-    // }
+    // Delay logout slightly so snackbar shows first
+    Future.delayed(const Duration(seconds: 1), () {
+      CommonMethod.logOutUser();
+      _isSessionExpiredShown = false; // Reset after logout
+    });
   }
 
   String _extractErrorMessage(dynamic body) {
     if (body is Map<String, dynamic>) {
       if (body.containsKey('Message')) return body['Message'];
-
       if (body.containsKey('message')) return body['message'];
       if (body.containsKey('errors') &&
           body['errors'] is Map<String, dynamic>) {

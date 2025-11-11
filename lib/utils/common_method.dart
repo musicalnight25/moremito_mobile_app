@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:crypto/crypto.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:more_mitro_app/pages/login_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
 
 import 'app_text_style.dart';
 import 'colors.dart';
@@ -144,8 +148,92 @@ class CommonMethod {
   }
 
   static Future<String> getDeviceToken() async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    return token.toString();
+    try {
+      String? deviceId;
+
+      final messaging = FirebaseMessaging.instance;
+
+      // 🔹 Android Logic
+      if (Platform.isAndroid) {
+        try {
+          final settings = await messaging.requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+          if (settings.authorizationStatus != AuthorizationStatus.denied) {
+            deviceId = await messaging.getToken();
+            if (deviceId != null && deviceId.isNotEmpty) {
+              log("📱 Android FCM Token (original): $deviceId");
+              return deviceId; // ✅ return original token directly
+            }
+          }
+        } catch (e) {
+          log("⚠️ Android token fetch error: $e");
+        }
+      }
+      // 🔹 iOS Logic
+      else if (Platform.isIOS) {
+        try {
+          final settings = await messaging.requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+          if (settings.authorizationStatus != AuthorizationStatus.denied) {
+            deviceId = await messaging.getToken();
+            if (deviceId != null && deviceId.isNotEmpty) {
+              log("🍏 iOS FCM/APNs Token (original): $deviceId");
+              return deviceId; // ✅ return original token directly
+            }
+          }
+        } catch (e) {
+          log("⚠️ iOS token fetch error: $e");
+          CommonMethod.getXSnackBar(
+            "Test",
+            "⚠️ iOS token fetch error: $e",
+            primaryColor,
+          );
+        }
+
+        // 🔁 Fallback: identifierForVendor
+        if (deviceId == null || deviceId.isEmpty) {
+          try {
+            final deviceInfo = DeviceInfoPlugin();
+            final iosInfo = await deviceInfo.iosInfo;
+            deviceId = iosInfo.identifierForVendor;
+            if (deviceId != null && deviceId.isNotEmpty) {
+              log("🍏 iOS identifierForVendor: $deviceId");
+              return deviceId; // ✅ return vendor ID directly
+            }
+          } catch (e) {
+            log("⚠️ iOS identifierForVendor error: $e");
+          }
+        }
+      }
+
+      // 🔹 Fallback (common)
+      if (deviceId == null || deviceId.isEmpty) {
+        deviceId = _generateLongId();
+        log("⚙️ Using generated fallback ID: $deviceId");
+      }
+
+      return deviceId;
+    } catch (e, st) {
+      log("❌ Error generating device ID: $e", stackTrace: st);
+      return _generateLongId();
+    }
+  }
+
+  // 🧩 Generates a fallback long random ID
+  static String _generateLongId() {
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final randomPart = const Uuid().v4();
+    final longId =
+        sha256.convert(utf8.encode("$timestamp-$randomPart")).toString();
+    return longId;
   }
 
   static showLostConnecationDialog() {

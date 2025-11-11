@@ -2,7 +2,7 @@ name: more_mitro_app
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 
 environment:
@@ -40,6 +40,7 @@ dependencies:
   hive:
   hive_flutter:
   firebase_remote_config: ^5.5.0
+  device_info_plus: ^12.2.0
 
 dev_dependencies:
   flutter_test:

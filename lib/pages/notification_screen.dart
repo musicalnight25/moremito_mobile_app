@@ -8,7 +8,6 @@ import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
-import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 
 import '../controller/notification_controller.dart';
 import '../utils/static_decoration.dart';
@@ -72,95 +71,106 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 shrinkWrap: true,
                                 children:
                                     controller.notificationList.map((element) {
+                                  var index = controller.notificationList
+                                      .indexOf(element);
+                                  bool isRead = (element.isRead == true ||
+                                      element.isRead == 1);
+
                                   return GestureDetector(
                                     onTap: () {
                                       controller.notificationDetails.value =
                                           null;
                                       controller.notificationDetails.refresh();
                                       Get.to(() => NotificationDetailsScreen(
-                                            notificationId:
-                                                element.id.toString(),
-                                          ));
+                                                notificationId:
+                                                    element.id.toString(),
+                                              ))!
+                                          .then((value) {
+                                        _onRefresh();
+                                      });
                                     },
-                                    child: Padding(
-                                      padding: EdgeInsets.only(bottom: 12.sp),
-                                      child: ShadowContainerWidget(
-                                          padding: 0,
-                                          radius: 8.sp,
-                                          blurRadius: 0,
-                                          borderWidth: 1.sp,
-                                          widget: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8.sp,
-                                                vertical: 12.sp),
-                                            child: Row(
+                                    child: Container(
+                                      margin: EdgeInsets.only(bottom: 10.sp),
+                                      padding: EdgeInsets.all(12.sp),
+                                      decoration: BoxDecoration(
+                                        color: isRead
+                                            ? Colors.white
+                                            : primaryColor.withOpacity(
+                                                0.15), // soft highlight for unread
+                                        borderRadius:
+                                            BorderRadius.circular(8.sp),
+                                        border: Border.all(
+                                          color: isRead
+                                              ? Colors.grey.shade300
+                                              : primaryColor.withOpacity(0.4),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Unread dot indicator
+                                          if (!isRead)
+                                            Container(
+                                              height: 10.sp,
+                                              width: 10.sp,
+                                              margin: EdgeInsets.only(
+                                                  top: 6.sp, right: 10.sp),
+                                              decoration: BoxDecoration(
+                                                color: primaryColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+
+                                          // Text section
+                                          Expanded(
+                                            child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                if (element.icon != null)
-                                                  Icon(
-                                                    element.icon,
-                                                    color: primaryColor,
-                                                    size: 32,
+                                                if (element.createdOn != null)
+                                                  Text(
+                                                    CommonMethod
+                                                        .formatTimeIsoDateString(
+                                                            element.createdOn!
+                                                                .toIso8601String()),
+                                                    style: AppTextStyle
+                                                        .normalRegular14
+                                                        .copyWith(
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      fontSize: 12.sp,
+                                                    ),
                                                   ),
-                                                customWidth(12),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      if (element.createdOn !=
-                                                          null)
-                                                        Text(
-                                                          CommonMethod
-                                                              .formatTimeIsoDateString(
-                                                                  element
-                                                                      .createdOn!
-                                                                      .toIso8601String()),
-                                                          style: AppTextStyle
-                                                              .normalRegular12
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Colors
-                                                                      .grey),
-                                                        ),
-                                                      customHeight(6),
-                                                      Text(
-                                                        element.title ?? "",
-                                                        style: AppTextStyle
-                                                            .normalBold16
-                                                            .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                      customHeight(4),
-                                                      Text(
-                                                        element.body ?? "",
-                                                        style: AppTextStyle
-                                                            .normalRegular14
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Colors
-                                                                    .black54),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      )
-                                                    ],
+                                                customHeight(4),
+                                                Text(
+                                                  element.title ?? "",
+                                                  style: AppTextStyle
+                                                      .normalBold16
+                                                      .copyWith(
+                                                    fontWeight: isRead
+                                                        ? FontWeight.w500
+                                                        : FontWeight.w700,
+                                                    color: Colors.black,
+                                                    fontSize: 15.sp,
                                                   ),
-                                                )
+                                                ),
+                                                customHeight(4),
+                                                Text(
+                                                  element.body ?? "",
+                                                  style: AppTextStyle
+                                                      .normalRegular16
+                                                      .copyWith(
+                                                    color: Colors.black87,
+                                                    fontSize: 14.sp,
+                                                  ),
+                                                ),
                                               ],
                                             ),
-                                          )),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 }).toList(),
