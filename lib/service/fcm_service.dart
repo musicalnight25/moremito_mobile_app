@@ -3,8 +3,10 @@ import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/app.dart';
 import 'package:more_mitro_app/pages/notification_details_screen.dart';
 
 import '../utils/colors.dart';
@@ -13,7 +15,6 @@ class FcmService extends GetxService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  // Android Channel
   final AndroidNotificationChannel channel = const AndroidNotificationChannel(
     'notification_id',
     'NotificationName',
@@ -24,7 +25,68 @@ class FcmService extends GetxService {
     enableVibration: true,
   );
 
-  // ✅ Show Notification
+  Future<FcmService> init() async {
+    log('🔔 Initializing FCM Service...');
+
+    await _initializeLocalNotifications();
+    await _setupFirebaseListeners();
+
+    log('✅ FCM Service initialized successfully');
+    return this;
+  }
+
+  Future<void> _initializeLocalNotifications() async {
+    const initSettings = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null) {
+          final data = jsonDecode(response.payload!);
+          _handleNotificationNavigation(data);
+        }
+      },
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  Future<void> _setupFirebaseListeners() async {
+    final messaging = FirebaseMessaging.instance;
+
+    // iOS permissions
+    await messaging.requestPermission(alert: true, badge: true, sound: true);
+
+    // Foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
+      if (notification != null) {
+        displayNotification(notification, message.data);
+      }
+    });
+
+    // When app is in background and tapped
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      log('📩 onMessageOpenedApp triggered');
+      _handleNotificationNavigation(message.data);
+    });
+
+    // When app was terminated and opened from tap
+    final initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null) {
+      log('🚀 getInitialMessage triggered');
+      Future.delayed(const Duration(seconds: 1), () {
+        _handleNotificationNavigation(initialMessage.data);
+      });
+    }
+  }
+
   void displayNotification(
       RemoteNotification notification, Map<String, dynamic> data) {
     flutterLocalNotificationsPlugin.show(
@@ -53,16 +115,22 @@ class FcmService extends GetxService {
     );
   }
 
-  // ✅ Notification tap handler
-  Future<void> _handleNotificationNavigation(Map<String, dynamic> data) async {
-    log("Notification Click Data: $data");
+  void _handleNotificationNavigation(Map<String, dynamic> data) {
+    log("🧭 Navigating with data: $data");
 
-    if (data.containsKey('id')) {
-      Get.to(() => NotificationDetailsScreen(notificationId: data['id']));
-    }
+    if (!data.containsKey('id')) return;
+
+    // Use Navigator safely with delay to ensure context is ready
+    Future.delayed(const Duration(milliseconds: 400), () {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => NotificationDetailsScreen(notificationId: data['id']),
+        ),
+      );
+    });
   }
 
-  // ✅ Background Notification Handler
+  // For background FCM (Android)
   static Future<void> fcmBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
     final notification = message.notification;
@@ -70,87 +138,5 @@ class FcmService extends GetxService {
       final service = FcmService();
       service.displayNotification(notification, message.data);
     }
-  }
-
-  void handleBackground() {
-    FirebaseMessaging.onBackgroundMessage(FcmService.fcmBackgroundHandler);
-  }
-
-  // ✅ Foreground notification handler
-  void handleForeground() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final notification = message.notification;
-      if (notification != null) {
-        displayNotification(notification, message.data);
-      }
-    });
-  }
-
-  // ✅ Handle notification taps
-  void setupNotificationClickHandler() {
-    // Background
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNotificationNavigation(message.data);
-    });
-
-    // Terminated
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage? message) {
-      if (message != null) {
-        _handleNotificationNavigation(message.data);
-      }
-    });
-
-    // Local tap
-    flutterLocalNotificationsPlugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(),
-      ),
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        if (response.payload != null) {
-          final data = jsonDecode(response.payload!);
-          _handleNotificationNavigation(data);
-        }
-      },
-    );
-  }
-
-  // ✅ Request iOS Permissions
-  Future<void> requestIOSPermissions() async {
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      sound: true,
-    );
-  }
-
-  // ✅ Initialize Service
-  Future<FcmService> init() async {
-    log('$runtimeType initialized!');
-    await Firebase.initializeApp();
-
-    // iOS
-    await requestIOSPermissions();
-
-    // Create Android Channel
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-
-    // Show notification in foreground (iOS only)
-    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    handleBackground();
-    handleForeground();
-    setupNotificationClickHandler();
-    return this;
   }
 }

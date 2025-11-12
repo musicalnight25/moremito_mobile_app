@@ -23,86 +23,31 @@ final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   HttpOverrides.global = MyHttpOverrides();
-  await PreferencesUtil
-      .init(); // ✅ Register background handler before Firebase.initializeApp()
-  FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+
   await Firebase.initializeApp();
+  await PreferencesUtil.init();
 
-  // Set notification display options for foreground messages (iOS)
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+  FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
 
-  // Handle Notification Permission and FCM token
-  await _initializeFirebaseMessaging();
+  // Initialize FCMService FIRST
+  final fcmService = Get.put(FcmService());
+  await fcmService.init(); // ensures flutterLocalNotificationsPlugin is ready
 
-  // Set app-wide headers
   await NetworkDioHttp.setDynamicHeader(endPoint: AppConstants.apiEndPoint);
-
-  // UI settings
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ),
-  );
-
-  // Initialize services
-  await Get.putAsync(() => FcmService().init());
-  Get.put(() => FcmService().handleBackground());
   await Hive.initFlutter();
   await Hive.openBox('contactsBox');
-
-  // Initialize localization and start app
   await initializeDateFormatting('en_IN', null);
 
-  // Enable fullscreen / edge-to-edge
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
 
-  // Make status bar transparent
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-    ),
-  );
   runApp(const MoreMitoApp());
-}
-
-Future<void> _initializeFirebaseMessaging() async {
-  final messaging = FirebaseMessaging.instance;
-
-  if (Platform.isIOS) {
-    // Request iOS notification permission
-    final settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    log('User granted permission: ${settings.authorizationStatus}');
-
-    // Wait for APNs token (real device only)
-    final apnsToken = await messaging.getAPNSToken();
-    log("APNs Token: $apnsToken");
-
-    if (apnsToken == null) {
-      log("⚠️ APNs token not yet available (likely simulator).");
-      return;
-    }
-  }
-
-  // Get the FCM token
-  try {
-    final fcmToken = await messaging.getToken();
-    log("✅ FCM Token: $fcmToken");
-  } catch (e) {
-    log("❌ Error getting FCM token: $e");
-  }
 }
 
 class MyHttpOverrides extends HttpOverrides {
