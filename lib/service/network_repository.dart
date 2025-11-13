@@ -57,6 +57,12 @@ class NetworkRepository {
       getRequest(null, AppConstants.getCategories);
   Future<dynamic> getDashboard(BuildContext? context) =>
       getRequest(context, AppConstants.getDashboard);
+  Future<dynamic> getCallDetails(
+      {BuildContext? context, required String id, required String templateName}) =>
+      getRequest(context, AppConstants.getCallDetails + "Id=$id&TemplateName=$templateName");
+  Future<dynamic> getAnnouncementDetails(
+      {BuildContext? context, required String annId}) =>
+      getRequest(context, AppConstants.getAnnouncementDetails + annId);
   Future<dynamic> getNotification() =>
       getRequest(null, AppConstants.getNotification);
   Future<dynamic> getNotificationDetail(

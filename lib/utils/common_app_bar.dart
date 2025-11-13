@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 
+import '../pages/menu_screen.dart';
 import '../pages/upcoming_feature_screen.dart';
 import 'app_asset.dart';
 import 'app_text_style.dart';
@@ -60,7 +61,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                 )
               : GestureDetector(
                   onTap: () {
-                    Get.to(() => UpcomingFeatureScreen());
+                    Get.to(() => MenuScreen());
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.sp),
@@ -93,6 +94,8 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
           //   height: 40.sp,
           //   fit: BoxFit.scaleDown,
           // ),
+
+          actionWidget ??
           Container(
             width: 32.sp,
             height: 32.sp,

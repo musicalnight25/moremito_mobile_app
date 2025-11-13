@@ -41,6 +41,7 @@ dependencies:
   hive_flutter:
   firebase_remote_config: ^5.5.0
   device_info_plus: ^12.2.0
+  flutter_widget_from_html_core:
 
 dev_dependencies:
   flutter_test:

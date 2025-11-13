@@ -7,26 +7,15 @@ import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
-import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+import 'announcement_detail_screen.dart';
+import 'call_detail_screen.dart';
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+class HomeScreen extends StatelessWidget {
+  HomeScreen({Key? key}) : super(key: key);
 
-class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.put(HomeController());
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      homeController.getDashboard();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           color: primaryColor,
-          backgroundColor: Colors.white,
-          onRefresh: () async {
-            await homeController.getDashboard();
-          },
+          onRefresh: () async => await homeController.getDashboard(),
           child: Obx(() {
-            final user = homeController.dashboardModel.value;
+            DashboardModel? user = homeController.dashboardModel.value;
 
-            if (user == null && !homeController.isLoading.value) {
+            if (user == null && homeController.isLoading.isFalse) {
               return const SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
-                  height: 400, // ensures pull-to-refresh still works
+                  height: 400,
                   child: Center(child: NoDataFound(title: "Dashboard")),
                 ),
               );
@@ -62,31 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(16.sp),
-              child: Center(
-                child: ShadowContainerWidget(
-                  blurRadius: 0,
-                  borderColor: disableButtonColor,
-                  borderWidth: .9,
-                  radius: 10.sp,
-                  widget: Padding(
-                    padding: EdgeInsets.all(14.sp),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: ProfileCardContent(
-                            name:
-                                '${user.name ?? "-"} (${user.userName ?? "-"})',
-                            rank: user.currentRank ?? "-",
-                          ),
-                        ),
-                        customHeight(24),
-                        MembershipInfo(data: user),
-                      ],
-                    ),
-                  ),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _profileCard(user),
+                  customHeight(20),
+                  _callDetailsCard(user),
+                  customHeight(20),
+                  _announcementCard(user),
+                ],
               ),
             );
           }),
@@ -94,100 +64,190 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-class ProfileCardContent extends StatelessWidget {
-  final String name;
-  final String rank;
+  // ===================== PROFILE CARD =====================
+  Widget _profileCard(DashboardModel user) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        "Welcome",
+        style: AppTextStyle.normalBold20.copyWith(
+          fontSize: 22.sp,
+          color: Colors.black,
+        ),
+      ),
+      customHeight(6),
 
-  const ProfileCardContent({
-    Key? key,
-    required this.name,
-    required this.rank,
-  }) : super(key: key);
+      Text(
+        "${user.name} (${user.userName})",
+        style: AppTextStyle.normalBold20.copyWith(color: Color(0xFF4CAF50)),
+      ),
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Welcome',
-          style: AppTextStyle.normalBold20.copyWith(
-            fontSize: 22.sp,
-            color: primaryBlack,
+      customHeight(10),
+
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 6.sp),
+        decoration: BoxDecoration(
+          color: Color(0xFFE8F5E9),
+          borderRadius: BorderRadius.circular(30.sp),
+        ),
+        child: Text(
+          "${user.currentRank} ${user.highestRank}",
+          style: AppTextStyle.normalSemiBold16.copyWith(
+            color: Color(0xFF4CAF50),
           ),
         ),
-        customHeight(6),
-        NameWithValue(name: name, value: rank),
-      ],
-    );
-  }
-}
+      ),
+    ],
+  );
 
-class NameWithValue extends StatelessWidget {
-  final String name;
-  final String value;
+  // ===================== CALL DETAILS CARD =====================
+  Widget _callDetailsCard(DashboardModel user) {
+    CallDetails? call = user.callDetails;
+    if (call == null) return SizedBox();
 
-  const NameWithValue({Key? key, required this.name, required this.value})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          name,
-          style: AppTextStyle.normalBold20.copyWith(color: primaryColor),
-          textAlign: TextAlign.center,
-        ),
-        customHeight(6),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
-          decoration: BoxDecoration(
-            border: Border.all(color: primaryColor),
-            borderRadius: BorderRadius.circular(22.sp),
-            color: primaryColor.withOpacity(.1),
-          ),
-          child: Text(
-            value,
-            style: AppTextStyle.normalSemiBold16.copyWith(color: primaryColor),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class MembershipInfo extends StatelessWidget {
-  final DashboardModel data;
-
-  const MembershipInfo({Key? key, required this.data}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Membership Type:',
-          style: AppTextStyle.normalBold12.copyWith(color: lightBlackColor),
+          "Call Announcement",
+          style: AppTextStyle.normalBold20.copyWith(
+            fontSize: 22.sp,
+            color: Colors.black,
+          ),
         ),
-        customHeight(2),
+        customHeight(12),
+
+        GestureDetector(
+          onTap: () {
+            Get.to(() => CallDetailScreen(
+              id: 1,
+              templateName: call.emailTemplate ?? "",
+            ));
+          },
+          child: Container(
+            padding: EdgeInsets.all(16.sp),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.sp),
+              boxShadow: [
+                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.campaign, size: 30, color: Colors.redAccent),
+                    customWidth(10),
+                    Expanded(
+                      child: Text(
+                        call.title ?? "-",
+                        style: AppTextStyle.normalBold16,
+                      ),
+                    ),
+                  ],
+                ),
+
+                customHeight(10),
+
+                Text(
+                  "Subject: ${call.subject ?? '-'}",
+                  style: AppTextStyle.normalRegular14.copyWith(color: Colors.black87),
+                ),
+
+                AbsorbPointer(
+                  absorbing: true,
+                  child: Text(
+                    "Click to View",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ===================== ANNOUNCEMENT CARD =====================
+  Widget _announcementCard(DashboardModel user) {
+    List<AnnouncementDetails> list = user.announcementDetails ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
-          data.userRole ?? "-",
-          style: AppTextStyle.normalBold18,
+          "Announcement",
+          style: AppTextStyle.normalBold20.copyWith(
+            fontSize: 22.sp,
+            color: Colors.black,
+          ),
         ),
-        Divider(color: lightGreyColor, height: 32.sp),
-        Text(
-          'Highest Rank Achieved:',
-          style: AppTextStyle.normalBold12.copyWith(color: lightBlackColor),
-        ),
-        customHeight(2),
-        Text(
-          data.highestRank ?? "-",
-          style: AppTextStyle.normalBold18,
-        ),
+
+        customHeight(12),
+
+        ...list.map((AnnouncementDetails item) {
+          return GestureDetector(
+            onTap: () {
+              Get.to(() => AnnouncementDetailScreen(id: item.id ?? 0));
+            },
+            child: Container(
+              margin: EdgeInsets.only(bottom: 16.sp),
+              padding: EdgeInsets.all(16.sp),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.sp),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.campaign, size: 30, color: Colors.grey.shade600),
+                  customWidth(10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.announcementName ?? "",
+                          style: AppTextStyle.normalBold16,
+                        ),
+                        customHeight(6),
+                        AbsorbPointer(
+                          absorbing: true,
+                          child: Text(
+                            "Click to View",
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ],
     );
   }
