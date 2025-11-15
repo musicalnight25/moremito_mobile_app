@@ -43,7 +43,7 @@ class NotificationResponseModel {
 }
 
 class NotificationModel {
-  int? id;
+  dynamic? id;
   String? title;
   String? body;
   DateTime? createdOn;
