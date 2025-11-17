@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'call_announcement_details_model.dart';
+
 NotificationDetailResponseModel notificationDetailResponseModelFromJson(
         String str) =>
     NotificationDetailResponseModel.fromJson(json.decode(str));
@@ -42,25 +44,36 @@ class NotificationDetailResponseModel {
 class NotificationDetailModel {
   AutoShipComing? autoShipComing;
   MessageDetails? messageDetails;
+  String? notificationtype;
+  CallAnnouncementDetailsModel? callAnnoucementDetails;
 
   NotificationDetailModel({
+    this.notificationtype,
     this.autoShipComing,
     this.messageDetails,
+    this.callAnnoucementDetails,
   });
 
   factory NotificationDetailModel.fromJson(Map<String, dynamic> json) =>
       NotificationDetailModel(
+        notificationtype: json["Notificationtype"],
         autoShipComing: json["AutoShipComing"] == null
             ? null
             : AutoShipComing.fromJson(json["AutoShipComing"]),
         messageDetails: json["MessageDetails"] == null
             ? null
             : MessageDetails.fromJson(json["MessageDetails"]),
+        callAnnoucementDetails: json["CallAnnoucementDetails"] == null
+            ? null
+            : CallAnnouncementDetailsModel.fromJson(
+                json["CallAnnoucementDetails"]),
       );
 
   Map<String, dynamic> toJson() => {
+        "Notificationtype": notificationtype,
         "AutoShipComing": autoShipComing?.toJson(),
         "MessageDetails": messageDetails?.toJson(),
+        "MessageDetails": messageDetails,
       };
 }
 

@@ -12,10 +12,28 @@ import 'package:more_mitro_app/utils/static_decoration.dart';
 import 'announcement_detail_screen.dart';
 import 'call_detail_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.put(HomeController());
+
+
+  @override
+  void initState() {
+    refreshPage();
+    super.initState();
+  }
+
+  refreshPage() async{
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.getDashboard();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +49,7 @@ class HomeScreen extends StatelessWidget {
           child: Obx(() {
             DashboardModel? user = homeController.dashboardModel.value;
 
-            if (user == null && homeController.isLoading.isFalse) {
+            if (user == null && homeController.isLoading.value == false) {
               return const SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
@@ -80,7 +98,7 @@ class HomeScreen extends StatelessWidget {
 
       Text(
         "${user.name} (${user.userName})",
-        style: AppTextStyle.normalBold20.copyWith(color: Color(0xFF4CAF50)),
+        style: AppTextStyle.normalBold20.copyWith(color: primaryColor),
       ),
 
       customHeight(10),
@@ -88,13 +106,13 @@ class HomeScreen extends StatelessWidget {
       Container(
         padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 6.sp),
         decoration: BoxDecoration(
-          color: Color(0xFFE8F5E9),
+          color: primaryColor.withOpacity(.1),
           borderRadius: BorderRadius.circular(30.sp),
         ),
         child: Text(
-          "${user.currentRank} ${user.highestRank}",
+          "${user.currentRank}",
           style: AppTextStyle.normalSemiBold16.copyWith(
-            color: Color(0xFF4CAF50),
+            color:primaryColor,
           ),
         ),
       ),

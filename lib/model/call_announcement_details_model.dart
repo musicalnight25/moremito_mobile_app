@@ -11,9 +11,9 @@ class CallAnnouncementDetailsModel {
 
   factory CallAnnouncementDetailsModel.fromJson(Map<String, dynamic> json) {
     return CallAnnouncementDetailsModel(
-      htmlPart: json["HtmlPart"],
-      subjectPart: json["SubjectPart"],
-      templateName: json["TemplateName"],
+      htmlPart: json["HtmlPart"] ?? json["HtmlBody"],
+      subjectPart: json["SubjectPart"] ?? json["Subject"],
+      templateName: json["TemplateName"] ?? json["TemplateName"],
     );
   }
 }

@@ -21,7 +21,6 @@ class FcmService extends GetxService {
     description: 'notifications',
     importance: Importance.max,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('notification_sound'),
     enableVibration: true,
   );
 
@@ -102,8 +101,6 @@ class FcmService extends GetxService {
           importance: Importance.max,
           playSound: true,
           icon: '@mipmap/ic_launcher',
-          sound:
-              const RawResourceAndroidNotificationSound('notification_sound'),
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
