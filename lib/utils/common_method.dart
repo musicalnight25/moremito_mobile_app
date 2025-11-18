@@ -480,18 +480,14 @@ class CommonMethod {
     );
   }
 
-  static String formatDate(int timestamp) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    String formattedDate = DateFormat('EEE, MMM dd, yyyy').format(date);
-    return formattedDate;
-  }
+  static String formatDateTime(DateTime? date) {
+    if (date == null) return "-";
 
-  static String formatDateIsoDateString(String isoDateString) {
-    DateTime parsedDate = DateTime.parse(isoDateString);
-    DateTime indianDate = parsedDate.add(Duration(hours: 5, minutes: 30));
-    String formattedDate =
-        DateFormat('dd MMM yyyy, hh:mm a').format(indianDate);
-    return formattedDate;
+    try {
+      return DateFormat('yyyy-MM-dd hh:mm a').format(date);
+    } catch (e) {
+      return "-";
+    }
   }
 
   // Converts ISO 8601 date string to IST and formats as "hh:mm a"
@@ -500,13 +496,6 @@ class CommonMethod {
     DateTime indianDate = parsedDate.add(Duration(hours: 5, minutes: 30));
     String formattedTime =
         DateFormat('dd MMM yyyy, hh:mm a').format(indianDate);
-    return formattedTime;
-  }
-
-  static String formatTimestampToTime(int timestamp) {
-    final DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    final String formattedTime = DateFormat.jm().format(dateTime);
     return formattedTime;
   }
 

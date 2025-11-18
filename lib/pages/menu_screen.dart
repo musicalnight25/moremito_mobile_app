@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/support_tickets_list_screen.dart';
 
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
@@ -18,6 +19,7 @@ import '../pages/my_referral_orders_screen.dart';
 import '../pages/mitochondria_story_screen.dart';
 import '../pages/testimonials_screen.dart';
 import '../pages/grief_relief_zoom_screen.dart';
+import 'create_support_ticket_screen.dart';
 
 class MenuScreen extends StatelessWidget {
   MenuScreen({Key? key}) : super(key: key);
@@ -32,7 +34,8 @@ class MenuScreen extends StatelessWidget {
         ),
         MenuItem(
           title: "My deep links",
-          onTap: () => Get.to(() => MyDeepLinkScreen(link: "https://moremito.com/joining/shubham/2")),
+          onTap: () => Get.to(() =>
+              MyDeepLinkScreen(link: "https://moremito.com/joining/shubham/2")),
         ),
         MenuItem(
           title: "My address",
@@ -44,7 +47,6 @@ class MenuScreen extends StatelessWidget {
         ),
       ],
     ),
-
     MenuSection(
       title: "Orders",
       items: [
@@ -62,7 +64,19 @@ class MenuScreen extends StatelessWidget {
         ),
       ],
     ),
-
+    MenuSection(
+      title: "Support",
+      items: [
+        MenuItem(
+          title: "Support Tickets List",
+          onTap: () => Get.to(() => SupportTicketsListScreen()),
+        ),
+        MenuItem(
+          title: "Create Support Ticket",
+          onTap: () => Get.to(() => CreateSupportTicketScreen()),
+        ),
+      ],
+    ),
     MenuSection(
       title: "Resources",
       items: [
@@ -85,11 +99,13 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
         title: "Menu",
         visibleBackButton: true,
       ),
-
       body: BaseBackgroundWidget(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.sp),
@@ -114,11 +130,8 @@ class MenuScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-
         customHeight(12),
-
         ...section.items.map((item) => _itemCard(item)).toList(),
-
         customHeight(20),
       ],
     );
@@ -165,11 +178,13 @@ class MenuScreen extends StatelessWidget {
 class MenuSection {
   final String title;
   final List<MenuItem> items;
+
   MenuSection({required this.title, required this.items});
 }
 
 class MenuItem {
   final String title;
   final VoidCallback onTap;
+
   MenuItem({required this.title, required this.onTap});
 }

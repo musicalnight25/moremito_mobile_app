@@ -8,7 +8,9 @@ import 'package:more_mitro_app/utils/common_method.dart';
 
 class NetworkRepository {
   static final NetworkRepository _instance = NetworkRepository._internal();
+
   factory NetworkRepository() => _instance;
+
   NetworkRepository._internal();
 
   FocusNode searchFocus = FocusNode();
@@ -45,36 +47,74 @@ class NetworkRepository {
   // ---------- API METHODS ----------
   Future<dynamic> loginWithPassword(BuildContext context, var data) =>
       postRequest(context, AppConstants.loginWithPassword, data: data);
+
   Future<dynamic> logout(BuildContext context) =>
       postRequest(context, AppConstants.logout);
+
   Future<dynamic> registerDeviceToken(var data) =>
       postRequest(null, AppConstants.registerDeviceToken, data: data);
+
   Future<dynamic> saveSurvey(BuildContext context, var data) =>
       postRequest(context, AppConstants.saveSurvey, data: data);
+
   Future<dynamic> getSurveyQuestions(BuildContext? context) =>
       getRequest(context, AppConstants.getSurveyQuestions);
+
   Future<dynamic> getCategoriesList() =>
       getRequest(null, AppConstants.getCategories);
+
   Future<dynamic> getDashboard(BuildContext? context) =>
       getRequest(context, AppConstants.getDashboard);
+
+  Future<dynamic> getSupportTickets(BuildContext? context,
+          {int sortBy = 0, int filter = 0}) =>
+      getRequest(context,
+          AppConstants.getSupportTickets + '?sortBy=$sortBy&filter=$filter');
+
+  Future<dynamic> getTicketPriorities(BuildContext? context) =>
+      getRequest(context, AppConstants.getTicketPriorities);
+
+  Future<dynamic> getTicketModules(BuildContext? context) =>
+      getRequest(context, AppConstants.getTicketModules);
+
+  Future<dynamic> getTicketComments(BuildContext? context, var ticketId) =>
+      getRequest(context,
+          AppConstants.getTicketComments + "?TicketId=${ticketId.toString()}");
+
+  Future<dynamic> createSupportTicket(BuildContext? context, var data) =>
+      postRequest(context, AppConstants.createSupportTicket, data: data);
+
+  Future<dynamic> addTicketComment(BuildContext? context, var data) =>
+      postRequest(context, AppConstants.addTicketComment, data: data);
+
   Future<dynamic> getCallDetails(
-      {BuildContext? context, required String id, required String templateName}) =>
-      getRequest(context, AppConstants.getCallDetails + "Id=$id&TemplateName=$templateName");
+          {BuildContext? context,
+          required String id,
+          required String templateName}) =>
+      getRequest(context,
+          AppConstants.getCallDetails + "Id=$id&TemplateName=$templateName");
+
   Future<dynamic> getAnnouncementDetails(
-      {BuildContext? context, required String annId}) =>
+          {BuildContext? context, required String annId}) =>
       getRequest(context, AppConstants.getAnnouncementDetails + annId);
+
   Future<dynamic> getNotification() =>
       getRequest(null, AppConstants.getNotification);
+
   Future<dynamic> getNotificationDetail(
           BuildContext? context, String notificationId) =>
       getRequest(context, AppConstants.getNotificationDetail + notificationId);
+
   Future<dynamic> getSubCategories(BuildContext? context, String categoryID) =>
       getRequest(context, AppConstants.getSubCategories + categoryID);
+
   Future<dynamic> getSubCategoriesFiles(
           BuildContext? context, String categoryID) =>
       getRequest(context, AppConstants.getSubCategoriesFiles + categoryID);
+
   Future<dynamic> mobileSaveFileShare(BuildContext context, var data) =>
       postRequest(context, AppConstants.mobileSaveFileShare, data: data);
+
   Future<dynamic> generateLink(BuildContext context, var data) =>
       postRequest(context, AppConstants.generateLink, data: data);
 

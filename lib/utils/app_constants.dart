@@ -16,10 +16,17 @@ class AppConstants {
   static const String getNotification = 'get-notifications';
   static const String getDashboard = 'get-dashboard';
   static const String getCallDetails = 'get-call-details?';
-  static const String getAnnouncementDetails = 'get-announcement-details?AnnnoucementId=';
+  static const String getAnnouncementDetails =
+      'get-announcement-details?AnnnoucementId=';
   static const String logout = 'logout';
   static const String getNotificationDetail =
       'get-notification-detail?NotificationId=';
   static const String mobileSaveFileShare = 'save-file-share';
   static const String generateLink = 'generate-link';
+  static const String getSupportTickets = 'get-support-tickets';
+  static const String getTicketPriorities = 'get-ticket-priorities';
+  static const String getTicketModules = 'get-ticket-modules';
+  static const String getTicketComments = 'get-ticket-comments';
+  static const String createSupportTicket = 'create-support-ticket';
+  static const String addTicketComment = 'add-ticket-comment';
 }
