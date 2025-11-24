@@ -78,7 +78,7 @@ class NetworkDioHttp {
   }
 
   /// Logs error details
-  static void logError(DioError error) {
+  static Future<void> logError(DioError error) async {
     final String curlCommand = generateCurlCommand(
       '${error.requestOptions.uri}',
       error.requestOptions.method,
@@ -86,14 +86,25 @@ class NetworkDioHttp {
       error.requestOptions.data,
     );
     log("❌ Error:\n${curlCommand}\n");
+    final int? statusCode = error.response?.statusCode;
+    final String errorMessage = error.message;
+    final String? deviceId = await CommonMethod.getDeviceToken(); // Add this
 
-    // 🧠 Log to backend for debugging
+    // Safe error payload — NO TOKEN, NO HEADERS, NO BODY
+    final Map<String, dynamic> safeErrorData = {
+      "statusCode": statusCode,
+      "errorMessage": errorMessage,
+      "deviceId": deviceId,
+    };
+
+    log("❌ Error (Safe Log): $safeErrorData");
+// Send only safe details to server
     ErrorLogger.logErrorToServer(
       pageType: "NetworkDioHttp",
       actionType: error.requestOptions.path,
-      errorMessage1: error.message,
-      errorMessage2: error.response?.data.toString(),
-      errorMessage3: curlCommand,
+      errorMessage1: errorMessage, // message
+      errorMessage2: statusCode?.toString(), // status code
+      errorMessage3: deviceId, // Device ID
     );
     if (error.response != null) {
       logResponse(error.response!);

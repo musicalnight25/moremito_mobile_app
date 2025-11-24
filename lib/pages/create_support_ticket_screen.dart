@@ -6,11 +6,11 @@ import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
-import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
+import '../utils/common_method.dart';
 import '../utils/custom_dropdown_widget.dart';
 
 class CreateSupportTicketScreen extends StatefulWidget {

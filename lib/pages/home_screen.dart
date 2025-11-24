@@ -22,14 +22,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.put(HomeController());
 
-
   @override
   void initState() {
     refreshPage();
     super.initState();
   }
 
-  refreshPage() async{
+  refreshPage() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       homeController.getDashboard();
     });
@@ -85,39 +84,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ===================== PROFILE CARD =====================
   Widget _profileCard(DashboardModel user) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Welcome",
-        style: AppTextStyle.normalBold20.copyWith(
-          fontSize: 22.sp,
-          color: Colors.black,
-        ),
-      ),
-      customHeight(6),
-
-      Text(
-        "${user.name} (${user.userName})",
-        style: AppTextStyle.normalBold20.copyWith(color: primaryColor),
-      ),
-
-      customHeight(10),
-
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 6.sp),
-        decoration: BoxDecoration(
-          color: primaryColor.withOpacity(.1),
-          borderRadius: BorderRadius.circular(30.sp),
-        ),
-        child: Text(
-          "${user.currentRank}",
-          style: AppTextStyle.normalSemiBold16.copyWith(
-            color:primaryColor,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Welcome",
+            style: AppTextStyle.normalBold20.copyWith(
+              fontSize: 22.sp,
+              color: Colors.black,
+            ),
           ),
-        ),
-      ),
-    ],
-  );
+          customHeight(6),
+          Text(
+            "${user.name} (${user.userName})",
+            style: AppTextStyle.normalBold20.copyWith(color: primaryColor),
+          ),
+          customHeight(10),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 6.sp),
+            decoration: BoxDecoration(
+              color: primaryColor.withOpacity(.1),
+              borderRadius: BorderRadius.circular(30.sp),
+            ),
+            child: Text(
+              "${user.currentRank}",
+              style: AppTextStyle.normalSemiBold16.copyWith(
+                color: primaryColor,
+              ),
+            ),
+          ),
+        ],
+      );
 
   // ===================== CALL DETAILS CARD =====================
   Widget _callDetailsCard(DashboardModel user) {
@@ -135,13 +131,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         customHeight(12),
-
         GestureDetector(
           onTap: () {
             Get.to(() => CallDetailScreen(
-              id: 1,
-              templateName: call.emailTemplate ?? "",
-            ));
+                  id: 1,
+                  templateName: call.emailTemplate ?? "",
+                ));
           },
           child: Container(
             padding: EdgeInsets.all(16.sp),
@@ -149,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.sp),
               boxShadow: [
-                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                BoxShadow(
+                    color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
               ],
             ),
             child: Column(
@@ -168,14 +164,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-
                 customHeight(10),
-
                 Text(
                   "Subject: ${call.subject ?? '-'}",
-                  style: AppTextStyle.normalRegular14.copyWith(color: Colors.black87),
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(color: Colors.black87),
                 ),
-
                 AbsorbPointer(
                   absorbing: true,
                   child: Text(
@@ -200,73 +194,74 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _announcementCard(DashboardModel user) {
     List<AnnouncementDetails> list = user.announcementDetails ?? [];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Announcement",
-          style: AppTextStyle.normalBold20.copyWith(
-            fontSize: 22.sp,
-            color: Colors.black,
-          ),
-        ),
-
-        customHeight(12),
-
-        ...list.map((AnnouncementDetails item) {
-          return GestureDetector(
-            onTap: () {
-              Get.to(() => AnnouncementDetailScreen(id: item.id ?? 0));
-            },
-            child: Container(
-              margin: EdgeInsets.only(bottom: 16.sp),
-              padding: EdgeInsets.all(16.sp),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.sp),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  )
-                ],
+    return list.isEmpty
+        ? SizedBox()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Announcement",
+                style: AppTextStyle.normalBold20.copyWith(
+                  fontSize: 22.sp,
+                  color: Colors.black,
+                ),
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.campaign, size: 30, color: Colors.grey.shade600),
-                  customWidth(10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.announcementName ?? "",
-                          style: AppTextStyle.normalBold16,
-                        ),
-                        customHeight(6),
-                        AbsorbPointer(
-                          absorbing: true,
-                          child: Text(
-                            "Click to View",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14.sp,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
+              customHeight(12),
+              ...list.map((AnnouncementDetails item) {
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => AnnouncementDetailScreen(id: item.id ?? 0));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 16.sp),
+                    padding: EdgeInsets.all(16.sp),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.sp),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        )
                       ],
                     ),
-                  )
-                ],
-              ),
-            ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.campaign,
+                            size: 30, color: Colors.grey.shade600),
+                        customWidth(10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.announcementName ?? "",
+                                style: AppTextStyle.normalBold16,
+                              ),
+                              customHeight(6),
+                              AbsorbPointer(
+                                absorbing: true,
+                                child: Text(
+                                  "Click to View",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.sp,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
           );
-        }).toList(),
-      ],
-    );
   }
 }

@@ -36,9 +36,12 @@ class FcmService extends GetxService {
 
   Future<void> _initializeLocalNotifications() async {
     const initSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    );
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        ));
 
     await flutterLocalNotificationsPlugin.initialize(
       initSettings,

@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
+import 'package:more_mitro_app/pages/my_account_info_screen.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 
 import '../pages/menu_screen.dart';
-import '../pages/upcoming_feature_screen.dart';
 import 'app_asset.dart';
 import 'app_text_style.dart';
 import 'common_method.dart';
@@ -44,11 +44,11 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           visibleBackButton
-              ? GestureDetector(
-                  onTap: () {
+              ? IconButton(
+                  onPressed: () {
                     Get.back();
                   },
-                  child: Container(
+                  icon: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.sp),
                     color: Colors.transparent,
                     child: SvgPicture.asset(
@@ -59,11 +59,11 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                 )
-              : GestureDetector(
-                  onTap: () {
+              : IconButton(
+                  onPressed: () {
                     Get.to(() => MenuScreen());
                   },
-                  child: Container(
+                  icon: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.sp),
                     child: SvgPicture.asset(
                       AppAsset.menu,
@@ -95,28 +95,34 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
           //   fit: BoxFit.scaleDown,
           // ),
 
-          actionWidget ??
-          Container(
-            width: 32.sp,
-            height: 32.sp,
-            margin: EdgeInsets.symmetric(
-              horizontal: 16.sp,
-              vertical: 10.sp,
-            ),
-            decoration: const BoxDecoration(
-              color: primaryColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Obx(
-                () => Text(
-                  CommonMethod.getProfileText(
-                      homeController.dashboardModel.value?.name ?? "Unknown"),
-                  style: AppTextStyle.normalSemiBold14
-                      .copyWith(color: primaryWhite),
+          IconButton(
+            onPressed: () {
+              Get.to(() => MyAccountInfoScreen());
+            },
+            icon: actionWidget ??
+                Container(
+                  width: 32.sp,
+                  height: 32.sp,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 16.sp,
+                    vertical: 10.sp,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Obx(
+                      () => Text(
+                        CommonMethod.getProfileText(
+                            homeController.dashboardModel.value?.name ??
+                                "Unknown"),
+                        style: AppTextStyle.normalSemiBold14
+                            .copyWith(color: primaryWhite),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
           ),
         ],
       ),
