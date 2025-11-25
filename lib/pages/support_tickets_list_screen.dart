@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/controller/ticket_controller.dart';
-import 'package:more_mitro_app/pages/ticket_detail_screen.dart';
+import 'package:more_mitro_app/pages/ticket_comment_screen.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
@@ -25,7 +25,6 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       tc.getTicketList();
     });
@@ -59,8 +58,13 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
     );
   }
 
-  // ===================== SUPPORT TICKET CARD =====================
+  // ======================================================
+  //                 INDIVIDUAL TICKET CARD
+  // ======================================================
   Widget _ticketCard(TicketModel t) {
+    final int unread = t.unreadUser ?? 0;
+    final bool isClosed = (t.statusValue ?? "").toLowerCase() == "closed";
+
     return Container(
       margin: EdgeInsets.only(bottom: 16.sp),
       padding: EdgeInsets.all(18.sp),
@@ -79,9 +83,21 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// Ticket ID
-          Text(
-            "#${t.ticketId}",
-            style: AppTextStyle.normalBold16.copyWith(fontSize: 18.sp),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Ticket ID",
+                style: AppTextStyle.normalBold16,
+              ),
+              Text(
+                "${t.ticketId}",
+                style: AppTextStyle.normalBold16.copyWith(
+                  color: primaryColor,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ],
           ),
 
           customHeight(12),
@@ -97,17 +113,33 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
               "Created Date", CommonMethod.formatDateTime(t.createdDate)),
           customHeight(20),
 
-          /// BUTTON ROW
+          // ======================================================
+          //                      ACTION BUTTONS
+          // ======================================================
           Row(
             children: [
-              _greenButton("Comments", () {
-                Get.to(
-                    () => TicketDetailScreen(ticketId: t.ticketId.toString()));
-              }),
+              Expanded(
+                child: _commentsButton(
+                  unreadCount: unread,
+                  onTap: () {
+                    // Mark unread = 0 on open (optional logic)
+                    t.unreadUser = 0;
+                    tc.update();
+
+                    Get.to(
+                        () => TicketCommentScreen(ticketId: t.ticketId ?? 0));
+                  },
+                ),
+              ),
               customWidth(12),
-              _greenButton("Re-open Ticket", () async {
-                await _handleReopen(t.ticketId);
-              }),
+              if (isClosed)
+                Expanded(
+                  child: PrimaryTextButton(
+                    title: "Re-open Ticket",
+                    buttonColor: blueColor,
+                    onPressed: () => _handleReopen(t.ticketId),
+                  ),
+                ),
             ],
           ),
         ],
@@ -115,10 +147,59 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
     );
   }
 
-  // ===================== ROW ITEM =====================
+  // ======================================================
+  //                  COMMENT BUTTON WITH BADGE
+  // ======================================================
+  Widget _commentsButton({
+    required int unreadCount,
+    required VoidCallback onTap,
+  }) {
+    bool hasUnread = unreadCount > 0;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 13.sp),
+        decoration: BoxDecoration(
+          color: hasUnread ? greenColor : primaryColor,
+          borderRadius: BorderRadius.circular(10.sp),
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Comments",
+              style: AppTextStyle.normalBold14.copyWith(color: Colors.white),
+            ),
+            if (hasUnread) ...[
+              customWidth(8),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  unreadCount.toString(),
+                  style: AppTextStyle.normalBold14.copyWith(
+                    color: greenColor,
+                    fontSize: 13.sp,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ======================================================
+  //                  ROW FOR KEY - VALUE PAIR
+  // ======================================================
   Widget _ticketRow(String label, String value) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
@@ -140,24 +221,17 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
     );
   }
 
-  // ===================== GREEN BUTTON =====================
-  Widget _greenButton(String title, VoidCallback onTap) {
-    return Expanded(
-      child: PrimaryTextButton(
-        onPressed: onTap,
-        title: title,
-      ),
-    );
-  }
-
-  // ===================== REOPEN TICKET =====================
+  // ======================================================
+  //                     REOPEN TICKET LOGIC
+  // ======================================================
   Future<void> _handleReopen(int? ticketId) async {
     if (ticketId == null) return;
 
-    // API supports reopening via addTicketComment with specific status
-    final ok = await tc.addComment(
+    await tc.addComment(
       ticketId: ticketId,
       comment: "Reopening ticket",
     );
+
+    tc.getTicketList(); // Refresh list
   }
 }

@@ -25,45 +25,45 @@ class MenuScreen extends StatelessWidget {
   MenuScreen({Key? key}) : super(key: key);
 
   final List<MenuSection> sections = [
-    MenuSection(
-      title: "My info",
-      items: [
-        MenuItem(
-          title: "My account information",
-          onTap: () => Get.to(() => MyAccountInfoScreen()),
-        ),
-        MenuItem(
-          title: "My deep links",
-          onTap: () => Get.to(() =>
-              MyDeepLinkScreen(link: "https://moremito.com/joining/shubham/2")),
-        ),
-        MenuItem(
-          title: "My address",
-          onTap: () => Get.to(() => MyAddressScreen()),
-        ),
-        MenuItem(
-          title: "My network",
-          onTap: () => Get.to(() => MyNetworkScreen()),
-        ),
-      ],
-    ),
-    MenuSection(
-      title: "Orders",
-      items: [
-        MenuItem(
-          title: "My orders",
-          onTap: () => Get.to(() => MyOrdersScreen()),
-        ),
-        MenuItem(
-          title: "My recurring order",
-          onTap: () => Get.to(() => MyRecurringOrderScreen()),
-        ),
-        MenuItem(
-          title: "My personal referral orders",
-          onTap: () => Get.to(() => MyReferralOrdersScreen()),
-        ),
-      ],
-    ),
+    // MenuSection(
+    //   title: "My info",
+    //   items: [
+    //     MenuItem(
+    //       title: "My account information",
+    //       onTap: () => Get.to(() => MyAccountInfoScreen()),
+    //     ),
+    // MenuItem(
+    //   title: "My deep links",
+    //   onTap: () => Get.to(() =>
+    //       MyDeepLinkScreen(link: "https://moremito.com/joining/shubham/2")),
+    // ),
+    // MenuItem(
+    //   title: "My address",
+    //   onTap: () => Get.to(() => MyAddressScreen()),
+    // ),
+    // MenuItem(
+    //   title: "My network",
+    //   onTap: () => Get.to(() => MyNetworkScreen()),
+    // ),
+    //   ],
+    // ),
+    // MenuSection(
+    //   title: "Orders",
+    //   items: [
+    //     MenuItem(
+    //       title: "My orders",
+    //       onTap: () => Get.to(() => MyOrdersScreen()),
+    //     ),
+    //     MenuItem(
+    //       title: "My recurring order",
+    //       onTap: () => Get.to(() => MyRecurringOrderScreen()),
+    //     ),
+    //     MenuItem(
+    //       title: "My personal referral orders",
+    //       onTap: () => Get.to(() => MyReferralOrdersScreen()),
+    //     ),
+    //   ],
+    // ),
     MenuSection(
       title: "Support",
       items: [
@@ -77,23 +77,23 @@ class MenuScreen extends StatelessWidget {
         ),
       ],
     ),
-    MenuSection(
-      title: "Resources",
-      items: [
-        MenuItem(
-          title: "Mitochondria Story",
-          onTap: () => Get.to(() => MitochondriaStoryScreen()),
-        ),
-        MenuItem(
-          title: "Testimonials",
-          onTap: () => Get.to(() => TestimonialsScreen()),
-        ),
-        MenuItem(
-          title: "Grief Relief Zoom Call 7-14-24",
-          onTap: () => Get.to(() => GriefReliefZoomScreen()),
-        ),
-      ],
-    ),
+    // MenuSection(
+    //   title: "Resources",
+    //   items: [
+    //     MenuItem(
+    //       title: "Mitochondria Story",
+    //       onTap: () => Get.to(() => MitochondriaStoryScreen()),
+    //     ),
+    //     MenuItem(
+    //       title: "Testimonials",
+    //       onTap: () => Get.to(() => TestimonialsScreen()),
+    //     ),
+    //     MenuItem(
+    //       title: "Grief Relief Zoom Call 7-14-24",
+    //       onTap: () => Get.to(() => GriefReliefZoomScreen()),
+    //     ),
+    //   ],
+    // ),
   ];
 
   @override

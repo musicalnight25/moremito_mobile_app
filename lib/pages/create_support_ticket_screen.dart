@@ -6,11 +6,11 @@ import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../utils/common_method.dart';
 import '../utils/custom_dropdown_widget.dart';
 
 class CreateSupportTicketScreen extends StatefulWidget {
@@ -54,22 +54,19 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// SUBJECT
+              /// ======================= SUBJECT =======================
               TextFormFieldWidget(
                 controller: subjectController,
-                hintText: "Enter subject",
                 labelText: 'Ticket Subject:',
+                hintText: "Enter subject",
               ),
 
               customHeight(16),
 
-              /// =================== MODULE DROPDOWN ===================
+              /// ======================= MODULE DROPDOWN =======================
               Obx(() {
                 if (tc.moduleLoading.value) {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                    color: primaryColor,
-                  ));
+                  return SizedBox();
                 }
 
                 return CustomDropdown(
@@ -98,13 +95,11 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
 
               customHeight(16),
 
-              /// =================== PRIORITY DROPDOWN ===================
+              /// ======================= PRIORITY DROPDOWN =======================
               Obx(() {
                 if (tc.priorityLoading.value) {
                   return const Center(
-                      child: CircularProgressIndicator(
-                    color: primaryColor,
-                  ));
+                      child: CircularProgressIndicator(color: primaryColor));
                 }
 
                 return CustomDropdown(
@@ -133,24 +128,24 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
 
               customHeight(16),
 
-              /// DESCRIPTION
+              /// ======================= DESCRIPTION =======================
               TextFormFieldWidget(
                 controller: descriptionController,
-                hintText: "Enter ticket description...",
+                labelText: "Ticket Description:",
+                hintText:
+                    "Enter ticket description (order no., username, etc.)",
                 maxLines: 5,
-                labelText:
-                    "Ticket Description (include details like order no., username, etc.):",
               ),
 
-              customHeight(20),
+              customHeight(24),
 
-              /// BUTTONS
-              Obx(
-                () => Row(
+              /// ======================= BUTTONS =======================
+              Obx(() {
+                return Row(
                   children: [
                     Expanded(
                       child: tc.createLoading.value
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(
                                 color: primaryColor,
                               ),
@@ -164,12 +159,13 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                     Expanded(
                       child: PrimaryTextButton(
                         title: "Cancel",
+                        buttonColor: lightBlackColor,
                         onPressed: () => Get.back(),
                       ),
                     ),
                   ],
-                ),
-              ),
+                );
+              }),
             ],
           ),
         ),
@@ -177,9 +173,9 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
     );
   }
 
-  // ===========================================================================
-  //                             CREATE TICKET
-  // ===========================================================================
+  // ============================================================
+  //                       CREATE TICKET
+  // ============================================================
   Future<void> _createTicket() async {
     if (subjectController.text.isEmpty ||
         descriptionController.text.isEmpty ||
@@ -190,8 +186,8 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
     }
 
     await tc.createTicket(
-      title: subjectController.text,
-      description: descriptionController.text,
+      title: subjectController.text.trim(),
+      description: descriptionController.text.trim(),
       moduleId: selectedModuleId.value,
       priorityId: selectedPriorityId.value,
     );
