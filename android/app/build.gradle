@@ -2,8 +2,9 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services" // ✅ must be here
+    id "com.google.gms.google-services"
 }
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -11,23 +12,15 @@ if (localPropertiesFile.exists()) {
         localProperties.load(reader)
     }
 }
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
-def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
-
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
 
 android {
-    namespace = "com.moremito.app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    namespace "com.moremito.app"
+    compileSdk flutter.compileSdkVersion
+    ndkVersion "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
         coreLibraryDesugaringEnabled true
     }
 
@@ -36,19 +29,17 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.moremito.app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = 10
-        versionName = "2.0.10"
+        applicationId "com.moremito.app"
+        minSdk flutter.minSdkVersion
+        targetSdk flutter.targetSdkVersion
+        versionCode 7
+        versionName "2.0.7"
     }
 
+    // 🚫 Disable signing completely
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+            // No signing
         }
     }
 
@@ -57,21 +48,22 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            // use debug keystore for release build (works without key.properties)
+            signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
         }
     }
+
 }
 
 flutter {
-    source = "../.."
+    source "../.."
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
     implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
     implementation platform('com.google.firebase:firebase-bom:32.2.3')
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
