@@ -47,23 +47,23 @@ class MenuScreen extends StatelessWidget {
     // ),
     //   ],
     // ),
-    // MenuSection(
-    //   title: "Orders",
-    //   items: [
-    //     MenuItem(
-    //       title: "My orders",
-    //       onTap: () => Get.to(() => MyOrdersScreen()),
-    //     ),
-    //     MenuItem(
-    //       title: "My recurring order",
-    //       onTap: () => Get.to(() => MyRecurringOrderScreen()),
-    //     ),
-    //     MenuItem(
-    //       title: "My personal referral orders",
-    //       onTap: () => Get.to(() => MyReferralOrdersScreen()),
-    //     ),
-    //   ],
-    // ),
+    MenuSection(
+      title: "Orders",
+      items: [
+        MenuItem(
+          title: "My orders",
+          onTap: () => Get.to(() => MyOrdersScreen()),
+        ),
+        MenuItem(
+          title: "My recurring order",
+          onTap: () => Get.to(() => MyRecurringOrderScreen()),
+        ),
+        MenuItem(
+          title: "My personal referral orders",
+          onTap: () => Get.to(() => MyReferralOrdersScreen()),
+        ),
+      ],
+    ),
     MenuSection(
       title: "Support",
       items: [

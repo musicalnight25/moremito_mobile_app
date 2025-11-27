@@ -32,10 +32,12 @@ class NetworkRepository {
     }
   }
 
-  Future<dynamic> getRequest(BuildContext? context, String endpoint) async {
+  Future<dynamic> getRequest(BuildContext? context, String endpoint,
+      {Map<String, dynamic>? queryParameters}) async {
     try {
       final response = await NetworkDioHttp.get(
         context: context,
+        queryParameters: queryParameters,
         url: AppConstants.apiEndPoint + endpoint,
       );
       return _processResponse(response);
@@ -65,6 +67,14 @@ class NetworkRepository {
 
   Future<dynamic> getDashboard(BuildContext? context) =>
       getRequest(context, AppConstants.getDashboard);
+
+  Future<dynamic> getOrders(BuildContext? context, int page) =>
+      getRequest(context, AppConstants.getOrders,
+          queryParameters: {'page': page});
+
+  Future<dynamic> getOrderDetail(BuildContext? context, int orderid) =>
+      getRequest(context, AppConstants.getOrderDetail,
+          queryParameters: {'orderid': orderid});
 
   Future<dynamic> getSupportTickets(BuildContext? context,
           {int sortBy = 0, int filter = 0}) =>

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Padding
 EdgeInsets horizonatal20 = EdgeInsets.symmetric(horizontal: 20.sp);
+
 EdgeInsets customVerticalHorizontal20({double vertical = 0}) =>
     EdgeInsets.symmetric(horizontal: 20.sp, vertical: vertical.sp);
 
@@ -17,8 +18,11 @@ SizedBox width20 = SizedBox(width: 20.sp);
 
 SizedBox customHeight(double height) => SizedBox(height: height.sp);
 SizedBox height05 = SizedBox(height: 05.sp);
+SizedBox height06 = SizedBox(height: 06.sp);
 SizedBox height08 = SizedBox(height: 08.sp);
 SizedBox height10 = SizedBox(height: 10.sp);
+SizedBox height12 = SizedBox(height: 12.sp);
+SizedBox height14 = SizedBox(height: 14.sp);
 SizedBox height15 = SizedBox(height: 15.sp);
 SizedBox height20 = SizedBox(height: 20.sp);
 SizedBox height16 = SizedBox(height: 16.sp);

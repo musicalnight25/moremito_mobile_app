@@ -15,6 +15,8 @@ class AppConstants {
       'get-sub-categories-files?SubCategoryId=';
   static const String getNotification = 'get-notifications';
   static const String getDashboard = 'get-dashboard';
+  static const String getOrders = 'get-order-list';
+  static const String getOrderDetail = 'get-order-detail';
   static const String getCallDetails = 'get-call-details?';
   static const String getAnnouncementDetails =
       'get-announcement-details?AnnnoucementId=';
