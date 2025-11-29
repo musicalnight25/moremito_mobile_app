@@ -55,9 +55,9 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/ios_logo.png"
+  image_path: "assets/images/ios_logo.jpg"
   adaptive_icon_background: "#e5f3d5"
-  adaptive_icon_foreground: "assets/images/ios_logo.png"
+  adaptive_icon_foreground: "assets/images/ios_logo.jpg"
   min_sdk_android: 21
 
 flutter_native_splash:
@@ -65,11 +65,11 @@ flutter_native_splash:
   android: false
   web: false
   color: "#e5f3d5"                # background color
-  image: assets/images/ios_logo.png
+  image: assets/images/ios_logo.jpg
   color_dark: "#e5f3d5"
-  image_dark: assets/images/ios_logo.png
+  image_dark: assets/images/ios_logo.jpg
   android_12:
-    image: assets/images/ios_logo.png
+    image: assets/images/ios_logo.jpg
     icon_background_color: "#e5f3d5"
 
 flutter:
