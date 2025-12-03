@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/common_app_bar.dart';
+import '../../utils/common_app_bar.dart';
 
 class TestimonialsScreen extends StatelessWidget {
   @override

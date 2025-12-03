@@ -6,14 +6,15 @@ import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../controller/login_controller.dart';
-import '../utils/app_asset.dart';
+import '../../controller/login_controller.dart';
+import '../../utils/app_asset.dart';
 import 'survey_screen.dart';
 
 class StartSurveyScreen extends StatelessWidget {
   StartSurveyScreen({Key? key}) : super(key: key);
 
   var controller = Get.put(LoginController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

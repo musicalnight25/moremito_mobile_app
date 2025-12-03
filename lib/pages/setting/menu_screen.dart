@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/pages/support_tickets_list_screen.dart';
+import 'package:more_mitro_app/pages/support/support_tickets_list_screen.dart';
 
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
@@ -9,17 +9,17 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
 // Import All Screens
-import '../pages/my_account_info_screen.dart';
-import '../pages/my_deep_link_screen.dart';
-import '../pages/my_address_screen.dart';
-import '../pages/my_network_screen.dart';
-import '../pages/my_orders_screen.dart';
-import '../pages/my_recurring_order_screen.dart';
-import '../pages/my_referral_orders_screen.dart';
-import '../pages/mitochondria_story_screen.dart';
-import '../pages/testimonials_screen.dart';
-import '../pages/grief_relief_zoom_screen.dart';
-import 'create_support_ticket_screen.dart';
+import '../account/my_account_info_screen.dart';
+import '../account/my_deep_link_screen.dart';
+import '../account/my_address_screen.dart';
+import '../account/my_network_screen.dart';
+import '../account/my_orders_screen.dart';
+import '../account/my_recurring_order_screen.dart';
+import '../account/my_referral_orders_screen.dart';
+import 'mitochondria_story_screen.dart';
+import 'testimonials_screen.dart';
+import 'grief_relief_zoom_screen.dart';
+import '../support/create_support_ticket_screen.dart';
 
 class MenuScreen extends StatelessWidget {
   MenuScreen({Key? key}) : super(key: key);

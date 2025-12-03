@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/app.dart';
-import 'package:more_mitro_app/pages/notification_details_screen.dart';
+import 'package:more_mitro_app/pages/notification/notification_details_screen.dart';
 
 import '../utils/colors.dart';
 

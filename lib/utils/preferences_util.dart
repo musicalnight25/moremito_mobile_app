@@ -5,7 +5,7 @@ import 'package:more_mitro_app/utils/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/main_dashboard_screen.dart';
-import '../pages/start_survey_screen.dart';
+import '../pages/auth/start_survey_screen.dart';
 import '../service/network_dio.dart';
 
 class PreferencesUtil {

@@ -68,9 +68,9 @@ class NetworkRepository {
   Future<dynamic> getDashboard(BuildContext? context) =>
       getRequest(context, AppConstants.getDashboard);
 
-  Future<dynamic> getOrders(BuildContext? context, int page) =>
-      getRequest(context, AppConstants.getOrders,
-          queryParameters: {'page': page});
+  Future<dynamic> getOrders(var queryParameters) =>
+      getRequest(null, AppConstants.getOrders,
+          queryParameters: queryParameters);
 
   Future<dynamic> getOrderDetail(BuildContext? context, int orderid) =>
       getRequest(context, AppConstants.getOrderDetail,
@@ -108,15 +108,16 @@ class NetworkRepository {
           {BuildContext? context, required String annId}) =>
       getRequest(context, AppConstants.getAnnouncementDetails + annId);
 
-  Future<dynamic> getNotification() =>
-      getRequest(null, AppConstants.getNotification);
+  Future<dynamic> getNotification(var queryParameters) =>
+      getRequest(null, AppConstants.getNotification,
+          queryParameters: queryParameters);
 
   Future<dynamic> getNotificationDetail(
           BuildContext? context, String notificationId) =>
       getRequest(context, AppConstants.getNotificationDetail + notificationId);
 
   Future<dynamic> getSubCategories(BuildContext? context, String categoryID) =>
-      getRequest(context, AppConstants.getSubCategories + categoryID);
+      getRequest(null, AppConstants.getSubCategories + categoryID);
 
   Future<dynamic> getSubCategoriesFiles(
           BuildContext? context, String categoryID) =>

@@ -10,14 +10,15 @@ import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../controller/categories_controller.dart';
-import '../model/categories_model.dart';
-import '../model/category_file_model.dart';
-import '../utils/static_decoration.dart';
+import '../../controller/categories_controller.dart';
+import '../../model/categories_model.dart';
+import '../../model/category_file_model.dart';
+import '../../utils/static_decoration.dart';
 import 'document_viewer_screen.dart';
 
 class CategoryDetailsScreen extends StatefulWidget {
   final CategoryModel data;
+
   const CategoryDetailsScreen({super.key, required this.data});
 
   @override

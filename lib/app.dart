@@ -4,9 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/pages/login_screen.dart';
+import 'package:more_mitro_app/pages/auth/login_screen.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
-import 'package:more_mitro_app/pages/start_survey_screen.dart';
+import 'package:more_mitro_app/pages/auth/start_survey_screen.dart';
 import 'package:more_mitro_app/service/pop_up_service.dart';
 
 import 'utils/app_text_style.dart';

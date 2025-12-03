@@ -6,15 +6,16 @@ import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 
-import '../controller/categories_controller.dart';
-import '../utils/app_text_style.dart';
-import '../utils/common_app_bar.dart';
-import '../utils/common_category_widget.dart';
-import '../utils/static_decoration.dart';
+import '../../controller/categories_controller.dart';
+import '../../utils/app_text_style.dart';
+import '../../utils/common_app_bar.dart';
+import '../../utils/common_category_widget.dart';
+import '../../utils/static_decoration.dart';
 import 'category_details_screen.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
   final CategoryModel data;
+
   const SubCategoriesScreen({Key? key, required this.data}) : super(key: key);
 
   @override
@@ -28,7 +29,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getSubCategories(context, widget.data.categoryId ?? "0");
+      controller.getSubCategories(null, widget.data.categoryId ?? "0");
     });
   }
 

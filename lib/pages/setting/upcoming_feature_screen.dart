@@ -6,8 +6,8 @@ import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../controller/login_controller.dart';
-import '../utils/app_asset.dart';
+import '../../controller/login_controller.dart';
+import '../../utils/app_asset.dart';
 
 class UpcomingFeatureScreen extends StatelessWidget {
   UpcomingFeatureScreen({Key? key}) : super(key: key);

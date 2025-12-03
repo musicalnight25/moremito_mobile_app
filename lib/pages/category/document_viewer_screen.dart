@@ -13,19 +13,20 @@ import 'package:more_mitro_app/utils/network_image_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 
-import '../controller/categories_controller.dart';
-import '../controller/contact_controller.dart';
-import '../model/category_file_model.dart';
-import '../utils/audio_player_widget.dart';
-import '../utils/document_viewer_widget.dart';
-import '../utils/full_screen_image_viewer.dart';
-import '../utils/static_decoration.dart';
-import '../utils/video_player_widget.dart';
+import '../../controller/categories_controller.dart';
+import '../../controller/contact_controller.dart';
+import '../../model/category_file_model.dart';
+import '../../utils/audio_player_widget.dart';
+import '../../utils/document_viewer_widget.dart';
+import '../../utils/full_screen_image_viewer.dart';
+import '../../utils/static_decoration.dart';
+import '../../utils/video_player_widget.dart';
 import 'contact_screen.dart';
-import 'main_dashboard_screen.dart';
+import '../main_dashboard_screen.dart';
 
 class DocumentViewerScreen extends StatefulWidget {
   final CategoryFileModel data;
+
   const DocumentViewerScreen({super.key, required this.data});
 
   @override

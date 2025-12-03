@@ -12,8 +12,8 @@ import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../controller/login_controller.dart';
-import '../utils/common_app_bar.dart';
+import '../../controller/login_controller.dart';
+import '../../utils/common_app_bar.dart';
 import 'close_survey_screen.dart';
 
 class SurveyScreen extends StatelessWidget {

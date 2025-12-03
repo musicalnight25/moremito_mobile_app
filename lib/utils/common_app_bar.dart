@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
-import 'package:more_mitro_app/pages/my_account_info_screen.dart';
+import 'package:more_mitro_app/pages/account/my_account_info_screen.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 
-import '../pages/menu_screen.dart';
+import '../pages/setting/menu_screen.dart';
 import 'app_asset.dart';
 import 'app_text_style.dart';
 import 'common_method.dart';

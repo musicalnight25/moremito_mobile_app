@@ -11,7 +11,7 @@ import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../utils/custom_dropdown_widget.dart';
+import '../../utils/custom_dropdown_widget.dart';
 
 class CreateSupportTicketScreen extends StatefulWidget {
   @override

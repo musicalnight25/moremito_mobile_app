@@ -12,8 +12,8 @@ import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../utils/primary_text_button.dart';
-import 'order_details_screen.dart';
+import '../../utils/primary_text_button.dart';
+import '../order/order_details_screen.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   MyOrdersScreen({super.key});
@@ -25,14 +25,37 @@ class MyOrdersScreen extends StatefulWidget {
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
   final OrdersController controller = Get.put(OrdersController());
 
+  // NEW — ScrollController for infinite scroll
+  final ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     controller.getOrderList();
+
+    // Listener for infinite scroll
+    scrollController.addListener(() {
+      if (!controller.hasMore) return; // No more data
+      if (controller.loadMoreLoading.value) return; // Already loading next page
+
+      double maxScroll = scrollController.position.maxScrollExtent;
+      double currentScroll = scrollController.position.pixels;
+
+      // Load next page when user reaches 80% scroll
+      if (currentScroll >= maxScroll * 0.80) {
+        controller.getOrderList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   // ----------------------------------------------------------
-  // SHIMMER LOADER
+  // SHIMMER
   // ----------------------------------------------------------
   Widget _shimmerCard() {
     return Shimmer.fromColors(
@@ -89,10 +112,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           await controller.getOrderList();
         },
         child: Obx(() {
-          // ------------ SHIMMER WHEN FIRST TIME LOADING ----------
           if (controller.listLoading.value && controller.orderList.isEmpty) {
             return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(16.sp),
               child: Column(
                 children: List.generate(6, (_) => _shimmerCard()),
@@ -105,12 +127,22 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           }
 
           return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            controller: scrollController, // IMPORTANT
+            physics: AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.all(16.sp),
             child: Column(
-              children: controller.orderList
-                  .map((order) => _orderCard(order))
-                  .toList(),
+              children: [
+                ...controller.orderList
+                    .map((order) => _orderCard(order))
+                    .toList(),
+
+                // LOADING INDICATOR AT BOTTOM (no button)
+                if (controller.loadMoreLoading.value)
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 18.sp),
+                    child: CircularProgressIndicator(color: primaryColor),
+                  ),
+              ],
             ),
           );
         }),
@@ -163,9 +195,6 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  // ----------------------------------------------------------
-  // REUSABLE LABEL-VALUE ROW
-  // ----------------------------------------------------------
   Widget _row(String label, String value, {bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,9 +213,6 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  // ----------------------------------------------------------
-  // SUPPORT BUTTON
-  // ----------------------------------------------------------
   Widget _supportButton() {
     return PrimaryTextButton(
       title: 'Send/View messages with support team',

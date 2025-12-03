@@ -8,13 +8,14 @@ import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../controller/login_controller.dart';
-import '../utils/app_asset.dart';
+import '../../controller/login_controller.dart';
+import '../../utils/app_asset.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
 
   var controller = Get.put(LoginController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

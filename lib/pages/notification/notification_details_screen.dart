@@ -12,9 +12,9 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../model/call_announcement_details_model.dart';
-import '../model/notification_detail_model.dart';
-import '../utils/common_method.dart';
+import '../../model/call_announcement_details_model.dart';
+import '../../model/notification_detail_model.dart';
+import '../../utils/common_method.dart';
 
 class NotificationDetailsScreen extends StatefulWidget {
   final String notificationId;

@@ -8,15 +8,16 @@ import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../controller/login_controller.dart';
-import '../utils/common_app_bar.dart';
-import 'main_dashboard_screen.dart';
+import '../../controller/login_controller.dart';
+import '../../utils/common_app_bar.dart';
+import '../main_dashboard_screen.dart';
 
 class CloseSurveyScreen extends StatelessWidget {
   CloseSurveyScreen({Key? key}) : super(key: key);
 
   var controller = Get.put(LoginController());
   TextEditingController reviewTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

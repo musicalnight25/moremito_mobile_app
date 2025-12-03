@@ -36,8 +36,8 @@ class NetworkDioHttp {
     final headers = await _getHeaders();
 
     _dio.options = BaseOptions(
-      receiveTimeout: 5000,
-      connectTimeout: 5000,
+      receiveTimeout: 30000, // 30 seconds
+      connectTimeout: 30000, // 30 seconds
       headers: headers,
     );
     _dio.interceptors.clear();
@@ -79,6 +79,13 @@ class NetworkDioHttp {
 
   /// Logs error details
   static Future<void> logError(DioError error) async {
+    final int? statusCode = error.response?.statusCode;
+
+    // ⛔ Don't log or report 401 errors
+    if (statusCode == 401) {
+      return;
+    }
+
     final String curlCommand = generateCurlCommand(
       '${error.requestOptions.uri}',
       error.requestOptions.method,
@@ -86,11 +93,10 @@ class NetworkDioHttp {
       error.requestOptions.data,
     );
     log("❌ Error:\n${curlCommand}\n");
-    final int? statusCode = error.response?.statusCode;
-    final String errorMessage = error.message;
-    final String? deviceId = await CommonMethod.getDeviceToken(); // Add this
 
-    // Safe error payload — NO TOKEN, NO HEADERS, NO BODY
+    final String errorMessage = error.message;
+    final String? deviceId = await CommonMethod.getDeviceToken();
+
     final Map<String, dynamic> safeErrorData = {
       "statusCode": statusCode,
       "errorMessage": errorMessage,
@@ -98,14 +104,15 @@ class NetworkDioHttp {
     };
 
     log("❌ Error (Safe Log): $safeErrorData");
-// Send only safe details to server
+
     ErrorLogger.logErrorToServer(
       pageType: "NetworkDioHttp",
       actionType: error.requestOptions.path,
-      errorMessage1: errorMessage, // message
-      errorMessage2: statusCode?.toString(), // status code
-      errorMessage3: deviceId, // Device ID
+      errorMessage1: errorMessage,
+      errorMessage2: statusCode?.toString(),
+      errorMessage3: deviceId,
     );
+
     if (error.response != null) {
       logResponse(error.response!);
     }

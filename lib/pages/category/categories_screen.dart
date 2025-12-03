@@ -8,7 +8,7 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_category_widget.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 
-import '../utils/static_decoration.dart';
+import '../../utils/static_decoration.dart';
 import 'sub_categories_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {

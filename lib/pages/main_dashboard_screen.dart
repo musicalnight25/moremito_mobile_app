@@ -7,10 +7,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/controller/home_controller.dart';
 import 'package:more_mitro_app/controller/login_controller.dart';
-import 'package:more_mitro_app/pages/categories_screen.dart';
-import 'package:more_mitro_app/pages/home_screen.dart';
-import 'package:more_mitro_app/pages/notification_screen.dart';
-import 'package:more_mitro_app/pages/setting_screen.dart';
+import 'package:more_mitro_app/pages/category/categories_screen.dart';
+import 'package:more_mitro_app/pages/home/home_screen.dart';
+import 'package:more_mitro_app/pages/setting/setting_screen.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,6 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../utils/app_asset.dart';
 import '../utils/colors.dart';
 import '../utils/common_method.dart';
+import 'notification/notification_screen.dart';
 
 var homeController = Get.put(HomeController());
 
@@ -38,6 +38,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     NotificationScreen(key: ValueKey('NotificationScreen')),
     SettingScreen(key: ValueKey('SettingScreen')),
   ];
+
   @override
   void initState() {
     loginController.registerDeviceToken();

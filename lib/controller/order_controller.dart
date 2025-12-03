@@ -16,6 +16,7 @@ class OrdersController extends GetxController {
 
   // ==================== ORDER LIST ====================
   RxBool listLoading = false.obs;
+  RxBool loadMoreLoading = false.obs; // NEW
   RxList<Order> orderList = <Order>[].obs;
 
   // ==================== ORDER DETAIL ====================
@@ -32,11 +33,19 @@ class OrdersController extends GetxController {
   Future<void> getOrderList() async {
     if (!hasMore) return;
 
-    listLoading.value = true;
+    if (page == 1) {
+      listLoading.value = true;
+    } else {
+      loadMoreLoading.value = true; // NEW
+    }
 
     try {
-      // FIXED CALL HERE
-      var response = await _repo.getOrders(null, page);
+      var queryParameters = {
+        "pageNumber": page.toString(),
+        "pageSize": 10,
+      };
+
+      var response = await _repo.getOrders(queryParameters);
 
       debugPrint("RAW ORDER RESPONSE: $response");
 
@@ -59,6 +68,7 @@ class OrdersController extends GetxController {
       debugPrint("❌ Error in getOrderList: $e=====$stack");
     } finally {
       listLoading.value = false;
+      loadMoreLoading.value = false; // NEW
     }
   }
 
