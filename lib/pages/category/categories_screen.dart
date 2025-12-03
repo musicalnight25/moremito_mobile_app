@@ -36,8 +36,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CommonAppBar(),
       backgroundColor: Colors.transparent,
+      appBar: CommonAppBar(),
       body: Obx(
         () => controller.isLoading.value
             ? const Center(child: CircularProgressIndicator())

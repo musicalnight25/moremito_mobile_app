@@ -1,172 +1,193 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/pages/support/support_tickets_list_screen.dart';
 
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-// Import All Screens
-import '../account/my_account_info_screen.dart';
-import '../account/my_deep_link_screen.dart';
-import '../account/my_address_screen.dart';
-import '../account/my_network_screen.dart';
+// Screens
 import '../account/my_orders_screen.dart';
 import '../account/my_recurring_order_screen.dart';
 import '../account/my_referral_orders_screen.dart';
-import 'mitochondria_story_screen.dart';
-import 'testimonials_screen.dart';
-import 'grief_relief_zoom_screen.dart';
+import '../support/support_tickets_list_screen.dart';
 import '../support/create_support_ticket_screen.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   MenuScreen({Key? key}) : super(key: key);
 
-  final List<MenuSection> sections = [
-    // MenuSection(
-    //   title: "My info",
-    //   items: [
-    //     MenuItem(
-    //       title: "My account information",
-    //       onTap: () => Get.to(() => MyAccountInfoScreen()),
-    //     ),
-    // MenuItem(
-    //   title: "My deep links",
-    //   onTap: () => Get.to(() =>
-    //       MyDeepLinkScreen(link: "https://moremito.com/joining/shubham/2")),
-    // ),
-    // MenuItem(
-    //   title: "My address",
-    //   onTap: () => Get.to(() => MyAddressScreen()),
-    // ),
-    // MenuItem(
-    //   title: "My network",
-    //   onTap: () => Get.to(() => MyNetworkScreen()),
-    // ),
-    //   ],
-    // ),
-    MenuSection(
-      title: "Orders",
-      items: [
-        MenuItem(
-          title: "My orders",
-          onTap: () => Get.to(() => MyOrdersScreen()),
-        ),
-        MenuItem(
-          title: "My recurring order",
-          onTap: () => Get.to(() => MyRecurringOrderScreen()),
-        ),
-        MenuItem(
-          title: "My personal referral orders",
-          onTap: () => Get.to(() => MyReferralOrdersScreen()),
-        ),
-      ],
-    ),
-    MenuSection(
-      title: "Support",
-      items: [
-        MenuItem(
-          title: "Support Tickets List",
-          onTap: () => Get.to(() => SupportTicketsListScreen()),
-        ),
-        MenuItem(
-          title: "Create Support Ticket",
-          onTap: () => Get.to(() => CreateSupportTicketScreen()),
-        ),
-      ],
-    ),
-    // MenuSection(
-    //   title: "Resources",
-    //   items: [
-    //     MenuItem(
-    //       title: "Mitochondria Story",
-    //       onTap: () => Get.to(() => MitochondriaStoryScreen()),
-    //     ),
-    //     MenuItem(
-    //       title: "Testimonials",
-    //       onTap: () => Get.to(() => TestimonialsScreen()),
-    //     ),
-    //     MenuItem(
-    //       title: "Grief Relief Zoom Call 7-14-24",
-    //       onTap: () => Get.to(() => GriefReliefZoomScreen()),
-    //     ),
-    //   ],
-    // ),
-  ];
+  @override
+  State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  List<MenuSection> sections = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    sections = [
+      MenuSection(
+        title: "Orders",
+        icon: Icons.shopping_bag,
+        items: [
+          MenuItem(
+              title: "My Orders",
+              icon: Icons.receipt_long,
+              onTap: () => Get.to(() => MyOrdersScreen())),
+          MenuItem(
+              title: "My Recurring Order",
+              icon: Icons.repeat,
+              onTap: () => Get.to(() => MyRecurringOrderScreen())),
+          MenuItem(
+              title: "My Referral Orders",
+              icon: Icons.group,
+              onTap: () => Get.to(() => MyReferralOrdersScreen())),
+        ],
+      ),
+      MenuSection(
+        title: "Support",
+        icon: Icons.support_agent,
+        items: [
+          MenuItem(
+              title: "Support Ticket List",
+              icon: Icons.list_alt,
+              onTap: () => Get.to(() => SupportTicketsListScreen())),
+          MenuItem(
+              title: "Create Support Ticket",
+              icon: Icons.add_circle_outline,
+              onTap: () => Get.to(() => CreateSupportTicketScreen())),
+        ],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(
-        title: "Menu",
-        visibleBackButton: true,
-      ),
+      appBar: CommonAppBar(title: "Menu", visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.sp),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: sections.map((s) => _buildSection(s)).toList(),
+            children:
+                sections.map((s) => MenuSectionWidget(section: s)).toList(),
           ),
         ),
       ),
     );
   }
+}
 
-  // ===================== SECTION =====================
-  Widget _buildSection(MenuSection section) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          section.title,
-          style: AppTextStyle.normalSemiBold16.copyWith(
-            fontSize: 18.sp,
-            color: Colors.black87,
+//////////////////////////////////////////////////////////////////////
+///                   SECTION ACCORDION WIDGET                     ///
+//////////////////////////////////////////////////////////////////////
+
+class MenuSectionWidget extends StatefulWidget {
+  final MenuSection section;
+
+  const MenuSectionWidget({super.key, required this.section});
+
+  @override
+  State<MenuSectionWidget> createState() => _MenuSectionWidgetState();
+}
+
+class _MenuSectionWidgetState extends State<MenuSectionWidget> {
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10.sp),
+      decoration: BoxDecoration(
+        color: primaryWhite,
+        borderRadius: BorderRadius.circular(16.sp),
+        border: Border.all(color: borderGreyColor),
+        boxShadow: [
+          BoxShadow(
+            color: bgPrimaryShadowColor.withOpacity(0.5),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildHeader(),
+
+          /// EXPANDED MENU
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 250),
+            crossFadeState:
+                expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            firstChild: Column(
+              children: widget.section.items.map((i) => _menuItem(i)).toList(),
+            ),
+            secondChild: const SizedBox.shrink(),
           ),
-        ),
-        customHeight(12),
-        ...section.items.map((item) => _itemCard(item)).toList(),
-        customHeight(20),
-      ],
+        ],
+      ),
     );
   }
 
-  // ===================== CARD ITEM =====================
-  Widget _itemCard(MenuItem item) {
+  // SECTION HEADER
+  Widget _buildHeader() {
     return GestureDetector(
-      onTap: item.onTap,
+      onTap: () => setState(() => expanded = !expanded),
       child: Container(
-        margin: EdgeInsets.only(bottom: 12.sp),
-        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 14.sp),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.sp),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            )
-          ],
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 18.sp),
         child: Row(
           children: [
+            Icon(widget.section.icon, color: primaryColor, size: 24.sp),
+            width14,
             Expanded(
               child: Text(
-                item.title,
-                style: AppTextStyle.normalBold16.copyWith(
-                  fontSize: 15.sp,
-                  color: Colors.black,
+                widget.section.title,
+                style: AppTextStyle.normalSemiBold18.copyWith(
+                  color: primaryBlack,
                 ),
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 18.sp, color: Colors.black54),
+            Icon(
+              expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+              color: primaryBlack,
+              size: 26.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // SINGLE MENU ITEM
+  Widget _menuItem(MenuItem item) {
+    return GestureDetector(
+      onTap: item.onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: borderGreyColor, width: 1),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(item.icon, size: 20.sp, color: lightBlackColor),
+            width12,
+            Expanded(
+              child: Text(
+                item.title,
+                style: AppTextStyle.normalSemiBold16.copyWith(
+                  color: lightBlackColor,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 16.sp, color: textGreyColor),
           ],
         ),
       ),
@@ -174,17 +195,26 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-// ===================== MODELS =====================
+//////////////////////////////////////////////////////////////////////
+///                          MODELS                                 ///
+//////////////////////////////////////////////////////////////////////
+
 class MenuSection {
   final String title;
+  final IconData icon;
   final List<MenuItem> items;
 
-  MenuSection({required this.title, required this.items});
+  MenuSection({required this.title, required this.icon, required this.items});
 }
 
 class MenuItem {
   final String title;
+  final IconData icon;
   final VoidCallback onTap;
 
-  MenuItem({required this.title, required this.onTap});
+  MenuItem({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
 }

@@ -29,8 +29,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      appBar: CommonAppBar(title: "Setting"),
-      backgroundColor: Colors.grey[200],
+      appBar: CommonAppBar(),
       extendBodyBehindAppBar: true,
       body: BaseBackgroundWidget(
         child: Center(

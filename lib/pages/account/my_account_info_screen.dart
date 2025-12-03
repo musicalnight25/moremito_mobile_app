@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
 class MyAccountInfoScreen extends StatelessWidget {
@@ -11,6 +12,7 @@ class MyAccountInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: primaryWhite,
       appBar: CommonAppBar(
         title: "My Account Information",
         visibleBackButton: true,
@@ -18,170 +20,134 @@ class MyAccountInfoScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.sp),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _myInfoCard(),
-            customHeight(16),
-            _addressCard(),
-            customHeight(16),
-            _websiteHeaderCard(),
-            customHeight(20),
+            _card(
+              title: "My Information",
+              children: [
+                _infoRow("Username", "shubham"),
+                _infoRow("Text Message Code", "SK13"),
+                _infoRow("First Name", "Shubham"),
+                _infoRow("Last Name", "Kumar1"),
+                _infoRow("Email", "shubham_shandil@outlook.com"),
+                _infoRow("Phone", "919812503572"),
+                _infoRow("Membership Type", "Paid Representative"),
+                _infoRow("Join Date", "2022/05/22"),
+                _infoRow("WhatsApp Phone", "123456788"),
+                height10,
+                PrimaryTextButton(
+                  title: "Edit",
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            height16,
+            _card(
+              title: "Manage Your Addresses",
+              children: [
+                Text(
+                  "Note: Changing your address here does not change your address on already created recurring orders. Go to Orders → Recurring Orders to do that.",
+                  style: AppTextStyle.normalRegular12.copyWith(
+                    color: redColor,
+                    fontSize: 12.sp,
+                  ),
+                ),
+                height14,
+                _infoRow("Address", "14105 E 19th Ave"),
+                _infoRow("City", "Spokane Valley"),
+                _infoRow("Country", "USA"),
+                _infoRow("State", "Washington"),
+                _infoRow("Zip", "99037"),
+                height10,
+                PrimaryTextButton(
+                  title: "Edit Address",
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            height16,
+            _card(
+              title: "Your Website Header Display",
+              children: [
+                _infoRow("Name", "Shubham Kumar alias1"),
+                _infoRow("Email", "shubham_shandil_1@outlook.com"),
+                _infoRow("Phone", "9812503573"),
+                _infoRow("State", "Washington"),
+                _infoRow("Zip", "99037"),
+                height10,
+                PrimaryTextButton(
+                  title: "Edit",
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            height20,
           ],
         ),
       ),
     );
   }
 
-  // ================= MY INFORMATION =================
-  Widget _myInfoCard() {
-    return _whiteCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _title("My Information"),
-          customHeight(10),
-          _rowItem("Username", "shubham"),
-          _rowItem("Text Message Code", "SK13"),
-          _rowItem("First Name", "Shubham"),
-          _rowItem("Last Name", "Kumar1"),
-          _rowItem("Email", "shubham_shandil@outlook.com"),
-          _rowItem("Phone", "919812503572"),
-          _rowItem("Membership Type", "Paid Representative"),
-          _rowItem("Join date", "2022/05/22"),
-          _rowItem("Whatsapp Phone (optional)", "123456788"),
-          customHeight(8),
-          _greenButton("Edit", () {}),
-        ],
-      ),
-    );
-  }
-
-  // ================= MANAGE ADDRESSES =================
-  Widget _addressCard() {
-    return _whiteCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _title("Manage your addresses"),
-          customHeight(6),
-
-          Text(
-            "Note: Changing your address here does not change your address on already created recurring orders. Go to Orders → Recurring orders to do that.",
-            style: AppTextStyle.normalRegular12.copyWith(
-              color: Colors.red,
-              fontSize: 12.sp,
-            ),
-          ),
-
-          customHeight(12),
-          _rowItem("Address", "14105 E 19th Ave"),
-          _rowItem("City", "Spokane Valley"),
-          _rowItem("Country", "United States of America"),
-          _rowItem("State", "Washington"),
-          _rowItem("Zip", "99037"),
-
-          customHeight(8),
-          _greenButton("Edit address", () {}),
-        ],
-      ),
-    );
-  }
-
-  // ================= WEBSITE HEADER DISPLAY =================
-  Widget _websiteHeaderCard() {
-    return _whiteCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _title("Your Website Header Display"),
-          customHeight(10),
-          _rowItem("Name", "Shubham Kumar alias1"),
-          _rowItem("Email", "shubham_shandil_1@outlook.com"),
-          _rowItem("Phone", "9812503573"),
-          _rowItem("State", "Washington"),
-          _rowItem("Zip", "99037"),
-          customHeight(8),
-          _greenButton("Edit", () {}),
-        ],
-      ),
-    );
-  }
-
-  // ================= REUSABLE WHITE CARD =================
-  Widget _whiteCard({required Widget child}) {
+  ////////////////////////////////////////////////////////////////////////////
+  ///                     CARD CONTAINER (Unified Design)
+  ////////////////////////////////////////////////////////////////////////////
+  Widget _card({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16.sp),
+      padding: EdgeInsets.all(18.sp),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.sp),
+        color: primaryWhite,
+        borderRadius: BorderRadius.circular(16.sp),
+        border: Border.all(color: borderGreyColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          )
+            color: bgPrimaryShadowColor.withOpacity(.5),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-      child: child,
-    );
-  }
-
-  // ================= ROW ITEM =================
-  Widget _rowItem(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: AppTextStyle.normalRegular14.copyWith(
-              color: Colors.black54,
-              fontSize: 14.sp,
+            style: AppTextStyle.normalSemiBold18.copyWith(
+              color: primaryBlack,
             ),
           ),
-          customHeight(2),
-          Text(
-            value,
-            style: AppTextStyle.normalBold16.copyWith(
-              fontSize: 15.sp,
-              color: Colors.black,
-            ),
-          ),
+          height14,
+          ...children,
         ],
       ),
     );
   }
 
-  // ================= SECTION TITLE =================
-  Widget _title(String text) {
-    return Text(
-      text,
-      style: AppTextStyle.normalSemiBold16.copyWith(
-        fontSize: 17.sp,
-        color: Colors.black,
-      ),
-    );
-  }
-
-  // ================= GREEN BUTTON =================
-  Widget _greenButton(String text, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.sp, horizontal: 16.sp),
-        decoration: BoxDecoration(
-          color: primaryColor,
-          borderRadius: BorderRadius.circular(8.sp),
-        ),
-        child: Text(
-          text,
-          style: AppTextStyle.normalSemiBold14.copyWith(
-            color: Colors.white,
-            fontSize: 14.sp,
+  ////////////////////////////////////////////////////////////////////////////
+  ///                          INFO ROW (Label + Value)
+  ////////////////////////////////////////////////////////////////////////////
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.sp),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTextStyle.normalRegular14.copyWith(
+              color: subTitleColor,
+            ),
           ),
-        ),
+          height04,
+          Text(
+            value,
+            style: AppTextStyle.normalSemiBold16.copyWith(
+              color: primaryBlack,
+            ),
+          ),
+        ],
       ),
     );
   }

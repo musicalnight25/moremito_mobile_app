@@ -19,6 +19,7 @@ SizedBox width16 = SizedBox(width: 16.sp);
 SizedBox width20 = SizedBox(width: 20.sp);
 
 SizedBox customHeight(double height) => SizedBox(height: height.sp);
+SizedBox height04 = SizedBox(height: 04.sp);
 SizedBox height05 = SizedBox(height: 05.sp);
 SizedBox height06 = SizedBox(height: 06.sp);
 SizedBox height08 = SizedBox(height: 08.sp);
@@ -28,6 +29,7 @@ SizedBox height14 = SizedBox(height: 14.sp);
 SizedBox height15 = SizedBox(height: 15.sp);
 SizedBox height20 = SizedBox(height: 20.sp);
 SizedBox height16 = SizedBox(height: 16.sp);
+SizedBox height24 = SizedBox(height: 24.sp);
 
 BorderRadius circularBorderRadius(double radius) =>
     BorderRadius.circular(radius.sp);

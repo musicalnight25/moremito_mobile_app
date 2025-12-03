@@ -41,7 +41,6 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
@@ -54,118 +53,126 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// ======================= SUBJECT =======================
-              TextFormFieldWidget(
-                controller: subjectController,
-                labelText: 'Ticket Subject:',
-                hintText: "Enter subject",
-              ),
-
-              customHeight(16),
-
-              /// ======================= MODULE DROPDOWN =======================
-              Obx(() {
-                if (tc.moduleLoading.value) {
-                  return SizedBox();
-                }
-
-                return CustomDropdown(
-                  labelText: "Ticket Related To:",
-                  hintText: "Select",
-                  value: selectedModuleId.value == 0
-                      ? null
-                      : selectedModuleId.value,
-                  items: tc.moduleList
-                      .map((m) => {"id": m.id, "value": m.value})
-                      .toList(),
-                  customItems: tc.moduleList
-                      .map(
-                        (m) => DropdownMenuItem(
-                          value: m.id,
-                          child: Text(
-                            m.value ?? "",
-                            style: AppTextStyle.normalRegular14,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => selectedModuleId.value = val,
-                );
-              }),
-
-              customHeight(16),
-
-              /// ======================= PRIORITY DROPDOWN =======================
-              Obx(() {
-                if (tc.priorityLoading.value) {
-                  return const Center(
-                      child: CircularProgressIndicator(color: primaryColor));
-                }
-
-                return CustomDropdown(
-                  labelText: "Ticket Priority:",
-                  hintText: "Select",
-                  value: selectedPriorityId.value == 0
-                      ? null
-                      : selectedPriorityId.value,
-                  items: tc.priorityList
-                      .map((p) => {"id": p.id, "value": p.value})
-                      .toList(),
-                  customItems: tc.priorityList
-                      .map(
-                        (p) => DropdownMenuItem(
-                          value: p.id,
-                          child: Text(
-                            p.value ?? "",
-                            style: AppTextStyle.normalRegular14,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => selectedPriorityId.value = val,
-                );
-              }),
-
-              customHeight(16),
-
-              /// ======================= DESCRIPTION =======================
-              TextFormFieldWidget(
-                controller: descriptionController,
-                labelText: "Ticket Description:",
-                hintText:
-                    "Enter ticket description (order no., username, etc.)",
-                maxLines: 5,
-              ),
-
-              customHeight(24),
-
-              /// ======================= BUTTONS =======================
-              Obx(() {
-                return Row(
+              _buildCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: tc.createLoading.value
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: primaryColor,
+                    _sectionTitle("Ticket Information"),
+                    height10,
+
+                    /// SUBJECT
+                    TextFormFieldWidget(
+                      controller: subjectController,
+                      labelText: 'Ticket Subject:',
+                      hintText: "Enter subject",
+                    ),
+
+                    height16,
+
+                    /// MODULE
+                    Obx(() {
+                      if (tc.moduleLoading.value) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: primaryColor),
+                        );
+                      }
+
+                      return CustomDropdown(
+                        labelText: "Ticket Related To:",
+                        hintText: "Select",
+                        value: selectedModuleId.value == 0
+                            ? null
+                            : selectedModuleId.value,
+                        items: tc.moduleList
+                            .map((m) => {"id": m.id, "value": m.value})
+                            .toList(),
+                        customItems: tc.moduleList
+                            .map(
+                              (m) => DropdownMenuItem(
+                                value: m.id,
+                                child: Text(m.value ?? "",
+                                    style: AppTextStyle.normalRegular14),
                               ),
                             )
-                          : PrimaryTextButton(
-                              title: "Create",
-                              onPressed: _createTicket,
-                            ),
-                    ),
-                    customWidth(12),
-                    Expanded(
-                      child: PrimaryTextButton(
-                        title: "Cancel",
-                        buttonColor: lightBlackColor,
-                        onPressed: () => Get.back(),
-                      ),
+                            .toList(),
+                        onChanged: (val) => selectedModuleId.value = val,
+                      );
+                    }),
+
+                    height16,
+
+                    /// PRIORITY
+                    Obx(() {
+                      if (tc.priorityLoading.value) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: primaryColor),
+                        );
+                      }
+
+                      return CustomDropdown(
+                        labelText: "Ticket Priority:",
+                        hintText: "Select",
+                        value: selectedPriorityId.value == 0
+                            ? null
+                            : selectedPriorityId.value,
+                        items: tc.priorityList
+                            .map((p) => {"id": p.id, "value": p.value})
+                            .toList(),
+                        customItems: tc.priorityList
+                            .map(
+                              (p) => DropdownMenuItem(
+                                value: p.id,
+                                child: Text(p.value ?? "",
+                                    style: AppTextStyle.normalRegular14),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) => selectedPriorityId.value = val,
+                      );
+                    }),
+
+                    height16,
+
+                    /// DESCRIPTION
+                    TextFormFieldWidget(
+                      controller: descriptionController,
+                      labelText: "Ticket Description:",
+                      hintText:
+                          "Describe your issue (order no., username, etc.)",
+                      maxLines: 5,
                     ),
                   ],
-                );
-              }),
+                ),
+              ),
+
+              height24,
+
+              /// BUTTONS
+              Row(
+                children: [
+                  Expanded(
+                    child: Obx(() {
+                      return tc.createLoading.value
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                  color: primaryColor),
+                            )
+                          : PrimaryTextButton(
+                              title: "Create Ticket",
+                              onPressed: _createTicket,
+                            );
+                    }),
+                  ),
+                  width16,
+                  Expanded(
+                    child: PrimaryTextButton(
+                      title: "Cancel",
+                      buttonColor: lightBlackColor,
+                      onPressed: () => Get.back(),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -173,9 +180,43 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
     );
   }
 
-  // ============================================================
-  //                       CREATE TICKET
-  // ============================================================
+  ////////////////////////////////////////////////////////////////////////////
+  ///                      REUSABLE CARD WIDGET                            ///
+  ////////////////////////////////////////////////////////////////////////////
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      padding: EdgeInsets.all(18.sp),
+      decoration: BoxDecoration(
+        color: primaryWhite,
+        borderRadius: BorderRadius.circular(16.sp),
+        border: Border.all(color: borderGreyColor),
+        boxShadow: [
+          BoxShadow(
+            color: bgPrimaryShadowColor.withOpacity(.50),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ///                            SECTION TITLE                              ///
+  ////////////////////////////////////////////////////////////////////////////
+  Widget _sectionTitle(String title) {
+    return Text(
+      title,
+      style: AppTextStyle.normalSemiBold18.copyWith(
+        color: primaryBlack,
+      ),
+    );
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ///                          CREATE TICKET                                ///
+  ////////////////////////////////////////////////////////////////////////////
   Future<void> _createTicket() async {
     if (subjectController.text.isEmpty ||
         descriptionController.text.isEmpty ||

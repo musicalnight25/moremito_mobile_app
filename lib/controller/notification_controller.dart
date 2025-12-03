@@ -17,7 +17,6 @@ class NotificationController extends GetxController {
 
   /// Pagination variables
   int pageNumber = 1;
-  final int pageSize = 10;
   RxBool isPaginationLoading = false.obs;
   RxBool hasMoreData = true.obs;
 
@@ -76,7 +75,7 @@ class NotificationController extends GetxController {
     try {
       var queryParameters = {
         "pageNumber": pageNumber.toString(),
-        "pageSize": pageSize.toString(),
+        "pageSize": 10,
       };
 
       final response =
@@ -97,7 +96,7 @@ class NotificationController extends GetxController {
           }
 
           /// If less than page size → no more data
-          if (model.data!.length < pageSize) {
+          if (model.data!.length < 10) {
             hasMoreData.value = false;
           }
         } else {
