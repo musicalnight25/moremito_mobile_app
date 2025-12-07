@@ -1,23 +1,24 @@
 import 'dart:async';
-
+import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:more_mitro_app/pages/auth/login_screen.dart';
-import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/pages/auth/start_survey_screen.dart';
+import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/service/pop_up_service.dart';
 
 import 'utils/app_text_style.dart';
 import 'utils/colors.dart';
 import 'utils/preferences_util.dart';
 
-// ------------------------------------------------------------
-// Notification streams
-// ------------------------------------------------------------
+/// Notification streams (DO NOT CLOSE THEM)
 final StreamController<String?> selectNotificationStream =
     StreamController<String?>.broadcast();
+
 final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
     StreamController<ReceivedNotification>.broadcast();
 
@@ -35,9 +36,7 @@ class ReceivedNotification {
   });
 }
 
-// ------------------------------------------------------------
-// Root App Widget
-// ------------------------------------------------------------
+/// Root App Widget
 class MoreMitoApp extends StatefulWidget {
   const MoreMitoApp({Key? key}) : super(key: key);
 
@@ -49,78 +48,57 @@ final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>(debugLabel: "navigator");
 
 class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
-  late final FirebaseMessaging messaging;
-  bool _popupShown = false;
+  Widget? initialPage;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    messaging = FirebaseMessaging.instance;
+
+    // Do minimal startup work that we need to decide initial page.
+    _setupApp();
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    selectNotificationStream.close();
-    didReceiveLocalNotificationStream.close();
-    super.dispose();
+  Future<void> _setupApp() async {
+    // Prefer fast non-blocking reads. If this is slow, consider returning a placeholder home and
+    // loading actual auth state later.
+    final userToken = await PreferencesUtil.getUserToken();
+    final isSurveyCompleted = await PreferencesUtil.getIsSurveyCompleted();
+
+    if (userToken != null) {
+      initialPage = isSurveyCompleted ? MainHomeScreen() : StartSurveyScreen();
+    } else {
+      initialPage = LoginScreen();
+    }
+
+    setState(() => _initialized = true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final deviceWidth = constraints.maxWidth;
-        final deviceHeight = constraints.maxHeight;
-
-        // Fixed base sizes
-        const baseWidth = 360.0;
-        const baseHeight = 800.0;
-
-        final designSize = Size(baseWidth, baseHeight);
-
-        return ScreenUtilInit(
-          designSize: designSize,
-          minTextAdapt: true,
-          splitScreenMode: true,
-          builder: (_, __) {
-            // ✅ At this point ScreenUtil is initialized
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!_popupShown) {
-                _popupShown = true;
-                PopupService.runAppChecks();
-              }
-            });
-
-            return GetMaterialApp(
-              navigatorKey: navigatorKey,
-              title: 'MoreMito',
-              debugShowCheckedModeBanner: false,
-              useInheritedMediaQuery: true,
-              fallbackLocale: const Locale('en', 'US'),
-              defaultTransition: Transition.fadeIn,
-              themeMode: ThemeMode.light,
-              theme: _buildThemeData(),
-              darkTheme: _buildThemeData(),
-              home: FutureBuilder<Widget>(
-                future: _getInitialPage(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Scaffold(
-                      body: Center(child: CircularProgressIndicator()),
-                    );
-                  } else if (snapshot.hasData) {
-                    return snapshot.data!;
-                  } else {
-                    return const Scaffold(
-                      body: Center(child: Text("Something went wrong")),
-                    );
-                  }
-                },
-              ),
-            );
-          },
+    return ScreenUtilInit(
+      designSize: const Size(360, 800),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (_, child) {
+        return GetMaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'MoreMito',
+          debugShowCheckedModeBanner: false,
+          useInheritedMediaQuery: true,
+          fallbackLocale: const Locale('en', 'US'),
+          defaultTransition: Transition.fadeIn,
+          themeMode: ThemeMode.light,
+          theme: _buildThemeData(),
+          darkTheme: _buildThemeData(),
+          home: _initialized
+              ? initialPage
+              : const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
         );
       },
     );
@@ -180,14 +158,10 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
     );
   }
 
-  Future<Widget> _getInitialPage() async {
-    final userToken = await PreferencesUtil.getUserToken();
-    final isSurveyCompleted = await PreferencesUtil.getIsSurveyCompleted();
-
-    if (userToken != null) {
-      return isSurveyCompleted ? MainHomeScreen() : StartSurveyScreen();
-    } else {
-      return LoginScreen();
-    }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // DO NOT close global streams here (they are app lifetime)
+    super.dispose();
   }
 }

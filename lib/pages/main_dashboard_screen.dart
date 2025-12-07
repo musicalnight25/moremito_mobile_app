@@ -14,6 +14,7 @@ import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../service/pop_up_service.dart';
 import '../utils/app_asset.dart';
 import '../utils/colors.dart';
 import '../utils/common_method.dart';
@@ -43,6 +44,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   void initState() {
     loginController.registerDeviceToken();
     notificationPermistion();
+    PopupService.runAppChecks();
     super.initState();
   }
 

@@ -9,12 +9,24 @@ import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
 import '../../controller/login_controller.dart';
+import '../../service/pop_up_service.dart';
 import '../../utils/app_asset.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   var controller = Get.put(LoginController());
+
+  @override
+  void initState() {
+    PopupService.runAppChecks();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

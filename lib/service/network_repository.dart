@@ -121,7 +121,7 @@ class NetworkRepository {
 
   Future<dynamic> getSubCategoriesFiles(
           BuildContext? context, String categoryID) =>
-      getRequest(context, AppConstants.getSubCategoriesFiles + categoryID);
+      getRequest(null, AppConstants.getSubCategoriesFiles + categoryID);
 
   Future<dynamic> mobileSaveFileShare(BuildContext context, var data) =>
       postRequest(context, AppConstants.mobileSaveFileShare, data: data);

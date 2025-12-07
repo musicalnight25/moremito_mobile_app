@@ -68,11 +68,11 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16.sp),
             children: [
               height20,
-              Text(
-                widget.data.fileName ?? "-",
-                style: AppTextStyle.normalExtraBold,
-              ),
-              height20,
+              // Text(
+              //   widget.data.fileName ?? "-",
+              //   style: AppTextStyle.normalExtraBold,
+              // ),
+              // height20,
               buildFileViewWidget(widget.data),
               height20,
             ],
@@ -136,7 +136,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             Text(
               data.fileName ?? "Document Name",
               style: AppTextStyle.normalBold14,
-              maxLines: 2,
+              maxLines: 10,
               overflow: TextOverflow.ellipsis,
             ),
             Row(

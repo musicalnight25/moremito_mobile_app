@@ -155,7 +155,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                     data.fileName ?? "-",
                     style: AppTextStyle.normalBold14,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 10,
                   ),
                 ),
                 customWidth(8),

@@ -154,7 +154,7 @@ class TicketItemCard extends StatelessWidget {
                 Expanded(
                   child: PrimaryTextButton(
                     title: "Re-open",
-                    buttonColor: blueColor,
+                    buttonColor: primaryColor,
                     onPressed: () async {
                       await controller.addComment(
                         ticketId: ticket.ticketId!,

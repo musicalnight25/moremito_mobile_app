@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
-const Color primaryColor = Color(0xff60BD0E);
+const Color primaryColor = Color(0xff0766C6);
 const Color redColor = Color(0xffEB3030);
-const Color blueColor = Color(0xff294B9F);
 const Color lightGreyColor = Color(0xffE9E9E9);
 const Color hintGreyColor = Color(0xff737373);
 const Color borderGreyColor = Color(0xffE4E4E7);
 const Color greyColor = Color(0xffd9d9d9);
 const Color lightBlackColor = Color(0xff52525B);
-const Color bgPrimaryShadowColor = Color(0xffe5f3d5);
-const Color disableButtonColor = Color(0xffb9e295);
+// const Color bgPrimaryShadowColor = Color(0xffe5f3d5);
+const Color bgPrimaryShadowColor = Color(0xffD6E9FB);
+
+// const Color disableButtonColor = Color(0xffb9e295);
+const Color disableButtonColor = Color(0xff9CC3E7);
+
 const Color textGreyColor = Color(0xffA0A0A0);
 const Color greenColor = Color(0xff27AE60);
 const Color orangeColor = Color(0xffFF8039);
-const Color paleYellowColor = Color(0xffFEFCE8);
-const Color mintGreenColor = Color(0xffF0FDFA);
+// const Color paleYellowColor = Color(0xffFEFCE8);
+const Color paleYellowColor = Color(0xffE8F4FF);
+
+// const Color mintGreenColor = Color(0xffF0FDFA);
+const Color mintGreenColor = Color(0xffF0F8FF);
+
 const Color softRedColor = Color(0xffFEF2F2);
 const Color lavenderColor = Color(0xffF5F3FF);
 const Color subTitleColor = Color(0xff797979);
