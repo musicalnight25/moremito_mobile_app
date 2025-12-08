@@ -40,9 +40,9 @@ class NotificationController extends GetxController {
     });
   }
 
-  ///--------------------------------------------------------
-  /// REFRESH LIST (Pull To Refresh)
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
+  /// REFRESH LIST
+  /// --------------------------------------------------------
   Future<void> refreshNotifications() async {
     pageNumber = 1;
     hasMoreData.value = true;
@@ -50,9 +50,9 @@ class NotificationController extends GetxController {
     await getNotification(isFromPagination: false);
   }
 
-  ///--------------------------------------------------------
-  /// SERVER SIDE PAGINATION
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
+  /// PAGINATION
+  /// --------------------------------------------------------
   Future<void> loadMoreNotifications() async {
     if (!hasMoreData.value) return;
 
@@ -64,9 +64,9 @@ class NotificationController extends GetxController {
     isPaginationLoading.value = false;
   }
 
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
   /// GET NOTIFICATION LIST
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
   Future<void> getNotification({bool isFromPagination = false}) async {
     if (!isFromPagination) {
       isLoading.value = true;
@@ -85,20 +85,16 @@ class NotificationController extends GetxController {
         final model = notificationResponseModelFromJson(json.encode(response));
 
         if (model.status == true && model.data != null) {
+          List<NotificationModel> list = model.data!.notifications ?? [];
+
           if (isFromPagination) {
-            if (model.data!.isEmpty) {
-              hasMoreData.value = false;
-            } else {
-              notificationList.addAll(model.data!);
-            }
+            notificationList.addAll(list);
           } else {
-            notificationList.assignAll(model.data!);
+            notificationList.assignAll(list);
           }
 
-          /// If less than page size → no more data
-          if (model.data!.length < 10) {
-            hasMoreData.value = false;
-          }
+          /// backend sends flag hasMore
+          hasMoreData.value = model.data!.hasMore ?? false;
         } else {
           hasMoreData.value = false;
         }
@@ -119,9 +115,9 @@ class NotificationController extends GetxController {
     }
   }
 
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
   /// GET NOTIFICATION DETAIL
-  ///--------------------------------------------------------
+  /// --------------------------------------------------------
   Future<void> getNotificationDetail(
       BuildContext context, String notificationId) async {
     isLoading.value = true;

@@ -15,7 +15,7 @@ String notificationResponseModelToJson(NotificationResponseModel data) =>
 class NotificationResponseModel {
   bool? status;
   dynamic message;
-  List<NotificationModel>? data;
+  NotificationData? data;
 
   NotificationResponseModel({
     this.status,
@@ -28,17 +28,44 @@ class NotificationResponseModel {
         status: json["Status"],
         message: json["Message"],
         data: json["Data"] == null
-            ? []
-            : List<NotificationModel>.from(
-                json["Data"]!.map((x) => NotificationModel.fromJson(x))),
+            ? null
+            : NotificationData.fromJson(json["Data"]),
       );
 
   Map<String, dynamic> toJson() => {
         "Status": status,
         "Message": message,
-        "Data": data == null
+        "Data": data?.toJson(),
+      };
+}
+
+class NotificationData {
+  List<NotificationModel>? notifications;
+  int? totalCount;
+  bool? hasMore;
+
+  NotificationData({
+    this.notifications,
+    this.totalCount,
+    this.hasMore,
+  });
+
+  factory NotificationData.fromJson(Map<String, dynamic> json) =>
+      NotificationData(
+        notifications: json["Notifications"] == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+            : List<NotificationModel>.from(json["Notifications"]!
+                .map((x) => NotificationModel.fromJson(x))),
+        totalCount: json["TotalCount"],
+        hasMore: json["HasMore"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "Notifications": notifications == null
+            ? []
+            : List<dynamic>.from(notifications!.map((x) => x.toJson())),
+        "TotalCount": totalCount,
+        "HasMore": hasMore,
       };
 }
 

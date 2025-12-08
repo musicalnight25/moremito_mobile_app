@@ -51,12 +51,11 @@ dev_dependencies:
   hive_generator: ^2.0.0
   build_runner: ^2.3.3
   flutter_native_splash: ^2.4.0   # ✅ added here
-
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/ios_logo.jpg"
-  adaptive_icon_background: "#fffff"
+  adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/ios_logo.jpg"
   min_sdk_android: 21
 
@@ -64,13 +63,13 @@ flutter_native_splash:
   ios: true
   android: false
   web: false
-  color: "#fffff"                # background color
+  color: "#FFFFFF"
   image: assets/images/ios_logo.jpg
-  color_dark: "#fffff"
+  color_dark: "#FFFFFF"
   image_dark: assets/images/ios_logo.jpg
   android_12:
     image: assets/images/ios_logo.jpg
-    icon_background_color: "#fffff"
+    icon_background_color: "#FFFFFF"
 
 flutter:
   uses-material-design: true
