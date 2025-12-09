@@ -159,7 +159,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         child: Column(
                           children: [
                             PrimaryTextButton(
-                              buttonColor: primaryBlack,
                               title: "Choose from Contacts",
                               onPressed: () {
                                 Get.back();
@@ -175,7 +174,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             ),
                             height15,
                             PrimaryTextButton(
-                              buttonColor: primaryBlack,
                               title: "Enter Details Manually",
                               onPressed: () {
                                 Get.back();
@@ -206,7 +204,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     RxString generatedLinkText = ''.obs;
     CommonMethod.showCustomBottomSheet(
       title: 'Secure File Sharing',
-      showCancelButton: false,
+      // showCancelButton: false,
+      showCancelButton: true,
+      cancelButtonTitle: "Close",
+      cancelButtonTextColor: redColor,
       message:
           'Enter recipient details to monitor link activity and ensure secure sharing.',
       customWidget: SizedBox(
@@ -229,7 +230,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                   () => generatedLinkText.value.isEmpty
                       ? Expanded(
                           child: PrimaryTextButton(
-                            buttonColor: primaryBlack,
                             title: "Generate Secure Link",
                             onPressed: () async {
                               if (nameTextController.text.isEmpty) {
@@ -286,7 +286,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               height15,
                               PrimaryTextButton(
                                 title: "Share File",
-                                buttonColor: primaryBlack,
                                 onPressed: () {
                                   if (messageTextController.text.isEmpty) {
                                     CommonMethod.getXSnackBar(

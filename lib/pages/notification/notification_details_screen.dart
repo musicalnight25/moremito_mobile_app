@@ -28,19 +28,19 @@ class NotificationDetailsScreen extends StatefulWidget {
 }
 
 class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
-  final NotificationController controller = Get.put(NotificationController());
+  final NotificationController controller = Get.find(); // IMPORTANT
   InAppWebViewController? webView;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getNotificationDetail(context, widget.notificationId);
+      controller.getNotificationDetail(widget.notificationId); // FIXED
     });
   }
 
   Future<void> _onRefresh() async {
-    await controller.getNotificationDetail(context, widget.notificationId);
+    await controller.getNotificationDetail(widget.notificationId); // FIXED
   }
 
   @override
@@ -50,7 +50,8 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
       appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          if (controller.isLoading.value) {
+          if (controller.isDetailLoading.value) {
+            // FIXED
             return Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 150.h),
@@ -62,7 +63,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           final data = controller.notificationDetails.value;
           if (data == null) return NoDataFound(title: "Notification Details");
 
-          // 3 possible screens → AutoShip, Message, WebView
           if (data.autoShipComing != null) {
             return _scrollContent(_buildAutoShipDetails(data.autoShipComing!));
           }
@@ -81,9 +81,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     );
   }
 
-  /// ---------------------------------------------
-  /// FULL SCREEN WEBVIEW (PROFESSIONAL IMPLEMENTATION)
-  /// ---------------------------------------------
   Widget _buildFullScreenWebView(CallAnnouncementDetailsModel details) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -118,7 +115,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     );
   }
 
-  /// Wrap non-web content in a proper scroll view
   Widget _scrollContent(Widget child) {
     return RefreshIndicator(
       onRefresh: _onRefresh,
@@ -131,9 +127,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     );
   }
 
-  /// ---------------------------------------------
-  /// AUTO SHIP UI
-  /// ---------------------------------------------
   Widget _buildAutoShipDetails(AutoShipComing autoShip) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,9 +142,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     );
   }
 
-  /// ---------------------------------------------
-  /// MESSAGE DETAILS UI
-  /// ---------------------------------------------
   Widget _buildMessageDetails(MessageDetails messageDetails) {
     return Column(
       children: [
@@ -161,6 +151,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           messageDetails.message ?? "",
         ),
         Container(
+          width: Get.width,
           color: primaryWhite,
           padding: EdgeInsets.all(14.sp),
           child: Column(
@@ -192,10 +183,6 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
       ],
     );
   }
-
-  /// ---------------------------------------------
-  /// REUSABLE UI BLOCKS BELOW
-  /// ---------------------------------------------
 
   Widget _buildNotificationTitle(
       String? title, DateTime? date, String? message) {
@@ -242,7 +229,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
   }
 
   Widget _buildOrderInfo(String orderId) {
-    if (orderId == "0") return SizedBox();
+    if (orderId == "0") return const SizedBox();
     return Container(
       margin: EdgeInsets.only(bottom: 20.sp),
       color: primaryWhite,
@@ -262,7 +249,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
   }
 
   Widget _buildShippingInfo(ShippingAddress? address) {
-    if (address == null) return SizedBox();
+    if (address == null) return const SizedBox();
 
     return Container(
       color: primaryWhite,
@@ -285,7 +272,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
   }
 
   Widget _buildProductList(List<ProductList>? products) {
-    if (products == null || products.isEmpty) return SizedBox();
+    if (products == null || products.isEmpty) return const SizedBox();
 
     return Container(
       color: primaryWhite,
@@ -349,14 +336,19 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
       child: Row(
         children: [
           Expanded(
-              child: Text(label,
-                  style: AppTextStyle.normalRegular12
-                      .copyWith(color: textGreyColor))),
-          Text("\$${value.toStringAsFixed(2)}",
-              style: isTotal
-                  ? AppTextStyle.normalSemiBold20.copyWith(color: orangeColor)
-                  : AppTextStyle.normalRegular14
-                      .copyWith(color: lightBlackColor)),
+            child: Text(
+              label,
+              style: AppTextStyle.normalRegular12.copyWith(
+                color: textGreyColor,
+              ),
+            ),
+          ),
+          Text(
+            "\$${value.toStringAsFixed(2)}",
+            style: isTotal
+                ? AppTextStyle.normalSemiBold20.copyWith(color: orangeColor)
+                : AppTextStyle.normalRegular14.copyWith(color: lightBlackColor),
+          ),
         ],
       ),
     );

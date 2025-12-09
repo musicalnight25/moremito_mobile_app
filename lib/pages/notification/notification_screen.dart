@@ -1,18 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/notification/widget/notification_shimmer_card.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
+
 import '../../controller/notification_controller.dart';
 import '../../model/notification_model.dart';
 import 'notification_details_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+  const NotificationScreen({super.key});
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -25,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.refreshNotifications();
+      controller.initialLoad();
     });
   }
 
@@ -38,48 +41,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: SafeArea(
         child: Obx(
           () => RefreshIndicator(
-            color: primaryColor,
             onRefresh: controller.refreshNotifications,
+            color: primaryColor,
             child: ListView(
               controller: controller.scrollController,
               padding: EdgeInsets.symmetric(horizontal: 18.sp),
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 height20,
-
-                /// Title
                 Text(
                   "Notifications",
-                  style: AppTextStyle.normalExtraBold.copyWith(
-                    fontSize: 26.sp,
-                    letterSpacing: 0.5,
-                    color: primaryBlack, // replaced
-                  ),
+                  style: AppTextStyle.normalExtraBold
+                      .copyWith(fontSize: 26.sp, color: primaryBlack),
                 ),
 
                 height20,
 
-                /// Empty view
-                if (controller.notificationList.isEmpty &&
-                    !controller.isLoading.value)
+                _filterRow(), // <-- add filter row
+
+                height10,
+
+                if (controller.isLoading.value)
+                  ...List.generate(6, (_) => const NotificationShimmerCard()),
+
+                if (!controller.isLoading.value &&
+                    controller.notificationList.isEmpty)
                   NoDataFound(),
 
-                /// Notification list
-                ...controller.notificationList.map(
-                  (element) => _buildNotificationTile(element),
-                ),
+                ...controller.notificationList.map(_buildTile),
 
-                /// Pagination Loader
                 if (controller.isPaginationLoading.value)
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.sp),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: primaryColor,
-                        strokeWidth: 2.5,
-                      ),
-                    ),
-                  ),
+                  ...List.generate(2, (_) => const NotificationShimmerCard()),
               ],
             ),
           ),
@@ -88,84 +80,99 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  // -----------------------------------------------------------
-  // Single Notification Tile
-  // -----------------------------------------------------------
-  Widget _buildNotificationTile(NotificationModel element) {
-    bool isRead = (element.isRead == true || element.isRead == 1);
+  Widget _filterRow() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Obx(
+        () => Row(
+          children: [
+            _filterChip(0, "All", CupertinoIcons.bell_fill),
+            width10,
+            _filterChip(1, "System", CupertinoIcons.gear_alt_fill),
+            width10,
+            _filterChip(2, "Marketing", CupertinoIcons.gift_fill),
+            width10,
+            _filterChip(3, "Announcement", Icons.campaign_rounded),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _filterChip(int index, String text, IconData icon) {
+    final selected = controller.selectedFilter.value == index;
+
+    return GestureDetector(
+      onTap: () => controller.changeFilter(index),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 8.sp),
+        decoration: BoxDecoration(
+          color: selected ? primaryColor : primaryColor.withOpacity(.15),
+          borderRadius: BorderRadius.circular(30.sp),
+        ),
+        child: Row(
+          children: [
+            Icon(icon,
+                size: 16.sp, color: selected ? Colors.white : primaryColor),
+            width06,
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: selected ? Colors.white : primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTile(NotificationModel element) {
+    final isRead = element.isRead == true || element.isRead == 1;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        controller.notificationDetails.value = null;
-        controller.notificationDetails.refresh();
-
-        Get.to(() => NotificationDetailsScreen(
-                  notificationId: element.id.toString(),
-                ))!
-            .then((_) => controller.refreshNotifications());
+      onTap: () async {
+        await Get.to(
+          () => NotificationDetailsScreen(notificationId: "${element.id}"),
+        );
+        controller.refreshNotifications();
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: Duration(milliseconds: 250),
         margin: EdgeInsets.only(bottom: 14.sp),
         padding: EdgeInsets.all(14.sp),
         decoration: BoxDecoration(
-          color: primaryWhite, // replaced pure white
+          color: isRead ? primaryWhite : primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16.sp),
           border: Border.all(
             color: isRead ? borderGreyColor : primaryColor.withOpacity(0.4),
-            width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: bgPrimaryShadowColor.withOpacity(0.4),
-              // soft green-ish shadow
-              blurRadius: 12,
-              spreadRadius: 1,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ICON CONTAINER
-            Container(
-              height: 48.sp,
-              width: 48.sp,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: bgPrimaryShadowColor, // soft brand color
-              ),
-              child: Icon(
-                element.icon,
-                color: primaryColor,
-                size: 24.sp,
-              ),
+            CircleAvatar(
+              backgroundColor: bgPrimaryShadowColor,
+              radius: 24.sp,
+              child: Icon(element.icon, color: primaryColor),
             ),
-
             width14,
-
-            // TEXTS SECTION
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// TIME
                   if (element.createdOn != null)
                     Text(
                       CommonMethod.formatTimeIsoDateString(
-                        element.createdOn!.toIso8601String(),
-                      ),
+                          element.createdOn!.toIso8601String()),
                       style: AppTextStyle.normalRegular14.copyWith(
-                        color: hintGreyColor, // replaced
+                        color: hintGreyColor,
                         fontSize: 12.sp,
                       ),
                     ),
-
                   height06,
-
-                  /// TITLE
                   Text(
                     element.title ?? "",
                     style: AppTextStyle.normalBold16.copyWith(
@@ -174,36 +181,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       color: primaryBlack,
                     ),
                   ),
-
                   height06,
-
-                  /// BODY
                   Text(
                     element.body ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.normalRegular14.copyWith(
+                      color: lightBlackColor,
                       fontSize: 14.sp,
-                      color: lightBlackColor, // replaced
-                      height: 1.3,
                     ),
                   ),
                 ],
               ),
             ),
-
-            width10,
-
-            /// UNREAD DOT
-            if (!isRead)
-              Container(
-                height: 12.sp,
-                width: 12.sp,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
           ],
         ),
       ),

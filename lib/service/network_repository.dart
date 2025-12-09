@@ -155,10 +155,9 @@ class NetworkRepository {
     if (_isSessionExpiredShown) return; // ✅ Prevent multiple calls
 
     _isSessionExpiredShown = true;
-
     CommonMethod.getXSnackBar(
       "🔐 Access Denied!",
-      "Either your session took a time warp ⏳ or your credentials don’t match our secret codes! 🔑 Try logging in again.",
+      "Session expired. Please log in again.",
       redColor,
     );
 

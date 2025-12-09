@@ -13,14 +13,17 @@ class NotificationController extends GetxController {
   RxList<NotificationModel> notificationList = <NotificationModel>[].obs;
   Rxn<NotificationDetailModel> notificationDetails =
       Rxn<NotificationDetailModel>();
-  RxBool isLoading = false.obs;
 
-  /// Pagination variables
-  int pageNumber = 1;
+  RxBool isLoading = false.obs;
   RxBool isPaginationLoading = false.obs;
   RxBool hasMoreData = true.obs;
+  RxBool isDetailLoading = false.obs;
 
-  /// Scroll Controller
+  /// filter
+  RxInt selectedFilter = 0.obs; // 0=all 1=system 2=marketing 3=announcement
+
+  int pageNumber = 1;
+
   ScrollController scrollController = ScrollController();
 
   @override
@@ -32,7 +35,7 @@ class NotificationController extends GetxController {
   void _setupScrollListener() {
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
-              scrollController.position.maxScrollExtent - 50 &&
+              scrollController.position.maxScrollExtent - 100 &&
           !isPaginationLoading.value &&
           hasMoreData.value) {
         loadMoreNotifications();
@@ -40,91 +43,83 @@ class NotificationController extends GetxController {
     });
   }
 
-  /// --------------------------------------------------------
-  /// REFRESH LIST
-  /// --------------------------------------------------------
+  /// FIRST LOAD
+  Future<void> initialLoad() async {
+    isLoading.value = true;
+    await refreshNotifications();
+    isLoading.value = false;
+  }
+
+  /// CHANGE FILTER
+  Future<void> changeFilter(int index) async {
+    selectedFilter.value = index;
+    await refreshNotifications();
+  }
+
+  /// REFRESH
   Future<void> refreshNotifications() async {
     pageNumber = 1;
     hasMoreData.value = true;
-    notificationList.clear();
-    await getNotification(isFromPagination: false);
+
+    final list = await _fetchNotifications();
+
+    if (list != null) {
+      notificationList.assignAll(list);
+    }
   }
 
-  /// --------------------------------------------------------
   /// PAGINATION
-  /// --------------------------------------------------------
   Future<void> loadMoreNotifications() async {
     if (!hasMoreData.value) return;
 
     isPaginationLoading.value = true;
-
     pageNumber++;
-    await getNotification(isFromPagination: true);
+
+    final moreList = await _fetchNotifications();
+
+    if (moreList != null) {
+      notificationList.addAll(moreList);
+    }
 
     isPaginationLoading.value = false;
   }
 
-  /// --------------------------------------------------------
-  /// GET NOTIFICATION LIST
-  /// --------------------------------------------------------
-  Future<void> getNotification({bool isFromPagination = false}) async {
-    if (!isFromPagination) {
-      isLoading.value = true;
-    }
-
+  Future<List<NotificationModel>?> _fetchNotifications() async {
     try {
-      var queryParameters = {
+      final response = await _networkRepository.getNotification({
         "pageNumber": pageNumber.toString(),
         "pageSize": 10,
-      };
-
-      final response =
-          await _networkRepository.getNotification(queryParameters);
+        "filter": selectedFilter.value.toString(),
+      });
 
       if (response != null) {
         final model = notificationResponseModelFromJson(json.encode(response));
 
         if (model.status == true && model.data != null) {
-          List<NotificationModel> list = model.data!.notifications ?? [];
-
-          if (isFromPagination) {
-            notificationList.addAll(list);
-          } else {
-            notificationList.assignAll(list);
-          }
-
-          /// backend sends flag hasMore
           hasMoreData.value = model.data!.hasMore ?? false;
-        } else {
-          hasMoreData.value = false;
+          return model.data!.notifications ?? [];
         }
       }
     } catch (e, stack) {
-      debugPrint("Error in getNotification: $e");
-
       await ErrorLogger.logErrorToServer(
         pageType: "Notification",
-        actionType: "getNotification",
+        actionType: "Fetch",
         errorMessage1: e.toString(),
         errorMessage3: stack.toString(),
       );
-    } finally {
-      if (!isFromPagination) {
-        isLoading.value = false;
-      }
     }
+
+    return null;
   }
 
-  /// --------------------------------------------------------
-  /// GET NOTIFICATION DETAIL
-  /// --------------------------------------------------------
-  Future<void> getNotificationDetail(
-      BuildContext context, String notificationId) async {
-    isLoading.value = true;
-
+  Future<void> getNotificationDetail(String notificationId) async {
     try {
-      final response =
-          await _networkRepository.getNotificationDetail(null, notificationId);
+      isDetailLoading.value = true;
+
+      final response = await _networkRepository.getNotificationDetail(
+        null,
+        notificationId,
+      );
 
       if (response != null) {
         final model = notificationDetailResponseModelFromJson(
@@ -136,16 +131,14 @@ class NotificationController extends GetxController {
         }
       }
     } catch (e, stack) {
-      debugPrint("Error in getNotificationDetail: $e");
-
       await ErrorLogger.logErrorToServer(
         pageType: "NotificationDetail",
-        actionType: "getNotificationDetail",
+        actionType: "Detail",
         errorMessage1: e.toString(),
         errorMessage3: stack.toString(),
       );
     } finally {
-      isLoading.value = false;
+      isDetailLoading.value = false;
     }
   }
 }

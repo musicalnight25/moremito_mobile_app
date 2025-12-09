@@ -64,11 +64,11 @@ flutter_native_splash:
   android: false
   web: false
   color: "#FFFFFF"
-  image: assets/images/ios_logo.jpg
+  image: assets/images/logo.png
   color_dark: "#FFFFFF"
-  image_dark: assets/images/ios_logo.jpg
+  image_dark: assets/images/logo.png
   android_12:
-    image: assets/images/ios_logo.jpg
+    image: assets/images/logo.png
     icon_background_color: "#FFFFFF"
 
 flutter:
