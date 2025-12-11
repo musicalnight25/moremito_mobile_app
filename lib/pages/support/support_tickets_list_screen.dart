@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/controller/ticket_controller.dart';
 import 'package:more_mitro_app/pages/support/ticket_comment_screen.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
+import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
@@ -33,34 +34,37 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryWhite,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
         title: "Support Tickets",
         visibleBackButton: true,
       ),
-      body: Obx(() {
-        if (tc.listLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: primaryColor),
+      body: BaseBackgroundWidget(
+        child: Obx(() {
+          if (tc.listLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(color: primaryColor),
+            );
+          }
+
+          if (tc.ticketList.isEmpty) {
+            return const NoDataFound(title: "Support Tickets");
+          }
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(16.sp),
+            child: Column(
+              children: tc.ticketList
+                  .map((ticket) => TicketItemCard(
+                        ticket: ticket,
+                        controller: tc,
+                      ))
+                  .toList(),
+            ),
           );
-        }
-
-        if (tc.ticketList.isEmpty) {
-          return const NoDataFound(title: "Support Tickets");
-        }
-
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.sp),
-          child: Column(
-            children: tc.ticketList
-                .map((ticket) => TicketItemCard(
-                      ticket: ticket,
-                      controller: tc,
-                    ))
-                .toList(),
-          ),
-        );
-      }),
+        }),
+      ),
     );
   }
 }
@@ -79,94 +83,187 @@ class TicketItemCard extends StatelessWidget {
     required this.controller,
   });
 
+  // ---------------- STATUS BADGE STYLE ----------------
+  Widget _statusBadge(String status) {
+    Color bg;
+    Color text;
+
+    switch (status.toLowerCase()) {
+      case "closed":
+        bg = const Color(0xff28C76F); // green
+        text = Colors.white;
+        break;
+      case "open":
+        bg = const Color(0xffF4B740); // yellow/orange
+        text = Colors.black87;
+        break;
+      default:
+        bg = Colors.grey.shade400;
+        text = Colors.white;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20.sp),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: AppTextStyle.normalSemiBold12.copyWith(color: text),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isClosed = (ticket.statusValue ?? '').toLowerCase() == "closed";
-    int unread = ticket.unreadUser ?? 0;
+    bool isClosed = (ticket.statusValue ?? "").toLowerCase() == "closed";
+    int unreadCount = ticket.unreadUser ?? 0;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.sp),
       padding: EdgeInsets.all(18.sp),
       decoration: BoxDecoration(
         color: primaryWhite,
-        borderRadius: BorderRadius.circular(16.sp),
-        border: Border.all(color: borderGreyColor),
+        borderRadius: BorderRadius.circular(14.sp),
         boxShadow: [
           BoxShadow(
-            color: bgPrimaryShadowColor.withOpacity(.6),
-            blurRadius: 14,
-            spreadRadius: 1,
-            offset: const Offset(0, 4),
-          ),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          )
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// HEADER : Ticket ID
+          // ---------------- TOP ROW (ID + DATE + BADGE) ----------------
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Ticket ID",
-                  style: AppTextStyle.normalSemiBold16
-                      .copyWith(color: primaryBlack)),
-              Text(
-                "#${ticket.ticketId}",
-                style:
-                    AppTextStyle.normalSemiBold18.copyWith(color: primaryColor),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "#${ticket.ticketId}",
+                      style: AppTextStyle.normalSemiBold18,
+                    ),
+                    SizedBox(height: 4.sp),
+                    Text(
+                      CommonMethod.formatDateTime(ticket.createdDate),
+                      style: AppTextStyle.normalRegular12
+                          .copyWith(color: Colors.black54),
+                    ),
+                  ],
+                ),
               ),
+              if (ticket.statusValue != null) _statusBadge(ticket.statusValue!),
             ],
           ),
 
           height14,
 
-          TicketInfoRow(label: "Subject", value: ticket.ticketTitle),
-          height10,
-          TicketInfoRow(label: "Priority", value: ticket.priorityValue),
-          height10,
-          TicketInfoRow(label: "Status", value: ticket.statusValue),
-          height10,
-          TicketInfoRow(label: "Related To", value: ticket.typeValue),
-          height10,
-          TicketInfoRow(
-            label: "Created",
-            value: CommonMethod.formatDateTime(ticket.createdDate),
-          ),
-
-          height20,
-
-          /// BUTTONS
+          // ---------------- TICKET RELATED TO ----------------
           Row(
             children: [
               Expanded(
-                child: CommentButton(
-                  unread: unread,
-                  onTap: () {
-                    ticket.unreadUser = 0;
-                    controller.update();
-                    Get.to(() =>
-                        TicketCommentScreen(ticketId: ticket.ticketId ?? 0));
-                  },
+                child: Text(
+                  "Ticket Related To:",
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(color: Colors.black54),
                 ),
               ),
-              if (isClosed) ...[
-                width14,
-                Expanded(
-                  child: PrimaryTextButton(
-                    title: "Re-open",
-                    buttonColor: primaryColor,
-                    onPressed: () async {
-                      await controller.addComment(
-                        ticketId: ticket.ticketId!,
-                        comment: "Re-opening ticket",
-                      );
-                      controller.getTicketList();
-                    },
-                  ),
-                ),
-              ],
+              Text(
+                ticket.typeValue ?? "-",
+                style: AppTextStyle.normalSemiBold14,
+              ),
             ],
           ),
+
+          height10,
+
+          // ---------------- PRIORITY ----------------
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Priority",
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(color: Colors.black54),
+                ),
+              ),
+              Text(
+                ticket.priorityValue ?? "-",
+                style:
+                    AppTextStyle.normalSemiBold14.copyWith(color: Colors.red),
+              ),
+            ],
+          ),
+
+          height10,
+
+          // ---------------- SUBJECT ----------------
+          Text(
+            "Subject",
+            style: AppTextStyle.normalRegular14.copyWith(color: Colors.black54),
+          ),
+          SizedBox(height: 4.sp),
+          Text(
+            ticket.ticketTitle ?? "-",
+            style: AppTextStyle.normalSemiBold14,
+          ),
+
+          height16,
+          Divider(color: Colors.black12, thickness: 0.5),
+          height08,
+
+          // ---------------- FOOTER ACTIONS ----------------
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // -------- COMMENTS BUTTON --------
+              InkWell(
+                onTap: () {
+                  ticket.unreadUser = 0;
+                  controller.update();
+                  Get.to(() =>
+                      TicketCommentScreen(ticketId: ticket.ticketId ?? 0));
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.chat_bubble_outline,
+                        size: 18.sp, color: primaryColor),
+                    SizedBox(width: 6.sp),
+                    Text(
+                      unreadCount > 0 ? "Comments ($unreadCount)" : "Comments",
+                      style: AppTextStyle.normalSemiBold14
+                          .copyWith(color: primaryColor),
+                    ),
+                  ],
+                ),
+              ),
+
+              // -------- RE-OPEN TICKET BUTTON --------
+              if (isClosed)
+                InkWell(
+                  onTap: () async {
+                    await controller.addComment(
+                      ticketId: ticket.ticketId!,
+                      comment: "Re-opening ticket",
+                    );
+                    controller.getTicketList();
+                  },
+                  child: Text(
+                    "Re-open Ticket",
+                    style: AppTextStyle.normalSemiBold14.copyWith(
+                      color: primaryColor,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+            ],
+          )
         ],
       ),
     );

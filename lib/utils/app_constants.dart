@@ -31,4 +31,7 @@ class AppConstants {
   static const String getTicketComments = 'get-ticket-comments';
   static const String createSupportTicket = 'create-support-ticket';
   static const String addTicketComment = 'add-ticket-comment';
+  static const String getFlyerTrackingStats = 'get-flyer-tracking-stats';
+  static const String getSharedFlyers = 'get-shared-flyers';
+  static const String getFlyerInteractions = 'get-flyer-interactions';
 }

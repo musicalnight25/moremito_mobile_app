@@ -11,6 +11,8 @@ import 'package:more_mitro_app/utils/static_decoration.dart';
 import '../account/my_orders_screen.dart';
 import '../account/my_recurring_order_screen.dart';
 import '../account/my_referral_orders_screen.dart';
+import '../flyer/my_shared_flyers_screen.dart';
+import '../flyer/shared_flyers_screen.dart';
 import '../support/support_tickets_list_screen.dart';
 import '../support/create_support_ticket_screen.dart';
 
@@ -63,6 +65,22 @@ class _MenuScreenState extends State<MenuScreen> {
             title: "Create Support Ticket",
             icon: Icons.add_circle_outline,
             onTap: () => Get.to(() => CreateSupportTicketScreen()),
+          ),
+        ],
+      ),
+      MenuSection(
+        title: "Marketing",
+        icon: Icons.campaign_outlined,
+        items: [
+          MenuItem(
+            title: "Files",
+            icon: Icons.file_present_outlined,
+            onTap: () => Get.to(() => MySharedFlyersScreen()),
+          ),
+          MenuItem(
+            title: "Flyers",
+            icon: Icons.mobile_friendly,
+            onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
         ],
       ),

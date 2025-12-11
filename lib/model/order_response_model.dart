@@ -74,6 +74,9 @@ class Order {
   String? paymentStatus;
   bool? hasBadAddress;
   String? addressWarningText;
+  String? trackingId;
+  String? trackingUrl;
+  String? shippingMethod;
 
   Order({
     this.orderId,
@@ -86,6 +89,9 @@ class Order {
     this.paymentStatus,
     this.hasBadAddress,
     this.addressWarningText,
+    this.trackingId,
+    this.trackingUrl,
+    this.shippingMethod,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
@@ -101,6 +107,9 @@ class Order {
         paymentStatus: json["PaymentStatus"],
         hasBadAddress: json["HasBadAddress"],
         addressWarningText: json["AddressWarningText"],
+        trackingId: json["TrackingId"],
+        trackingUrl: json["TrackingUrl"],
+        shippingMethod: json["ShippingMethod"],
       );
 
   Map<String, dynamic> toJson() => {
