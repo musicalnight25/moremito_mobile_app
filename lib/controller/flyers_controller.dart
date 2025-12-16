@@ -83,7 +83,8 @@ class FlyersController extends GetxController {
     interactions.clear();
 
     try {
-      final response = await _repo.getFlyerInteractions(sharedFlyerId);
+      final response =
+          await _repo.getFlyerInteractions({'sharedLinkId': sharedFlyerId});
 
       if (response != null && response['Status'] == true) {
         final List list = response['Data'] ?? [];
