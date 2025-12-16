@@ -1,129 +1,102 @@
-// lib/controller/flyers_controller.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/service/network_repository.dart';
-import 'package:more_mitro_app/utils/common_method.dart';
-
-import '../model/flyer_models.dart';
+import '../model/flyer_interaction_model.dart';
+import '../model/flyer_tracking_stats_model.dart';
+import '../model/shared_flyers_model.dart';
+import '../service/network_repository.dart';
+import '../utils/common_method.dart';
 
 class FlyersController extends GetxController {
   final NetworkRepository _repo = NetworkRepository();
 
-  // ------------------ TRACKING STATS (tiles) ------------------
+  // -------- STATS --------
   RxBool statsLoading = false.obs;
-  Rxn<FlyerTrackingStats> stats = Rxn<FlyerTrackingStats>();
+  Rxn<FlyerTrackingStats> stats = Rxn();
 
-  // ------------------ SHARED FLYERS (paginated list) ------------------
+  // -------- SHARED FLYERS --------
   RxBool listLoading = false.obs;
   RxBool loadMoreLoading = false.obs;
   RxList<SharedFlyerItem> sharedFlyers = <SharedFlyerItem>[].obs;
 
-  // pagination
   int page = 1;
   bool hasMore = true;
 
-  // ------------------ INTERACTIONS (activity) ------------------
+// -------- ACTIVITY --------
   RxBool activityLoading = false.obs;
   RxList<FlyerInteraction> interactions = <FlyerInteraction>[].obs;
 
-  // -------------------------------------------------------------------
-  // GET TRACKING STATS (tiles)
-  // -------------------------------------------------------------------
+  // ---------------- GET STATS ----------------
   Future<void> getFlyerTrackingStats() async {
     statsLoading.value = true;
     try {
-      var response = await _repo.getFlyerTrackingStats();
-      debugPrint("RAW FLYER STATS RESPONSE: $response");
+      final response = await _repo.getFlyerTrackingStats();
       if (response != null) {
         final model = flyerTrackingStatsFromJson(json.encode(response));
-        if (model.status == true && model.data != null) {
+        if (model.status == true) {
           stats.value = model.data;
-        } else {
-          CommonMethod.getXSnackBar(
-            "Error",
-            model.message ?? "Unable to fetch stats",
-            Colors.red,
-          );
         }
       }
-    } catch (e, s) {
-      debugPrint("❌ Error in getFlyerTrackingStats: $e\n$s");
+    } catch (e) {
+      debugPrint("Stats error: $e");
     } finally {
       statsLoading.value = false;
     }
   }
 
-  // -------------------------------------------------------------------
-  // GET SHARED FLYERS (paginated)
-  // filterKey should be one of: last72hours, last7days, days8to14, days15to21, days22to28, lifetime
-  // -------------------------------------------------------------------
+  // ---------------- GET SHARED FLYERS ----------------
   Future<void> getSharedFlyers({required String filterKey}) async {
     if (!hasMore && page != 1) return;
 
-    if (page == 1) {
-      listLoading.value = true;
-    } else {
-      loadMoreLoading.value = true;
-    }
+    page == 1 ? listLoading.value = true : loadMoreLoading.value = true;
 
     try {
-      Map<String, dynamic> queryParameters = {
-        "pageNumber": page.toString(),
-        "pageSize": 10.toString(),
+      final response = await _repo.getSharedFlyers({
+        "pageNumber": page,
+        "pageSize": 10,
         "filterDays": filterKey,
-      };
-
-      var response = await _repo.getSharedFlyers(queryParameters);
-      debugPrint("RAW SHARED FLYERS RESPONSE: $response");
+      });
 
       if (response != null) {
         final model = sharedFlyersResponseFromJson(json.encode(response));
+
         if (model.status == true && model.data != null) {
           if (page == 1) sharedFlyers.clear();
-          sharedFlyers.addAll(model.data!.items ?? []);
-          hasMore = model.data!.hasMore ?? false;
 
-          sharedFlyers.refresh();
+          sharedFlyers.addAll(model.data!.items ?? []);
+
+          hasMore = page < (model.data!.totalPages ?? 1);
           if (hasMore) page++;
-        } else {
-          CommonMethod.getXSnackBar("Error",
-              model.message ?? "Unable to fetch shared flyers", Colors.red);
         }
       }
-    } catch (e, s) {
-      debugPrint("❌ Error in getSharedFlyers: $e\n$s");
+    } catch (e) {
+      debugPrint("Shared flyers error: $e");
     } finally {
       listLoading.value = false;
       loadMoreLoading.value = false;
     }
   }
 
-  // -------------------------------------------------------------------
-  // GET FLYER INTERACTIONS
-  // -------------------------------------------------------------------
-  Future<void> getFlyerInteractions({required int sharedLinkId}) async {
+  // ---------------- GET FLYER ACTIVITY ----------------
+  Future<void> getFlyerInteractions({required int sharedFlyerId}) async {
     activityLoading.value = true;
+    interactions.clear();
+
     try {
-      var response = await _repo.getFlyerInteractions(sharedLinkId);
-      debugPrint("RAW FLYER INTERACTIONS: $response");
-      if (response != null) {
-        final model = flyerInteractionsFromJson(json.encode(response));
-        // if (model.status == true && model.data != null) {
-        //   interactions.value = model.data ?? [];
-        // } else {
-        //   CommonMethod.getXSnackBar("Error",
-        //       model.message ?? "Unable to fetch interactions", Colors.red);
-        // }
+      final response = await _repo.getFlyerInteractions(sharedFlyerId);
+
+      if (response != null && response['Status'] == true) {
+        final List list = response['Data'] ?? [];
+        interactions.value =
+            list.map((e) => FlyerInteraction.fromJson(e)).toList();
       }
-    } catch (e, s) {
-      debugPrint("❌ Error in getFlyerInteractions: $e\n$s");
+    } catch (e) {
+      debugPrint("Flyer activity error: $e");
     } finally {
       activityLoading.value = false;
     }
   }
 
-  // helper to reset pagination (call before a fresh fetch)
   void resetPagination() {
     page = 1;
     hasMore = true;

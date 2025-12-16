@@ -75,9 +75,12 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
           Spacer(),
           title != null
-              ? Text(
-                  title!,
-                  style: AppTextStyle.normalBold18,
+              ? Expanded(
+                  child: Text(
+                    title!,
+                    style: AppTextStyle.normalBold18,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 )
               : Center(
                   child: Image.asset(
@@ -97,7 +100,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
           IconButton(
             onPressed: () {
-              Get.to(() => MyAccountInfoScreen());
+              // Get.to(() => MyAccountInfoScreen());
             },
             icon: actionWidget ??
                 Container(

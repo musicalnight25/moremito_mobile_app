@@ -185,7 +185,7 @@ class SurveyScreen extends StatelessWidget {
                                             ? null
                                             : disableButtonColor,
                                         title: "Next",
-                                        onPressed: () {
+                                        onPressed: () async {
                                           if (isCurrentQuestionAnswered) {
                                             if (controller.currentQuestionIndex
                                                     .value <
@@ -195,8 +195,11 @@ class SurveyScreen extends StatelessWidget {
                                               controller
                                                   .currentQuestionIndex.value++;
                                             } else {
-                                              Get.to(() =>
-                                                  CloseSurveyScreen()); // End of survey
+                                              await controller
+                                                  .saveSurvey(context);
+
+                                              // Get.to(() =>
+                                              //     CloseSurveyScreen()); // End of survey
                                             }
                                           } else {
                                             CommonMethod.getXSnackBar(

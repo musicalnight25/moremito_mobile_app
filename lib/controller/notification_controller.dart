@@ -29,39 +29,39 @@ class NotificationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _setupScrollListener();
+    _setupScrollListener(null);
   }
 
-  void _setupScrollListener() {
+  void _setupScrollListener(BuildContext? context) {
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 100 &&
           !isPaginationLoading.value &&
           hasMoreData.value) {
-        loadMoreNotifications();
+        loadMoreNotifications(context);
       }
     });
   }
 
   /// FIRST LOAD
-  Future<void> initialLoad() async {
+  Future<void> initialLoad(BuildContext? context) async {
     isLoading.value = true;
-    await refreshNotifications();
+    await refreshNotifications(context);
     isLoading.value = false;
   }
 
   /// CHANGE FILTER
-  Future<void> changeFilter(int index) async {
+  Future<void> changeFilter({BuildContext? context, required int index}) async {
     selectedFilter.value = index;
-    await refreshNotifications();
+    await refreshNotifications(context);
   }
 
   /// REFRESH
-  Future<void> refreshNotifications() async {
+  Future<void> refreshNotifications(BuildContext? context) async {
     pageNumber = 1;
     hasMoreData.value = true;
 
-    final list = await _fetchNotifications();
+    final list = await _fetchNotifications(context);
 
     if (list != null) {
       notificationList.assignAll(list);
@@ -69,13 +69,13 @@ class NotificationController extends GetxController {
   }
 
   /// PAGINATION
-  Future<void> loadMoreNotifications() async {
+  Future<void> loadMoreNotifications(BuildContext? context) async {
     if (!hasMoreData.value) return;
 
     isPaginationLoading.value = true;
     pageNumber++;
 
-    final moreList = await _fetchNotifications();
+    final moreList = await _fetchNotifications(context);
 
     if (moreList != null) {
       notificationList.addAll(moreList);
@@ -84,9 +84,11 @@ class NotificationController extends GetxController {
     isPaginationLoading.value = false;
   }
 
-  Future<List<NotificationModel>?> _fetchNotifications() async {
+  Future<List<NotificationModel>?> _fetchNotifications(
+      BuildContext? context) async {
     try {
-      final response = await _networkRepository.getNotification({
+      final response = await _networkRepository
+          .getNotification(context: context, queryParameters: {
         "pageNumber": pageNumber.toString(),
         "pageSize": 10,
         "filter": selectedFilter.value.toString(),

@@ -108,8 +108,9 @@ class NetworkRepository {
           {BuildContext? context, required String annId}) =>
       getRequest(context, AppConstants.getAnnouncementDetails + annId);
 
-  Future<dynamic> getNotification(var queryParameters) =>
-      getRequest(null, AppConstants.getNotification,
+  Future<dynamic> getNotification(
+          {BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getNotification,
           queryParameters: queryParameters);
 
   Future<dynamic> getSharedFlyers(var queryParameters) =>

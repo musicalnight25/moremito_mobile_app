@@ -28,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.initialLoad();
+      controller.initialLoad(null);
     });
   }
 
@@ -41,7 +41,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: SafeArea(
         child: Obx(
           () => RefreshIndicator(
-            onRefresh: controller.refreshNotifications,
+            onRefresh: () {
+              return controller.refreshNotifications(null);
+            },
             color: primaryColor,
             child: ListView(
               controller: controller.scrollController,
@@ -103,27 +105,38 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final selected = controller.selectedFilter.value == index;
 
     return GestureDetector(
-      onTap: () => controller.changeFilter(index),
+      onTap: () => controller.changeFilter(index: index, context: Get.context),
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 8.sp),
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: selected ? 14.sp : 10.sp,
+          vertical: 8.sp,
+        ),
         decoration: BoxDecoration(
           color: selected ? primaryColor : primaryColor.withOpacity(.15),
           borderRadius: BorderRadius.circular(30.sp),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon,
-                size: 16.sp, color: selected ? Colors.white : primaryColor),
-            width06,
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: selected ? Colors.white : primaryColor,
-                fontWeight: FontWeight.w600,
+            Icon(
+              icon,
+              size: 16.sp,
+              color: selected ? Colors.white : primaryColor,
+            ),
+
+            /// show label only if selected
+            if (selected) ...[
+              width06,
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            )
+            ],
           ],
         ),
       ),
@@ -138,7 +151,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         await Get.to(
           () => NotificationDetailsScreen(notificationId: "${element.id}"),
         );
-        controller.refreshNotifications();
+        controller.refreshNotifications(null);
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 250),

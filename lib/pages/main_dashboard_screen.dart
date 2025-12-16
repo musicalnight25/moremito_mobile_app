@@ -158,7 +158,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           width: 24.sp,
           color: redColor,
         ),
-        label: "Categories",
+        label: "Share Info",
       ),
       BottomNavigationBarItem(
         icon: _buildNotificationIcon(),
