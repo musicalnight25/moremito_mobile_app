@@ -190,7 +190,9 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(),
+      appBar: CommonAppBar(
+        visibleBackButton: true,
+      ),
       body: BaseBackgroundWidget(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
