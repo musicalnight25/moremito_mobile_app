@@ -144,6 +144,8 @@ class CommonMethod {
 
   static Future logOutUser() async {
     await PreferencesUtil.clear();
+    PreferencesUtil.clearRememberMe();
+
     Get.offAll(() => LoginScreen());
   }
 

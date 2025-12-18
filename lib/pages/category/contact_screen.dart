@@ -8,64 +8,44 @@ import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import '../../controller/contact_controller.dart';
 import '../../utils/base_background_widget.dart';
 
-class ContactScreen extends StatefulWidget {
-  @override
-  State<ContactScreen> createState() => _ContactScreenState();
-}
-
-class _ContactScreenState extends State<ContactScreen> {
-  final ContactController contactController = Get.put(ContactController());
-
-  @override
-  void initState() {
-    contactController.selectedContact.value = '';
-    contactController.searchQuery.value = '';
-    contactController.loadContacts();
-    contactController.searchContact();
-    super.initState();
-  }
+class ContactScreen extends StatelessWidget {
+  final ContactController controller = Get.put(ContactController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: 'Select a Contact',
+        title: 'Select Contact',
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12),
               child: TextFormFieldWidget(
-                controller: null,
                 hintText: 'Search Contacts',
                 prefixIcon: Icon(Icons.search, color: primaryColor),
-                onChanged: (value) {
-                  contactController.searchQuery.value = value ?? "";
-                  contactController.searchContact();
-                },
+                onChanged: (value) =>
+                    controller.searchQuery.value = value ?? '',
+                controller: null,
               ),
             ),
-
-            // Contact List with Loader & Smooth UI
             Expanded(
               child: Obx(() {
-                if (contactController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
                 }
 
-                if (contactController.filteredContacts.isEmpty) {
-                  return Center(child: Text("No Contacts Found"));
+                if (controller.filteredContacts.isEmpty) {
+                  return const Center(child: Text("No Contacts Found"));
                 }
 
                 return ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: contactController.filteredContacts.length,
+                  itemCount: controller.filteredContacts.length,
                   itemBuilder: (context, index) {
-                    final contact = contactController.filteredContacts[index];
+                    final contact = controller.filteredContacts[index];
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundColor: primaryColor,
@@ -75,16 +55,9 @@ class _ContactScreenState extends State<ContactScreen> {
                               .copyWith(color: primaryWhite),
                         ),
                       ),
-                      title: Text(contact.displayName,
-                          style: AppTextStyle.normalBold14),
-                      subtitle: Text(contact.phones.first.number,
-                          style: AppTextStyle.normalRegular12),
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: lightBlackColor,
-                      ),
-                      onTap: () => contactController.selectContact(contact),
+                      title: Text(contact.displayName),
+                      subtitle: Text(contact.phones.first.number),
+                      onTap: () => controller.selectContact(contact),
                     );
                   },
                 );
@@ -94,9 +67,9 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        onPressed: controller.refreshContacts,
         backgroundColor: primaryColor,
-        onPressed: () => contactController.refreshContacts(),
-        child: Icon(Icons.refresh, color: Colors.white),
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
   }

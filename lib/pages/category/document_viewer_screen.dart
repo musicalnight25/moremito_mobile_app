@@ -177,6 +177,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               title: "Enter Details Manually",
                               onPressed: () {
                                 Get.back();
+                                nameTextController.clear();
                                 showEnterDetailsManuallySheet(widget.data);
                               },
                             ),
@@ -200,122 +201,182 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     );
   }
 
-  showEnterDetailsManuallySheet(CategoryFileModel data) {
-    RxString generatedLinkText = ''.obs;
+  void showEnterDetailsManuallySheet(CategoryFileModel data) {
+    final RxString generatedLinkText = ''.obs;
+
     CommonMethod.showCustomBottomSheet(
-      title: 'Secure File Sharing',
-      // showCancelButton: false,
+      title: 'Generate Link',
       showCancelButton: true,
       cancelButtonTitle: "Close",
       cancelButtonTextColor: redColor,
-      message:
-          'Enter recipient details to monitor link activity and ensure secure sharing.',
+      message: null,
+      // 'Enter recipient details to monitor link activity and ensure secure sharing.',
       customWidget: SizedBox(
         width: Get.width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextFormFieldWidget(
-              controller: nameTextController,
-              labelText: 'Recipient details',
-              hintText: 'Please enter a name, email, or phone number...',
-              prefixIcon: Icon(Icons.person, color: lightBlackColor),
+            /// -------- INSTRUCTIONS --------
+            buildInstructionStep(
+              step: "1",
+              text:
+                  "Enter the name to track the responses from this person with.",
             ),
-            height15,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Obx(
-                  () => generatedLinkText.value.isEmpty
-                      ? Expanded(
-                          child: PrimaryTextButton(
-                            title: "Generate Secure Link",
-                            onPressed: () async {
-                              if (nameTextController.text.isEmpty) {
-                                return CommonMethod.getXSnackBar(
-                                  "Error",
-                                  "Please enter name, email, or phone number...",
-                                  redColor,
-                                );
-                              }
-                              generatedLinkText.value =
-                                  await controller.generateLink(
-                                          context: context,
-                                          fileId: data.id.toString(),
-                                          SharedTo: nameTextController.text) ??
-                                      "";
-                              final String message =
-                                  "Dear ${nameTextController.text},\n\n${homeController.dashboardModel.value?.userName ?? "A colleague"} has shared a file with you.\n\n📂 File Access Link:\n${generatedLinkText.value}\n\nBest regards,\n${homeController.dashboardModel.value?.name ?? "Support Team"}";
+            buildInstructionStep(
+              step: "2",
+              text:
+                  "Click on \"Generate a Link\" button to create a link that you are going to send to this person.",
+            ),
 
-                              messageTextController.text = message;
-                            },
-                          ),
-                        )
-                      : Expanded(
-                          child: ShadowContainerWidget(
-                            blurRadius: 0,
-                            borderWidth: 1,
-                            borderColor: primaryColor,
-                            color: primaryColor.withOpacity(.2),
-                            widget: Text(
-                              generatedLinkText.value,
-                              style: AppTextStyle.normalBold12,
-                            ),
-                          ),
-                        ),
-                ),
-              ],
-            ),
-            Obx(
-              () => generatedLinkText.value.isEmpty
-                  ? const SizedBox(height: 10)
-                  : Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.sp),
-                          child: Column(
-                            children: [
-                              TextFormFieldWidget(
-                                controller: messageTextController,
-                                hintText:
-                                    'Include an optional message for the recipient.',
-                                labelText: "Add a Personalized Message",
-                                maxLines: 5,
-                              ),
-                              height15,
-                              PrimaryTextButton(
-                                title: "Share File",
-                                onPressed: () {
-                                  if (messageTextController.text.isEmpty) {
-                                    CommonMethod.getXSnackBar(
-                                        "Error",
-                                        "Please enter personalized message.",
-                                        redColor);
-                                    return;
-                                  }
-                                  if (nameTextController.text.isEmpty) {
-                                    CommonMethod.getXSnackBar(
-                                        "Error",
-                                        "Please enter recipient details.",
-                                        redColor);
-                                    return;
-                                  }
-                                  Get.back();
-                                  controller.shareFile(
-                                      data,
-                                      messageTextController.text,
-                                      generatedLinkText.value);
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+            /// -------- GENERATE LINK / SHOW LINK --------
+            Obx(() {
+              if (generatedLinkText.value.isEmpty) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 15.sp),
+                      child: TextFormFieldWidget(
+                        controller: nameTextController,
+                        labelText: 'Enter recipient name',
+                        hintText: 'e.g. John Doe',
+                        prefixIcon: Icon(Icons.person, color: lightBlackColor),
+                      ),
                     ),
-            ),
+                    height15,
+                    PrimaryTextButton(
+                      title: "Generate a Link",
+                      onPressed: () async {
+                        if (nameTextController.text.trim().isEmpty) {
+                          CommonMethod.getXSnackBar(
+                            "Error",
+                            "Please enter recipient name",
+                            redColor,
+                          );
+                          return;
+                        }
+
+                        final link = await controller.generateLink(
+                          context: context,
+                          fileId: data.id.toString(),
+                          SharedTo: nameTextController.text.trim(),
+                        );
+
+                        if (link == null || link.isEmpty) {
+                          CommonMethod.getXSnackBar(
+                            "Error",
+                            "Unable to generate link. Please try again.",
+                            redColor,
+                          );
+                          return;
+                        }
+
+                        generatedLinkText.value = link;
+
+                        messageTextController.text =
+                            "Hey ${nameTextController.text}, check out this $link";
+                      },
+                    ),
+                  ],
+                );
+              }
+              return SizedBox();
+
+              /// -------- GENERATED LINK VIEW --------
+              // return ShadowContainerWidget(
+              //   blurRadius: 0,
+              //   borderWidth: 1,
+              //   borderColor: primaryColor,
+              //   color: primaryColor.withOpacity(.12),
+              //   padding: 12.sp,
+              //   widget: SelectableText(
+              //     generatedLinkText.value,
+              //     style: AppTextStyle.normalBold12,
+              //   ),
+              // );
+            }),
+
+            /// -------- MESSAGE + SHARE --------
+            Obx(() {
+              if (generatedLinkText.value.isEmpty) {
+                return const SizedBox(height: 10);
+              }
+
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.sp),
+                child: Column(
+                  children: [
+                    TextFormFieldWidget(
+                      controller: messageTextController,
+                      labelText: "Add a message (optional)",
+                      hintText: "Write a message for the recipient",
+                      maxLines: 4,
+                    ),
+                    height15,
+                    PrimaryTextButton(
+                      title: "Share File",
+                      onPressed: () {
+                        if (nameTextController.text.trim().isEmpty) {
+                          CommonMethod.getXSnackBar(
+                            "Error",
+                            "Recipient name is required",
+                            redColor,
+                          );
+                          return;
+                        }
+
+                        Get.back();
+                        controller.shareFile(
+                          data,
+                          messageTextController.text.trim(),
+                          generatedLinkText.value,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildInstructionStep({
+    required String step,
+    required String text,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.sp),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// Step Number
+          Container(
+            width: 22.sp,
+            height: 22.sp,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: primaryColor.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              step,
+              style: AppTextStyle.normalBold12.copyWith(color: primaryColor),
+            ),
+          ),
+
+          SizedBox(width: 10.sp),
+
+          /// Step Text
+          Expanded(
+            child: Text(
+              text,
+              style:
+                  AppTextStyle.normalRegular13.copyWith(color: lightBlackColor),
+            ),
+          ),
+        ],
       ),
     );
   }

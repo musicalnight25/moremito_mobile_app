@@ -24,7 +24,7 @@ class FlyersController extends GetxController {
 
 // -------- ACTIVITY --------
   RxBool activityLoading = false.obs;
-  RxList<FlyerInteraction> interactions = <FlyerInteraction>[].obs;
+  RxList<FlyerInteractionModel> interactions = <FlyerInteractionModel>[].obs;
 
   // ---------------- GET STATS ----------------
   Future<void> getFlyerTrackingStats() async {
@@ -85,11 +85,12 @@ class FlyersController extends GetxController {
     try {
       final response =
           await _repo.getFlyerInteractions({'sharedLinkId': sharedFlyerId});
-
-      if (response != null && response['Status'] == true) {
-        final List list = response['Data'] ?? [];
-        interactions.value =
-            list.map((e) => FlyerInteraction.fromJson(e)).toList();
+      if (response != null) {
+        final model =
+            flyerInteractionResponseModelFromJson(json.encode(response));
+        if (model.status == true) {
+          interactions.value = model.data ?? [];
+        }
       }
     } catch (e) {
       debugPrint("Flyer activity error: $e");

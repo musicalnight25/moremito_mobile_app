@@ -15,7 +15,7 @@ import 'package:more_mitro_app/utils/static_decoration.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/primary_text_button.dart';
-import '../order/order_details_screen.dart';
+import 'order_details_screen.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   MyOrdersScreen({super.key});
@@ -165,7 +165,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "#${order.orderId}",
+                    "Order Id : ${order.orderId}",
                     style: AppTextStyle.normalSemiBold18,
                   ),
                 ),
@@ -184,21 +184,21 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             height16,
 
             // ---------------- BAD ADDRESS WARNING ----------------
-            if (order.hasBadAddress == true)
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(10.sp),
-                margin: EdgeInsets.only(bottom: 12.sp),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
-                  borderRadius: BorderRadius.circular(6.sp),
-                ),
-                child: Text(
-                  order.addressWarningText ?? "Warning",
-                  style: AppTextStyle.normalSemiBold14
-                      .copyWith(color: Colors.orange.shade900),
-                ),
-              ),
+            // if (order.hasBadAddress == true)
+            //   Container(
+            //     width: double.infinity,
+            //     padding: EdgeInsets.all(10.sp),
+            //     margin: EdgeInsets.only(bottom: 12.sp),
+            //     decoration: BoxDecoration(
+            //       color: Colors.orange.shade100,
+            //       borderRadius: BorderRadius.circular(6.sp),
+            //     ),
+            //     child: Text(
+            //       order.addressWarningText ?? "Warning",
+            //       style: AppTextStyle.normalSemiBold14
+            //           .copyWith(color: Colors.orange.shade900),
+            //     ),
+            //   ),
 
             // ---------------- ORDER AMOUNTS ----------------
             _row("Order Amount",
@@ -297,18 +297,18 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             // ======================================================
             // ---------------- REPORT LINK (Cancelled) -------------
             // ======================================================
-            if (status?.toLowerCase() == "cancelled")
-              IconButton(
-                onPressed: () {},
-                icon: Text(
-                  "Report missing/damaged items",
-                  style: AppTextStyle.normalSemiBold14.copyWith(
-                    color: redColor,
-                    decorationColor: redColor,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
+            // if (status?.toLowerCase() == "cancelled")
+            //   IconButton(
+            //     onPressed: () {},
+            //     icon: Text(
+            //       "Report missing/damaged items",
+            //       style: AppTextStyle.normalSemiBold14.copyWith(
+            //         color: redColor,
+            //         decorationColor: redColor,
+            //         decoration: TextDecoration.underline,
+            //       ),
+            //     ),
+            //   ),
           ],
         ),
       ),

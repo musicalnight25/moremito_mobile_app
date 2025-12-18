@@ -10,6 +10,50 @@ import '../service/network_dio.dart';
 
 class PreferencesUtil {
   static SharedPreferences? _prefs;
+  static const _rememberMeKey = "remember_me";
+  static const _usernameKey = "saved_username";
+  static const _passwordKey = "saved_password";
+
+  // -------- REMEMBER ME --------
+  static Future<void> saveRememberMe({
+    required bool rememberMe,
+    required String username,
+    required String password,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_rememberMeKey, rememberMe);
+
+    if (rememberMe) {
+      await prefs.setString(_usernameKey, username);
+      await prefs.setString(_passwordKey, password);
+    } else {
+      await prefs.remove(_usernameKey);
+      await prefs.remove(_passwordKey);
+    }
+  }
+
+  static Future<bool> isRememberMeEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_rememberMeKey) ?? false;
+  }
+
+  static Future<String?> getSavedUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_usernameKey);
+  }
+
+  static Future<String?> getSavedPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_passwordKey);
+  }
+
+  // -------- CLEAR ON LOGOUT (optional) --------
+  static Future<void> clearRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_rememberMeKey);
+    await prefs.remove(_usernameKey);
+    await prefs.remove(_passwordKey);
+  }
 
   // Initialize SharedPreferences instance once (singleton)
   static Future<void> init() async {

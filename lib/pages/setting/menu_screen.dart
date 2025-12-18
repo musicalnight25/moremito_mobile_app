@@ -8,7 +8,7 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../account/my_orders_screen.dart';
+import '../order/my_orders_screen.dart';
 import '../account/my_recurring_order_screen.dart';
 import '../account/my_referral_orders_screen.dart';
 import '../flyer/my_shared_flyers_screen.dart';
@@ -40,16 +40,16 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.receipt_long_outlined,
             onTap: () => Get.to(() => MyOrdersScreen()),
           ),
-          MenuItem(
-            title: "My Recurring Order",
-            icon: Icons.repeat_outlined,
-            onTap: () => Get.to(() => MyRecurringOrderScreen()),
-          ),
-          MenuItem(
-            title: "My Referral Orders",
-            icon: Icons.group_outlined,
-            onTap: () => Get.to(() => MyReferralOrdersScreen()),
-          ),
+          // MenuItem(
+          //   title: "My Recurring Order",
+          //   icon: Icons.repeat_outlined,
+          //   onTap: () => Get.to(() => MyRecurringOrderScreen()),
+          // ),
+          // MenuItem(
+          //   title: "My Referral Orders",
+          //   icon: Icons.group_outlined,
+          //   onTap: () => Get.to(() => MyReferralOrdersScreen()),
+          // ),
         ],
       ),
       MenuSection(
@@ -73,13 +73,8 @@ class _MenuScreenState extends State<MenuScreen> {
         icon: Icons.campaign_outlined,
         items: [
           MenuItem(
-            title: "Files",
+            title: "My Shared Links & Tracking",
             icon: Icons.file_present_outlined,
-            onTap: () => Get.to(() => MySharedFlyersScreen()),
-          ),
-          MenuItem(
-            title: "Flyers",
-            icon: Icons.mobile_friendly,
             onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
         ],

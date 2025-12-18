@@ -18,6 +18,7 @@ class LoginController extends GetxController {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   RxBool isLoading = false.obs;
+  RxBool rememberMe = false.obs;
 
   RxList<Map<String, int>> selectedAnswersList = <Map<String, int>>[].obs;
   RxList<SurveyQuestionsModel> surveyQuestionsList =
@@ -30,6 +31,20 @@ class LoginController extends GetxController {
     if (kDebugMode) {
       usernameController.text = "shubham";
       passwordController.text = "Hello@#7777#";
+    }
+    _loadRememberedUser();
+  }
+
+  Future<void> _loadRememberedUser() async {
+    final isEnabled = await PreferencesUtil.isRememberMeEnabled();
+    rememberMe.value = isEnabled;
+
+    if (isEnabled) {
+      String? savedUser = await PreferencesUtil.getSavedUsername();
+      String? savedPass = await PreferencesUtil.getSavedPassword();
+
+      if (savedUser != null) usernameController.text = savedUser;
+      if (savedPass != null) passwordController.text = savedPass;
     }
   }
 
@@ -89,6 +104,12 @@ class LoginController extends GetxController {
 
         if (loginUserModel.status == true && loginUserModel.data != null) {
           await PreferencesUtil.saveUserToken(loginUserModel);
+          // ✅ SAVE REMEMBER ME STATE
+          await PreferencesUtil.saveRememberMe(
+            rememberMe: rememberMe.value,
+            username: usernameController.text.trim(),
+            password: passwordController.text.trim(),
+          );
         }
       }
     } catch (e, stack) {

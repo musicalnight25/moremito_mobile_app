@@ -9,6 +9,7 @@ import '../../utils/app_text_style.dart';
 import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
 import '../../utils/no_data_found.dart';
+import '../../utils/static_decoration.dart';
 import 'flyer_activity_screen.dart';
 
 class SharedFlyersScreen extends StatefulWidget {
@@ -61,18 +62,19 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   // CARD (FIGMA MATCH)
   // ------------------------------------------------------------
   Widget _tile(SharedFlyerItem item) {
+    final int total = item.totalInteractions ?? 0;
+    final bool isViewEnabled = total > 0;
     return InkWell(
       borderRadius: BorderRadius.circular(14.sp),
-      onTap: () {
-        // 🔒 This screen opens ONLY when IsFlyerShare = 1
-        // (shared flyers API guarantees that)
-        // TODO: Navigate to Flyer Activity Screen
-        Get.to(() => FlyerActivityScreen(
-              sharedFlyerId: item.fileShareId!,
-              title: item.title ?? "",
-              sharedTo: item.sharedTo ?? "",
-            ));
-      },
+      onTap: isViewEnabled
+          ? () {
+              Get.to(() => FlyerActivityScreen(
+                    sharedFlyerId: item.fileShareId!,
+                    title: item.title ?? "",
+                    sharedTo: item.sharedTo ?? "",
+                  ));
+            }
+          : null,
       child: Container(
         margin: EdgeInsets.only(bottom: 14.sp),
         padding: EdgeInsets.all(16.sp),
@@ -169,11 +171,12 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   style: AppTextStyle.normalSemiBold14,
                 ),
                 const Spacer(),
-                Icon(
-                  Icons.remove_red_eye_outlined,
-                  size: 22.sp,
-                  color: Colors.black,
-                ),
+                if (isViewEnabled)
+                  Icon(
+                    Icons.remove_red_eye_outlined,
+                    size: 22.sp,
+                    color: Colors.black,
+                  ),
               ],
             ),
           ],
@@ -213,7 +216,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
-        title: widget.title,
+        // title: widget.title,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -243,7 +246,35 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   (controller.loadMoreLoading.value ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index < controller.sharedFlyers.length) {
-                  return _tile(controller.sharedFlyers[index]);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      index == 0
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.title,
+                                  style: AppTextStyle.normalBold20.copyWith(
+                                    color: primaryBlack,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                height04,
+                                Text(
+                                  _getDescriptionByTitle(widget.title),
+                                  style: AppTextStyle.normalRegular14.copyWith(
+                                    color: Colors.black54,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                height10
+                              ],
+                            )
+                          : SizedBox(),
+                      _tile(controller.sharedFlyers[index]),
+                    ],
+                  );
                 } else {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.sp),
@@ -258,5 +289,9 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
         }),
       ),
     );
+  }
+
+  String _getDescriptionByTitle(String title) {
+    return "Below is the list of flyers you shared during $title.";
   }
 }

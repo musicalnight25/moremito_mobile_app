@@ -212,7 +212,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "Track and monitor all your shared links and tracking. View recipient activity and interaction details.",
+                "View all the links you’ve shared and track how people interact with them. See recipient counts and activity details in one place.",
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: Colors.black54,
                   height: 1.4,

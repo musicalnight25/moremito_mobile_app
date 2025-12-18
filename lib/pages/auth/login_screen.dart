@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
@@ -60,14 +61,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: controller.passwordController,
                   hintText: "Enter password",
                   labelText: "Password*",
-                  keyboardType: TextInputType.visiblePassword,
+                  // keyboardType: TextInputType.visiblePassword,
                   autofillHints: const [AutofillHints.password],
                   focusedBorderColor: primaryColor,
                 ),
               ],
             ),
           ),
-          customHeight(40),
+          customHeight(16),
+
+          /// -------- REMEMBER ME --------
+          Obx(() {
+            return Row(
+              children: [
+                Checkbox(
+                  value: controller.rememberMe.value,
+                  activeColor: primaryColor,
+                  onChanged: (value) {
+                    controller.rememberMe.value = value ?? false;
+                  },
+                ),
+                Text(
+                  "Remember me",
+                  style: AppTextStyle.normalRegular14,
+                ),
+              ],
+            );
+          }),
+
+          customHeight(32),
           PrimaryTextButton(
             title: "Login",
             onPressed: () {
