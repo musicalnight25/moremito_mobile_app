@@ -31,7 +31,20 @@ class AppConstants {
   static const String getTicketComments = 'get-ticket-comments';
   static const String createSupportTicket = 'create-support-ticket';
   static const String addTicketComment = 'add-ticket-comment';
-  static const String getFlyerTrackingStats = 'get-flyer-tracking-stats';
+  static const String getFlyerTrackingStats = 'get-marketing-tracking-stats';
   static const String getSharedFlyers = 'get-shared-flyers';
-  static const String getFlyerInteractions = 'get-flyer-interactions';
+  static const String getFlyerInteractions = 'get-marketing-interactions';
+  static const String archiveLead = 'get-marketing-interactions';
+  static const String getMyLeads = 'my-leads';
+  static const String getTmrisLeads = 'get-tmris-leads';
+  static const String archiveTmrisLead = 'archive-tmris-lead';
+  static const String getMyProfile = 'my-info';
+  static const String updateMyProfile = 'update-my-info';
+  static const String getMyAddresses = 'my-addresses';
+  static const String saveAddress = 'save-address';
+  static const String updateWelcomeTag = 'welcome-tag';
+  static const String getWelcomeTag = 'welcome-tag';
+  static const String getUserRoleInfo = 'user-role-info';
+  static const String changePassword = 'change-password';
+  static const String changeUserRole = 'change-user-role';
 }

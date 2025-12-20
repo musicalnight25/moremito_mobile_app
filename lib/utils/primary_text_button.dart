@@ -44,68 +44,47 @@ class PrimaryTextButton extends StatelessWidget {
         width ?? MediaQuery.of(context).size.width - (2 * padding);
 
     return Center(
-      child: SizedBox(
-        width: buttonWidth,
-        height: height ?? 50.sp,
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 6.sp),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: buttonColor?.withOpacity(.8) ??
-                      primaryColor.withOpacity(.8),
-                  borderRadius: borderRadius ?? BorderRadius.circular(12.sp),
+      child: TextButton(
+        autofocus: autofocus,
+        style: TextButton.styleFrom(
+            foregroundColor: textColor ?? primaryWhite,
+            shape: RoundedRectangleBorder(
+              side: border ?? BorderSide.none,
+              borderRadius: borderRadius ?? BorderRadius.circular(12.sp),
+            ),
+            disabledForegroundColor: primaryWhite.withOpacity(0.38),
+            backgroundColor: buttonColor ?? primaryColor,
+            fixedSize: Size(
+              buttonWidth,
+              height ?? 42.sp,
+            ),
+            alignment: Alignment.center,
+            textStyle: AppTextStyle.normalBold18),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            children: [
+              if (prefixIconWidget != null || prefixIcon != null)
+                prefixIconWidget ??
+                    SvgPicture.asset(prefixIcon!,
+                        color: iconColor, height: 20.sp, width: 20.sp),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.sp),
+                child: Text(
+                  title.toString(),
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.normalBold18
+                      .copyWith(color: textColor ?? primaryWhite),
                 ),
               ),
-            ),
-            TextButton(
-              autofocus: autofocus,
-              style: TextButton.styleFrom(
-                  foregroundColor: textColor ?? primaryWhite,
-                  shape: RoundedRectangleBorder(
-                    side: border ?? BorderSide.none,
-                    borderRadius: borderRadius ?? BorderRadius.circular(12.sp),
-                  ),
-                  disabledForegroundColor: primaryWhite.withOpacity(0.38),
-                  backgroundColor: buttonColor ?? primaryColor,
-                  fixedSize: Size(
-                    buttonWidth,
-                    height ?? 42.sp,
-                  ),
-                  alignment: Alignment.center,
-                  textStyle: AppTextStyle.normalBold18),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Padding(
-                  padding: EdgeInsets.only(top: 8.0.sp),
-                  child: Row(
-                    children: [
-                      if (prefixIconWidget != null || prefixIcon != null)
-                        prefixIconWidget ??
-                            SvgPicture.asset(prefixIcon!,
-                                color: iconColor, height: 20.sp, width: 20.sp),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6.sp),
-                        child: Text(
-                          title.toString(),
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.normalBold18
-                              .copyWith(color: textColor ?? primaryWhite),
-                        ),
-                      ),
-                      // if (trailIcon != null)
-                      // SvgPicture.asset(AppAsset.arrow_forward,
-                      //     color: iconColor, height: 20.sp, width: 20.sp)
-                    ],
-                  ),
-                ),
-              ),
-              onPressed: onPressed,
-            ),
-          ],
+              // if (trailIcon != null)
+              // SvgPicture.asset(AppAsset.arrow_forward,
+              //     color: iconColor, height: 20.sp, width: 20.sp)
+            ],
+          ),
         ),
+        onPressed: onPressed,
       ),
     );
   }

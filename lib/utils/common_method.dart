@@ -31,8 +31,24 @@ extension ByteListEquality on List<int> {
 }
 
 class CommonMethod {
-  void showSnackBar(BuildContext context, SnackBar snackBar) {
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  static String formatDateFromDateTime(DateTime? dateTime) {
+    if (dateTime == null) return "-";
+
+    try {
+      return DateFormat("MMM dd, yyyy").format(dateTime);
+    } catch (e) {
+      return "-";
+    }
+  }
+
+  static String formatFullDateFromDateTime(DateTime? dateTime) {
+    if (dateTime == null) return "-";
+
+    try {
+      return DateFormat("MMMM dd, yyyy 'at' hh:mm a").format(dateTime);
+    } catch (e) {
+      return "-";
+    }
   }
 
   static bool isBottomSheetOpen = false;

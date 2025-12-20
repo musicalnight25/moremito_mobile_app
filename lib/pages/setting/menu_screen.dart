@@ -8,13 +8,20 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
+import '../marketing/my_leads_screen.dart';
+import '../marketing/my_shared_flyers_screen.dart';
+import '../marketing/tmris_leads_screen.dart';
 import '../order/my_orders_screen.dart';
 import '../account/my_recurring_order_screen.dart';
 import '../account/my_referral_orders_screen.dart';
-import '../flyer/my_shared_flyers_screen.dart';
-import '../flyer/shared_flyers_screen.dart';
+
+import '../profile/change_password_screen.dart';
+import '../profile/my_profile_screen.dart';
+import '../profile/user_role_screen.dart';
+import '../profile/welcome_tag_screen.dart';
 import '../support/support_tickets_list_screen.dart';
 import '../support/create_support_ticket_screen.dart';
+import '../profile/my_addresses_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   MenuScreen({super.key});
@@ -31,6 +38,37 @@ class _MenuScreenState extends State<MenuScreen> {
     super.initState();
 
     sections = [
+      MenuSection(
+        title: "My Info",
+        icon: Icons.person_outline,
+        items: [
+          MenuItem(
+            title: "My Profile",
+            icon: Icons.account_circle_outlined,
+            onTap: () => Get.to(() => MyProfileScreen()),
+          ),
+          MenuItem(
+            title: "My Addresses",
+            icon: Icons.location_on_outlined,
+            onTap: () => Get.to(() => MyAddressesScreen()),
+          ),
+          MenuItem(
+            title: "Welcome Tag",
+            icon: Icons.badge_outlined,
+            onTap: () => Get.to(() => WelcomeTagScreen()),
+          ),
+          MenuItem(
+            title: "Change Password",
+            icon: Icons.lock_outline,
+            onTap: () => Get.to(() => ChangePasswordScreen()),
+          ),
+          MenuItem(
+            title: "User Role",
+            icon: Icons.switch_account_outlined,
+            onTap: () => Get.to(() => UserRoleScreen()),
+          ),
+        ],
+      ),
       MenuSection(
         title: "Orders",
         icon: Icons.shopping_bag_outlined,
@@ -76,6 +114,16 @@ class _MenuScreenState extends State<MenuScreen> {
             title: "My Shared Links & Tracking",
             icon: Icons.file_present_outlined,
             onTap: () => Get.to(() => MySharedFlyersScreen()),
+          ),
+          MenuItem(
+            title: "My Leads",
+            icon: Icons.group_outlined,
+            onTap: () => Get.to(() => MyLeadsScreen()),
+          ),
+          MenuItem(
+            title: "TMRIS Leads",
+            icon: Icons.analytics_outlined,
+            onTap: () => Get.to(() => TmrisLeadsScreen()),
           ),
         ],
       ),

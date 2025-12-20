@@ -143,6 +143,53 @@ class NetworkRepository {
   Future<dynamic> generateLink(BuildContext context, var data) =>
       postRequest(context, AppConstants.generateLink, data: data);
 
+  Future<dynamic> getMyLeads({BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getMyLeads,
+          queryParameters: queryParameters);
+
+  Future<dynamic> archiveLead({BuildContext? context, var data}) =>
+      postRequest(context, AppConstants.archiveLead, data: data);
+
+  Future<dynamic> archiveTmrisLead({BuildContext? context, var data}) =>
+      postRequest(context, AppConstants.archiveTmrisLead, data: data);
+
+  Future<dynamic> updateMyProfile({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.updateMyProfile, data: body);
+
+  Future<dynamic> getTmrisLeads({BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getTmrisLeads,
+          queryParameters: queryParameters);
+
+  Future<dynamic> getMyProfile({BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getMyProfile,
+          queryParameters: queryParameters);
+
+  Future<dynamic> getMyAddresses(
+          {BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getMyAddresses,
+          queryParameters: queryParameters);
+
+  Future<dynamic> getWelcomeTag({BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getWelcomeTag,
+          queryParameters: queryParameters);
+
+  Future<dynamic> getUserRoleInfo(
+          {BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getUserRoleInfo,
+          queryParameters: queryParameters);
+
+  Future<dynamic> saveAddress({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.saveAddress, data: body);
+
+  Future<dynamic> updateWelcomeTag({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.updateWelcomeTag, data: body);
+
+  Future<dynamic> changePassword({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.changePassword, data: body);
+
+  Future<dynamic> changeUserRole({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.changeUserRole, data: body);
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

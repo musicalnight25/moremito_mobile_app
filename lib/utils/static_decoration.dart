@@ -31,6 +31,7 @@ SizedBox height15 = SizedBox(height: 15.sp);
 SizedBox height20 = SizedBox(height: 20.sp);
 SizedBox height16 = SizedBox(height: 16.sp);
 SizedBox height24 = SizedBox(height: 24.sp);
+SizedBox height30 = SizedBox(height: 30.sp);
 
 BorderRadius circularBorderRadius(double radius) =>
     BorderRadius.circular(radius.sp);
