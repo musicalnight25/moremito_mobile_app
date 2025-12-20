@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/base_background_widget.dart';
 
 import '../../controller/my_addresses_controller.dart';
 import '../../model/my_address_model.dart';
@@ -18,30 +19,33 @@ class MyAddressesScreen extends StatelessWidget {
     final controller = Get.put(MyAddressesController());
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
         title: "My Addresses",
         visibleBackButton: true,
       ),
-      body: Obx(
-        () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
-            : controller.addressList.isEmpty
-                ? NoDataFound()
-                : ListView(
-                    padding: EdgeInsets.all(18.sp),
-                    children: [
-                      if (controller.defaultAddress.value != null)
-                        _defaultAddressCard(controller.defaultAddress.value!),
-                      height20,
-                      ...controller.addressList.map(
-                        (e) => _addressCard(
-                          address: e,
-                          isDefault: e.isDefaultAddress == true,
-                          onSetDefault: () => controller.setDefaultAddress(e),
+      body: BaseBackgroundWidget(
+        child: Obx(
+          () => controller.isLoading.value
+              ? const Center(child: CircularProgressIndicator())
+              : controller.addressList.isEmpty
+                  ? NoDataFound()
+                  : ListView(
+                      padding: EdgeInsets.all(18.sp),
+                      children: [
+                        if (controller.defaultAddress.value != null)
+                          _defaultAddressCard(controller.defaultAddress.value!),
+                        height20,
+                        ...controller.addressList.map(
+                          (e) => _addressCard(
+                            address: e,
+                            isDefault: e.isDefaultAddress == true,
+                            onSetDefault: () => controller.setDefaultAddress(e),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+        ),
       ),
     );
   }
@@ -93,7 +97,11 @@ class MyAddressesScreen extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: onSetDefault,
-                child: const Text("Set as Default"),
+                child: Text(
+                  "Set as Default",
+                  style:
+                      AppTextStyle.normalBold14.copyWith(color: primaryColor),
+                ),
               ),
             ),
         ],

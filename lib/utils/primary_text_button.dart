@@ -9,12 +9,13 @@ class PrimaryTextButton extends StatelessWidget {
   String? title;
   String? prefixIcon;
   String? trailIcon;
-  VoidCallback onPressed;
+  VoidCallback? onPressed;
   Color? buttonColor;
   Color? textColor;
   Color? iconColor;
   double? width;
   double? height;
+  bool isLoading;
   Widget? prefixIconWidget;
   BorderSide? border;
   bool autofocus;
@@ -27,6 +28,7 @@ class PrimaryTextButton extends StatelessWidget {
     this.buttonColor,
     this.textColor,
     this.iconColor,
+    this.isLoading = false,
     this.prefixIcon,
     this.prefixIconWidget,
     this.trailIcon,
@@ -60,30 +62,39 @@ class PrimaryTextButton extends StatelessWidget {
             ),
             alignment: Alignment.center,
             textStyle: AppTextStyle.normalBold18),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(
-            children: [
-              if (prefixIconWidget != null || prefixIcon != null)
-                prefixIconWidget ??
-                    SvgPicture.asset(prefixIcon!,
-                        color: iconColor, height: 20.sp, width: 20.sp),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.sp),
-                child: Text(
-                  title.toString(),
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyle.normalBold18
-                      .copyWith(color: textColor ?? primaryWhite),
+        child: isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  children: [
+                    if (prefixIconWidget != null || prefixIcon != null)
+                      prefixIconWidget ??
+                          SvgPicture.asset(prefixIcon!,
+                              color: iconColor, height: 20.sp, width: 20.sp),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6.sp),
+                      child: Text(
+                        title.toString(),
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyle.normalBold18
+                            .copyWith(color: textColor ?? primaryWhite),
+                      ),
+                    ),
+                    // if (trailIcon != null)
+                    // SvgPicture.asset(AppAsset.arrow_forward,
+                    //     color: iconColor, height: 20.sp, width: 20.sp)
+                  ],
                 ),
               ),
-              // if (trailIcon != null)
-              // SvgPicture.asset(AppAsset.arrow_forward,
-              //     color: iconColor, height: 20.sp, width: 20.sp)
-            ],
-          ),
-        ),
         onPressed: onPressed,
       ),
     );

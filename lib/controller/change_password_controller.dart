@@ -12,9 +12,6 @@ class ChangePasswordController extends GetxController {
   final confirmPasswordCtrl = TextEditingController();
 
   RxBool isLoading = false.obs;
-  RxBool obscureCurrent = true.obs;
-  RxBool obscureNew = true.obs;
-  RxBool obscureConfirm = true.obs;
 
   Future<void> changePassword() async {
     if (currentPasswordCtrl.text.isEmpty ||

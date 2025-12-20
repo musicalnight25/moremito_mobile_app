@@ -6,16 +6,6 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 
-class PasswordController extends GetxController {
-  // Observable for controlling password visibility
-  var obscureText = true.obs;
-
-  // Method to toggle the visibility of the password
-  void toggleObscureText() {
-    obscureText.value = !obscureText.value;
-  }
-}
-
 class PasswordWidget extends StatelessWidget {
   final Key? fieldKey;
   final int? maxLength;
@@ -34,7 +24,6 @@ class PasswordWidget extends StatelessWidget {
   final ValueChanged<String?>? onFieldSubmitted;
   final ValueChanged<String?>? onChanged;
   final Widget? prefixIcon;
-  final Widget? suffixIcon;
   final GestureTapCallback? onTap;
   final int? maxLines;
   final TextInputType? keyboardType;
@@ -62,7 +51,6 @@ class PasswordWidget extends StatelessWidget {
     this.labelText,
     this.prefixIcon,
     this.maxLines,
-    this.suffixIcon,
     this.onTap,
     this.onChanged,
     this.onFieldSubmitted,
@@ -82,29 +70,31 @@ class PasswordWidget extends StatelessWidget {
     this.contentPadding,
   }) : super(key: key);
 
-  final PasswordController _passwordController = Get.put(PasswordController());
+  /// 🔑 LOCAL state (per widget instance)
+  final RxBool _obscureText = true.obs;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (labelText != null)
           Padding(
             padding: EdgeInsets.only(bottom: 8.sp, top: 12.sp),
             child: Text(
-              labelText ?? "",
+              labelText!,
               style: AppTextStyle.normalSemiBold16.copyWith(
-                  color: enabled != null && !enabled!
-                      ? lableColor ?? hintGreyColor
-                      : primaryBlack),
+                color: enabled != null && !enabled!
+                    ? lableColor ?? hintGreyColor
+                    : primaryBlack,
+              ),
             ),
           ),
-        Obx(() => textFormField(
+        Obx(
+          () => textFormField(
             fieldKey: fieldKey,
             hintText: hintText,
-            obscureText: _passwordController.obscureText.value,
+            obscureText: _obscureText.value,
             focusNode: focusNode,
             controller: controller,
             textInputAction: textInputAction,
@@ -113,16 +103,14 @@ class PasswordWidget extends StatelessWidget {
             keyboardType: keyboardType,
             suffixIcon: GestureDetector(
               onTap: () {
-                _passwordController.toggleObscureText();
+                _obscureText.value = !_obscureText.value;
               },
-              child: Obx(
-                () => Icon(
-                  _passwordController.obscureText.value
-                      ? CupertinoIcons.eye
-                      : CupertinoIcons.eye_slash,
-                  size: 20.sp,
-                  color: hintGreyColor,
-                ),
+              child: Icon(
+                _obscureText.value
+                    ? CupertinoIcons.eye
+                    : CupertinoIcons.eye_slash,
+                size: 20.sp,
+                color: hintGreyColor,
               ),
             ),
             labelText: labelText,
@@ -141,7 +129,9 @@ class PasswordWidget extends StatelessWidget {
             filledColor: filledColor,
             enabledBorderColor: enabledBorderColor,
             focusedBorderColor: focusedBorderColor,
-            errorBorderColor: errorBorderColor)),
+            errorBorderColor: errorBorderColor,
+          ),
+        ),
       ],
     );
   }

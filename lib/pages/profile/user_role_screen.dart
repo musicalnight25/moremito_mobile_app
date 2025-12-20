@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/base_background_widget.dart';
+import 'package:more_mitro_app/utils/primary_text_button.dart';
 
 import '../../controller/user_role_controller.dart';
 import '../../model/user_role_model.dart';
@@ -17,42 +19,41 @@ class UserRoleScreen extends StatelessWidget {
     final controller = Get.put(UserRoleController());
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
         title: "User Role",
         visibleBackButton: true,
       ),
-      body: Obx(
-        () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(18.sp),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _sectionTitle("Current Role"),
-                    _currentRoleCard(
-                      controller.roleData.value?.currentRole,
-                    ),
-                    height20,
-                    _sectionTitle("Available Roles"),
-                    ...controller.roleData.value!.availableRoles!.map(
-                      (role) => _roleTile(
-                        role: role,
-                        controller: controller,
+      body: BaseBackgroundWidget(
+        child: Obx(
+          () => controller.isLoading.value
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(18.sp),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _sectionTitle("Current Role"),
+                      _currentRoleCard(
+                        controller.roleData.value?.currentRole,
                       ),
-                    ),
-                    height30,
-                    ElevatedButton(
-                      onPressed: controller.changeRole,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        padding: EdgeInsets.symmetric(vertical: 14.sp),
+                      height20,
+                      _sectionTitle("Available Roles"),
+                      ...controller.roleData.value!.availableRoles!.map(
+                        (role) => _roleTile(
+                          role: role,
+                          controller: controller,
+                        ),
                       ),
-                      child: const Text("Change Role"),
-                    ),
-                  ],
+                      height30,
+                      PrimaryTextButton(
+                        onPressed: controller.changeRole,
+                        title: "Change Role",
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -73,6 +74,7 @@ class UserRoleScreen extends StatelessWidget {
     if (role == null) return const SizedBox();
 
     return Container(
+      width: Get.width,
       padding: EdgeInsets.all(14.sp),
       decoration: BoxDecoration(
         color: primaryColor.withOpacity(.08),
