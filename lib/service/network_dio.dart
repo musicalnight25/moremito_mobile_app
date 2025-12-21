@@ -77,40 +77,35 @@ class NetworkDioHttp {
     log("\n📨 Response (${response.statusCode}): ${formatJsonData(response.data)}\n");
   }
 
-  /// Logs error details
   static Future<void> logError(DioError error) async {
     final int? statusCode = error.response?.statusCode;
 
-    // ⛔ Don't log or report 401 errors
-    if (statusCode == 401) {
-      return;
-    }
+    // Ignore 401
+    if (statusCode == 401) return;
 
-    final String curlCommand = generateCurlCommand(
-      '${error.requestOptions.uri}',
-      error.requestOptions.method,
-      error.requestOptions.headers,
-      error.requestOptions.data,
-    );
-    log("❌ Error:\n${curlCommand}\n");
+    final String apiEndpoint = error.requestOptions.path; // API endpoint
+    final String detailedMessage = error.message; // Inner message
+    final String stackTrace =
+        error.stackTrace?.toString() ?? 'No stack trace available';
 
-    final String errorMessage = error.message;
-    final String? deviceId = await CommonMethod.getDeviceToken();
+    log("""
+❌ API ERROR
+Endpoint   : $apiEndpoint
+StatusCode: $statusCode
+Message   : $detailedMessage
+StackTrace:
+$stackTrace
+""");
 
-    final Map<String, dynamic> safeErrorData = {
-      "statusCode": statusCode,
-      "errorMessage": errorMessage,
-      "deviceId": deviceId,
-    };
-
-    log("❌ Error (Safe Log): $safeErrorData");
-
-    ErrorLogger.logErrorToServer(
+    await ErrorLogger.logErrorToServer(
       pageType: "NetworkDioHttp",
-      actionType: error.requestOptions.path,
-      errorMessage1: errorMessage,
+      // module / layer
+      actionType: apiEndpoint,
+      // Message (API endpoint)
+      errorMessage1: detailedMessage,
+      // InnerMessage
       errorMessage2: statusCode?.toString(),
-      errorMessage3: deviceId,
+      errorMessage3: stackTrace, // StackTrace
     );
 
     if (error.response != null) {
