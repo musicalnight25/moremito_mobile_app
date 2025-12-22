@@ -77,36 +77,22 @@ class NetworkDioHttp {
     log("\n📨 Response (${response.statusCode}): ${formatJsonData(response.data)}\n");
   }
 
+  /// Logs error details
   static Future<void> logError(DioError error) async {
     final int? statusCode = error.response?.statusCode;
 
-    // Ignore 401
-    if (statusCode == 401) return;
+    // ⛔ Don't log or report 401 errors
+    if (statusCode == 401) {
+      return;
+    }
 
-    final String apiEndpoint = error.requestOptions.path; // API endpoint
-    final String detailedMessage = error.message; // Inner message
-    final String stackTrace =
-        error.stackTrace?.toString() ?? 'No stack trace available';
-
-    log("""
-❌ API ERROR
-Endpoint   : $apiEndpoint
-StatusCode: $statusCode
-Message   : $detailedMessage
-StackTrace:
-$stackTrace
-""");
-
-    await ErrorLogger.logErrorToServer(
-      pageType: "NetworkDioHttp",
-      // module / layer
-      actionType: apiEndpoint,
-      // Message (API endpoint)
-      errorMessage1: detailedMessage,
-      // InnerMessage
-      errorMessage2: statusCode?.toString(),
-      errorMessage3: stackTrace, // StackTrace
+    final String curlCommand = generateCurlCommand(
+      '${error.requestOptions.uri}',
+      error.requestOptions.method,
+      error.requestOptions.headers,
+      error.requestOptions.data,
     );
+    log("❌ Error:\n${curlCommand}\n");
 
     if (error.response != null) {
       logResponse(error.response!);

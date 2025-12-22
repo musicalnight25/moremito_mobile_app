@@ -57,17 +57,17 @@ class LeadDetailsScreen extends StatelessWidget {
 
             height20,
 
-            _sectionTitle("Contact Status"),
-            _detailRow(
-              "Contacted",
-              lead.isContacted == true ? "Yes" : "No",
-            ),
-            _detailRow(
-              "Contacted Date",
-              CommonMethod.formatFullDateFromDateTime(
-                lead.contactedDate,
-              ),
-            ),
+            // _sectionTitle("Contact Status"),
+            // _detailRow(
+            //   "Contacted",
+            //   lead.isContacted == true ? "Yes" : "No",
+            // ),
+            // _detailRow(
+            //   "Contacted Date",
+            //   CommonMethod.formatFullDateFromDateTime(
+            //     lead.contactedDate,
+            //   ),
+            // ),
 
             height30,
 

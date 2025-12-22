@@ -48,9 +48,19 @@ class WelcomeTagScreen extends StatelessWidget {
                           Obx(
                             () => Switch(
                               value: controller.useDisplay.value,
-                              activeColor: primaryColor,
-                              onChanged: (val) =>
-                                  controller.useDisplay.value = val,
+
+                              // ✅ ACTIVE STATE
+                              activeColor: Colors.white,
+                              activeTrackColor: primaryColor,
+
+                              // ✅ INACTIVE STATE
+                              inactiveThumbColor: Colors.white,
+                              inactiveTrackColor:
+                                  primaryColor.withOpacity(0.35),
+
+                              onChanged: (val) {
+                                controller.useDisplay.value = val;
+                              },
                             ),
                           ),
                           width10,

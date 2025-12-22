@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
+import 'package:more_mitro_app/utils/text_primary_button.dart';
 
 import '../../controller/tmris_lead_controller.dart';
 import '../../model/tmris_lead_model.dart';
@@ -37,7 +39,7 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: CommonAppBar(
+      appBar: const CommonAppBar(
         title: "TMRIS Leads",
         visibleBackButton: true,
       ),
@@ -52,13 +54,23 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 height20,
+
+                /// ───── ARCHIVE TABS ─────
                 _archiveTabs(),
                 height16,
+
+                /// ───── LOADING ─────
                 if (controller.isLoading.value)
                   ...List.generate(6, (_) => const NotificationShimmerCard()),
+
+                /// ───── EMPTY ─────
                 if (!controller.isLoading.value && controller.leadList.isEmpty)
-                  NoDataFound(),
+                  const NoDataFound(),
+
+                /// ───── LIST ─────
                 ...controller.leadList.map(_leadCard),
+
+                /// ───── PAGINATION ─────
                 if (controller.isPaginationLoading.value)
                   ...List.generate(2, (_) => const NotificationShimmerCard()),
               ],
@@ -106,91 +118,111 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
     );
   }
 
-  // ───────────────── LEAD CARD ─────────────────
+  // ───────────────── LEAD CARD (PRO / VERTICAL) ─────────────────
 
   Widget _leadCard(TmrisLeadModel lead) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.sp),
-      padding: EdgeInsets.all(14.sp),
+      padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: primaryWhite,
+        borderRadius: BorderRadius.circular(14.sp),
+        border: Border.all(color: borderGreyColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// ───── HEADER ─────
+          Text(
+            lead.name ?? "—",
+            style: AppTextStyle.normalSemiBold18.copyWith(
+              color: primaryColor,
+            ),
+          ),
+          height04,
+          if (lead.createdDate != null)
+            Text(
+              CommonMethod.formatDateFromDateTime(lead.createdDate),
+              style:
+                  AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
+            ),
+
+          height14,
+
+          /// ───── INFO ─────
+          _verticalInfo("Phone Number", lead.phone),
+          height10,
+          _verticalInfo("Email Address", lead.email),
+          height10,
+          _verticalInfo("Call Me", lead.contactMe == true ? "Yes" : "No"),
+          height10,
+          _verticalInfo("Interest", lead.pageType),
+
+          /// ───── NOTES ─────
+          if ((lead.notes ?? "").isNotEmpty) ...[
+            height16,
+            _notesSection(lead.notes),
+          ],
+
+          height18,
+
+          /// ───── ACTION ─────
+          TextPrimaryButton(
+            onPressed: () {
+              Get.to(() => TmrisLeadDetailsScreen(lead: lead));
+            },
+            title: "View Details",
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ───────────────── NOTES SECTION ─────────────────
+
+  Widget _notesSection(String? notes) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.sp),
+      decoration: BoxDecoration(
+        color: bgPrimaryShadowColor,
         borderRadius: BorderRadius.circular(12.sp),
         border: Border.all(color: borderGreyColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// HEADER
           Row(
             children: [
-              Text(
-                "Name: ${lead.name ?? ""}",
-                style: AppTextStyle.normalBold16.copyWith(color: primaryColor),
-              ),
-              const Spacer(),
-              Text(
-                CommonMethod.formatDateFromDateTime(
-                  lead.createdDate,
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(2),
                 ),
+              ),
+              width10,
+              Text(
+                "Notes",
                 style:
-                    AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
+                    AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
               ),
             ],
           ),
-
-          Divider(height: 22),
-
-          /// INFO ROW 1
-          Row(
-            children: [
-              _infoItem("Phone", lead.phone),
-              Spacer(),
-              _infoItem("Email", lead.email),
-            ],
-          ),
-          height08,
-
-          /// INFO ROW 2
-          Row(
-            children: [
-              _infoItem("Call me", lead.contactMe == true ? "Yes" : "No"),
-              Spacer(),
-              _infoItem("Interest", lead.pageType),
-            ],
-          ),
-
-          height12,
-
-          /// NOTES
-          if ((lead.notes ?? "").isNotEmpty)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(12.sp),
-              decoration: BoxDecoration(
-                color: bgPrimaryShadowColor,
-                borderRadius: BorderRadius.circular(8.sp),
-                border: Border(
-                  left: BorderSide(color: primaryColor, width: 3),
-                ),
-              ),
-              child: Text(
-                lead.notes!,
-                style: AppTextStyle.normalRegular14,
-              ),
-            ),
-
-          height12,
-
-          /// ACTION
-          Align(
-            alignment: Alignment.centerLeft,
-            child: PrimaryTextButton(
-              onPressed: () {
-                Get.to(
-                  () => TmrisLeadDetailsScreen(lead: lead),
-                );
-              },
-              title: "View Details",
+          height10,
+          Text(
+            notes ?? "",
+            style: AppTextStyle.normalRegular14.copyWith(
+              color: primaryBlack,
+              height: 1.5,
             ),
           ),
         ],
@@ -198,13 +230,21 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
     );
   }
 
-  Widget _infoItem(String label, String? value) {
+  // ───────────────── VERTICAL INFO ─────────────────
+
+  Widget _verticalInfo(String label, String? value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyle.normalBold14),
+        Text(
+          label,
+          style: AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
+        ),
         height04,
-        Text(value ?? "-", style: AppTextStyle.normalRegular14),
+        Text(
+          (value == null || value.isEmpty) ? "—" : value,
+          style: AppTextStyle.normalRegular14.copyWith(color: primaryBlack),
+        ),
       ],
     );
   }

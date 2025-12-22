@@ -72,11 +72,11 @@ class CommonBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon ?? Icons.error_outline,
-                size: 40.sp,
-              ),
-              height15,
+              // Icon(
+              //   icon ?? Icons.error_outline,
+              //   size: 40.sp,
+              // ),
+              // height15,
               Text(
                 title,
                 style: AppTextStyle.normalBold24,

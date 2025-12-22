@@ -47,26 +47,26 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.account_circle_outlined,
             onTap: () => Get.to(() => MyProfileScreen()),
           ),
-          MenuItem(
-            title: "My Addresses",
-            icon: Icons.location_on_outlined,
-            onTap: () => Get.to(() => MyAddressesScreen()),
-          ),
+          // MenuItem(
+          //   title: "My Addresses",
+          //   icon: Icons.location_on_outlined,
+          //   onTap: () => Get.to(() => MyAddressesScreen()),
+          // ),
           MenuItem(
             title: "Welcome Tag",
             icon: Icons.badge_outlined,
             onTap: () => Get.to(() => WelcomeTagScreen()),
           ),
-          MenuItem(
-            title: "Change Password",
-            icon: Icons.lock_outline,
-            onTap: () => Get.to(() => ChangePasswordScreen()),
-          ),
-          MenuItem(
-            title: "User Role",
-            icon: Icons.switch_account_outlined,
-            onTap: () => Get.to(() => UserRoleScreen()),
-          ),
+          // MenuItem(
+          //   title: "Change Password",
+          //   icon: Icons.lock_outline,
+          //   onTap: () => Get.to(() => ChangePasswordScreen()),
+          // ),
+          // MenuItem(
+          //   title: "User Role",
+          //   icon: Icons.switch_account_outlined,
+          //   onTap: () => Get.to(() => UserRoleScreen()),
+          // ),
         ],
       ),
       MenuSection(
@@ -116,12 +116,12 @@ class _MenuScreenState extends State<MenuScreen> {
             onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
           MenuItem(
-            title: "My Leads",
+            title: "Text Message Info System",
             icon: Icons.group_outlined,
             onTap: () => Get.to(() => MyLeadsScreen()),
           ),
           MenuItem(
-            title: "TMRIS Leads",
+            title: "My Generated Leads",
             icon: Icons.analytics_outlined,
             onTap: () => Get.to(() => TmrisLeadsScreen()),
           ),

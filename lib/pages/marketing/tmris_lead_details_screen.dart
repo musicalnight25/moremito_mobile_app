@@ -66,12 +66,12 @@ class TmrisLeadDetailsScreen extends StatelessWidget {
               "Contacted",
               lead.isContacted == true ? "Yes" : "No",
             ),
-            _detailRow(
-              "Contacted Date",
-              CommonMethod.formatFullDateFromDateTime(
-                lead.contactedDate,
-              ),
-            ),
+            // _detailRow(
+            //   "Contacted Date",
+            //   CommonMethod.formatFullDateFromDateTime(
+            //     lead.contactedDate,
+            //   ),
+            // ),
 
             height30,
 

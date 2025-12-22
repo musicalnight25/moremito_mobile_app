@@ -292,6 +292,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   }
 
   String _getDescriptionByTitle(String title) {
-    return "Below is the list of flyers you shared during $title.";
+    // return "Below is the list of flyers you shared during $title.";
+    return "Below is list of activities from the your recipients";
   }
 }

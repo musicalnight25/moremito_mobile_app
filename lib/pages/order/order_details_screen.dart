@@ -96,24 +96,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          // ------------------------------------------------------
-          // SHIMMER LOADER
-          // ------------------------------------------------------
           if (controller.detailLoading.value) {
             return SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 20.sp),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _shimmerCard(height: 90),
                   height16,
-                  _shimmerCard(height: 170),
-                  height12,
-                  _shimmerCard(height: 170),
-                  height12,
-                  _shimmerCard(height: 120),
+                  _shimmerCard(height: 180),
                   height12,
                   _shimmerCard(height: 180),
+                  height12,
+                  _shimmerCard(height: 200),
                   height12,
                   _shimmerCard(height: 140),
                 ],
@@ -122,7 +116,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           }
 
           final OrderDetailData? data = controller.orderDetail.value;
-          if (data == null) return const NoDataFound(title: "Order Details");
+          if (data == null) {
+            return const NoDataFound(title: "Order Details");
+          }
 
           return RefreshIndicator(
             onRefresh: _onRefresh,
@@ -131,15 +127,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 20.sp),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _orderHeader(data.orderInfo),
                   height16,
-                  _addressCard("Billing Address", data.billingInfo),
+                  _addressCard(
+                    title: "Billing Address",
+                    billing: data.billingInfo,
+                    shipping: null,
+                    info: data.orderInfo,
+                  ),
                   height12,
-                  _addressCard("Shipping Address", data.shippingInfo),
-                  height12,
-                  _paymentCard(data.orderInfo),
+                  _addressCard(
+                    title: "Shipping Address",
+                    billing: null,
+                    shipping: data.shippingInfo,
+                    info: data.orderInfo,
+                  ),
                   height12,
                   _productCard(data.orderItems ?? []),
                   height12,
@@ -154,7 +157,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   // ----------------------------------------------------------
-  // ORDER HEADER CARD
+  // ORDER HEADER
   // ----------------------------------------------------------
   Widget _orderHeader(OrderInfo? info) {
     final date = info?.orderDate?.toUtc().toString().split(".").first ?? "—";
@@ -163,13 +166,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Order Date",
-              style:
-                  AppTextStyle.normalSemiBold16.copyWith(color: primaryBlack)),
-          height08,
-          Text("$date (UTC)",
-              style:
-                  AppTextStyle.normalRegular14.copyWith(color: textGreyColor)),
+          Text(
+            "Order Number - ${_value(info?.customOrderNumber)}",
+            style: AppTextStyle.normalSemiBold18.copyWith(color: primaryBlack),
+          ),
+          height06,
+          Text(
+            "Order Date: $date (UTC)",
+            style: AppTextStyle.normalRegular14.copyWith(color: textGreyColor),
+          ),
         ],
       ),
     );
@@ -178,34 +183,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   // ----------------------------------------------------------
   // ADDRESS CARD
   // ----------------------------------------------------------
-  Widget _addressCard(String title, dynamic model) {
-    late final String? line1;
-    late final String? line2;
-    late final String? city;
-    late final String? state;
-    late final String? country;
-    late final String? zip;
+  Widget _addressCard({
+    required String title,
+    BillingInfo? billing,
+    ShippingInfo? shipping,
+    OrderInfo? info,
+  }) {
+    final name = billing != null
+        ? "${billing.billingFirstName} ${billing.billingLastName}"
+        : "${shipping?.shippingFirstName ?? ""} ${shipping?.shippingLastName ?? ""}";
 
-    // Billing
-    if (model is BillingInfo) {
-      line1 = model.billingAddress1;
-      line2 = model.billingAddress2;
-      city = model.billingCity;
-      state = model.billingStateName;
-      country = model.billingCountryName;
-      zip = model.billingZip;
-    }
-    // Shipping
-    else if (model is ShippingInfo) {
-      line1 = model.shippingAddress1;
-      line2 = model.shippingAddress2;
-      city = model.shippingCity;
-      state = model.shippingStateName;
-      country = model.shippingCountryName;
-      zip = model.shippingZip;
-    } else {
-      return const SizedBox();
-    }
+    final line1 = billing?.billingAddress1 ?? shipping?.shippingAddress1;
+    final line2 = billing?.billingAddress2 ?? shipping?.shippingAddress2;
+    final city = billing?.billingCity ?? shipping?.shippingCity;
+    final state = billing?.billingStateName ?? shipping?.shippingStateName;
+    final country =
+        billing?.billingCountryName ?? shipping?.shippingCountryName;
+    final zip = billing?.billingZip ?? shipping?.shippingZip;
 
     return _card(
       child: Column(
@@ -214,7 +208,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           Text(title,
               style:
                   AppTextStyle.normalSemiBold16.copyWith(color: primaryBlack)),
+          // height06,
+          // Text(
+          //   "Order Number - ${_value(info?.customOrderNumber)}",
+          //   style: AppTextStyle.normalRegular13.copyWith(color: textGreyColor),
+          // ),
           height12,
+          _row("Name", _value(name)),
+          height08,
           _row("Address Line 1", _value(line1)),
           height08,
           _row("Address Line 2", _value(line2)),
@@ -232,28 +233,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   // ----------------------------------------------------------
-  // PAYMENT CARD
-  // ----------------------------------------------------------
-  Widget _paymentCard(OrderInfo? info) {
-    return _card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Payment Details",
-              style:
-                  AppTextStyle.normalSemiBold16.copyWith(color: primaryBlack)),
-          height12,
-          _row("Payment Status", _value(info?.paymentStatus)),
-          height08,
-          _row("Commission Paid",
-              "\$${(info?.orderTotal ?? 0).toStringAsFixed(2)}"),
-        ],
-      ),
-    );
-  }
-
-  // ----------------------------------------------------------
-  // PRODUCT LIST CARD
+  // PRODUCT LIST
   // ----------------------------------------------------------
   Widget _productCard(List<OrderItem> items) {
     return _card(
@@ -270,49 +250,60 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               padding: EdgeInsets.only(bottom: 14.sp),
               decoration: const BoxDecoration(
                 border: Border(
-                    bottom: BorderSide(color: Colors.black12, width: 0.3)),
+                    bottom: BorderSide(color: Colors.black12, width: .3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _row("Name", _value(item.productName)),
+                  _row("Product", _value(item.productName)),
                   height06,
                   _row("Quantity", _value(item.quantity)),
                   height06,
-                  _row("Price",
-                      "\$${(item.unitPrice?.toDouble() ?? 0).toStringAsFixed(2)}"),
+                  _row(
+                    "Unit Price",
+                    "\$${(item.unitPrice ?? 0).toStringAsFixed(2)}",
+                  ),
+                  height06,
+                  _row(
+                    "Item Total",
+                    "\$${(item.total ?? 0).toStringAsFixed(2)}",
+                  ),
                 ],
               ),
             );
-          })
+          }),
         ],
       ),
     );
   }
 
   // ----------------------------------------------------------
-  // PRICE DETAILS CARD
+  // PRICE SUMMARY
   // ----------------------------------------------------------
   Widget _priceCard(OrderInfo? info) {
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _row("Sub-Total", "\$${(info?.subTotal ?? 0).toStringAsFixed(2)}"),
+          _row("Sub Total", "\$${(info?.subTotal ?? 0).toStringAsFixed(2)}"),
           height08,
-          _row("Shipping", "\$${(info?.shippingFee ?? 0).toStringAsFixed(2)}"),
+          _row("Shipping Fee",
+              "\$${(info?.shippingFee ?? 0).toStringAsFixed(2)}"),
           height08,
-          _row("Sales Tax", "\$${(info?.orderTax ?? 0).toStringAsFixed(2)}"),
+          _row("Tax", "\$${(info?.orderTax ?? 0).toStringAsFixed(2)}"),
           height12,
-          _row("Total", "\$${(info?.orderTotal ?? 0).toStringAsFixed(2)}",
-              isTotal: true),
+          _row(
+            "Order Total",
+            "\$${(info?.orderTotal ?? 0).toStringAsFixed(2)}",
+            isTotal: true,
+          ),
         ],
       ),
     );
   }
 
   // ----------------------------------------------------------
-  // REUSABLE ROW (Label + Value)
+  // REUSABLE ROW
   // ----------------------------------------------------------
   Widget _row(String label, String value, {bool isTotal = false}) {
     return Row(
@@ -324,6 +315,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         Flexible(
           child: Text(
             value,
+            textAlign: TextAlign.right,
             style: isTotal
                 ? AppTextStyle.normalSemiBold18.copyWith(color: orangeColor)
                 : AppTextStyle.normalRegular14.copyWith(color: primaryBlack),

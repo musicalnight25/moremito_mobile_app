@@ -14,6 +14,7 @@ import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../utils/text_primary_button.dart';
 import '../../utils/primary_text_button.dart';
 import 'order_details_screen.dart';
 
@@ -165,7 +166,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Order Id : ${order.orderId}",
+                    "Order Number : ${order.orderId}",
                     style: AppTextStyle.normalSemiBold18,
                   ),
                 ),
@@ -277,22 +278,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             // ======================================================
             // ---------------- SUPPORT LINK -----------------------
             // ======================================================
-            IconButton(
-              onPressed: () {
-                CommonMethod.getXSnackBar(
-                  "Support",
-                  "Chat with support coming soon",
-                  greenColor,
-                );
-              },
-              icon: Text(
-                'Send/View messages with support team',
-                style: AppTextStyle.normalSemiBold14.copyWith(
-                    color: primaryColor,
-                    decoration: TextDecoration.underline,
-                    decorationColor: primaryColor),
-              ),
-            ),
+            // CommonTextActionButton(
+            //   title: "Send/View messages with support team",
+            //   onTap: () {
+            //     CommonMethod.getXSnackBar(
+            //       "Support",
+            //       "Chat with support coming soon",
+            //       greenColor,
+            //     );
+            //   },
+            // ),
 
             // ======================================================
             // ---------------- REPORT LINK (Cancelled) -------------

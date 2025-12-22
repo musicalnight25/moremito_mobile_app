@@ -28,6 +28,7 @@ SizedBox height10 = SizedBox(height: 10.sp);
 SizedBox height12 = SizedBox(height: 12.sp);
 SizedBox height14 = SizedBox(height: 14.sp);
 SizedBox height15 = SizedBox(height: 15.sp);
+SizedBox height18 = SizedBox(height: 18.sp);
 SizedBox height20 = SizedBox(height: 20.sp);
 SizedBox height16 = SizedBox(height: 16.sp);
 SizedBox height24 = SizedBox(height: 24.sp);
