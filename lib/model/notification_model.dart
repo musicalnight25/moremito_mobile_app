@@ -5,6 +5,76 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+enum NotificationType {
+  autoshipCardDecline,
+  autoshipNoCard,
+  autoshipComing,
+  orderPlaced,
+  orderInTransit,
+  orderDelivered,
+  badShippingAddress,
+  callAnnouncement,
+  otherAnnouncements,
+  smsBroadcast,
+  rankDemotion,
+  orderComment,
+  supportTicketComment,
+  newSignUp,
+  filesMarketing,
+  flyerMarketing,
+  smsLead,
+  unknown,
+}
+
+NotificationType parseNotificationType(String? type) {
+  switch (type) {
+    case "AutoshipCardDecline":
+      return NotificationType.autoshipCardDecline;
+    case "AutoshipNoCard":
+      return NotificationType.autoshipNoCard;
+    case "AutoshipComing":
+      return NotificationType.autoshipComing;
+
+    case "OrderPlaced":
+      return NotificationType.orderPlaced;
+    case "OrderInTransit":
+      return NotificationType.orderInTransit;
+    case "OrderDelivered":
+      return NotificationType.orderDelivered;
+    case "BadShippingAddress":
+      return NotificationType.badShippingAddress;
+
+    case "CallAnnouncement":
+      return NotificationType.callAnnouncement;
+    case "OtherAnnouncements":
+      return NotificationType.otherAnnouncements;
+    case "SmsBroadcast":
+      return NotificationType.smsBroadcast;
+
+    case "RankDemotion":
+      return NotificationType.rankDemotion;
+
+    case "OrderComment":
+      return NotificationType.orderComment;
+    case "SupportTicketComment":
+      return NotificationType.supportTicketComment;
+
+    case "NewSignUp":
+      return NotificationType.newSignUp;
+
+    case "FilesMarketing":
+      return NotificationType.filesMarketing;
+    case "FlyerMarketing":
+      return NotificationType.flyerMarketing;
+    case "SmsLead":
+      return NotificationType.smsLead;
+
+    default:
+      return NotificationType.unknown;
+  }
+}
 
 NotificationResponseModel notificationResponseModelFromJson(String str) =>
     NotificationResponseModel.fromJson(json.decode(str));
@@ -76,7 +146,7 @@ class NotificationModel {
   DateTime? createdOn;
   String? notificationType;
   bool? isRead;
-  IconData? icon;
+  NotificationType type;
 
   NotificationModel({
     this.id,
@@ -84,22 +154,26 @@ class NotificationModel {
     this.body,
     this.createdOn,
     this.notificationType,
-    this.icon,
     this.isRead,
+    required this.type,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    final parsedType = parseNotificationType(json["NotificationType"]);
+
     return NotificationModel(
       id: json["Id"],
-      icon: getNotificationIcon(json["NotificationType"]),
       title: json["Title"]!,
       body: json["Body"],
       isRead: json["IsRead"],
       createdOn:
           json["CreatedOn"] == null ? null : DateTime.parse(json["CreatedOn"]),
       notificationType: json["NotificationType"]!,
+      type: parsedType,
     );
   }
+
+  IconData get icon => getNotificationIcon(type);
 
   Map<String, dynamic> toJson() => {
         "Id": id,
@@ -111,16 +185,68 @@ class NotificationModel {
       };
 }
 
-IconData getNotificationIcon(String notificationType) {
-  switch (notificationType) {
-    case "AutoshipCardDecline":
-      return CupertinoIcons.exclamationmark_circle;
-    case "AutoshipComing":
-      return CupertinoIcons.calendar;
-    case "AutoshipNoCard":
+IconData getNotificationIcon(NotificationType type) {
+  switch (type) {
+    // ───── AUTOSHIP ─────
+    case NotificationType.autoshipCardDecline:
+      return CupertinoIcons.creditcard; // payment issue
+
+    case NotificationType.autoshipNoCard:
       return CupertinoIcons.creditcard;
-    case "RankDemotion":
+
+    case NotificationType.autoshipComing:
+      return CupertinoIcons.calendar;
+
+    // ───── ORDER FLOW ─────
+    case NotificationType.orderPlaced:
+      return CupertinoIcons.cube_box;
+
+    case NotificationType.orderInTransit:
+      return CupertinoIcons.car;
+
+    case NotificationType.orderDelivered:
+      return CupertinoIcons.checkmark_seal;
+
+    case NotificationType.badShippingAddress:
+      return CupertinoIcons.location_slash;
+
+    // ───── COMMENTS / SUPPORT ─────
+    case NotificationType.orderComment:
+      return CupertinoIcons.text_bubble;
+
+    case NotificationType.supportTicketComment:
+      return CupertinoIcons.chat_bubble_2;
+
+    // ───── RANK ─────
+    case NotificationType.rankDemotion:
       return CupertinoIcons.arrow_down_circle;
+
+    // ───── ANNOUNCEMENTS ─────
+    case NotificationType.callAnnouncement:
+      return CupertinoIcons.phone;
+
+    case NotificationType.otherAnnouncements:
+      return CupertinoIcons.speaker_3;
+
+    case NotificationType.smsBroadcast:
+      return CupertinoIcons.chat_bubble;
+
+    // ───── USER ─────
+    case NotificationType.newSignUp:
+      return CupertinoIcons.person_add;
+
+    // ───── MARKETING ─────
+    case NotificationType.filesMarketing:
+      return CupertinoIcons.doc;
+
+    case NotificationType.flyerMarketing:
+      return CupertinoIcons.doc_text;
+
+    case NotificationType.smsLead:
+      return CupertinoIcons.chat_bubble_text;
+
+    // ───── FALLBACK ─────
+    case NotificationType.unknown:
     default:
       return CupertinoIcons.bell;
   }

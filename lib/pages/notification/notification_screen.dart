@@ -22,7 +22,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final controller = Get.put(NotificationController());
+  final NotificationController controller = Get.put(NotificationController());
 
   @override
   void initState() {
@@ -37,43 +37,52 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(),
+      appBar: const CommonAppBar(),
       body: SafeArea(
         child: Obx(
           () => RefreshIndicator(
-            onRefresh: () {
-              return controller.refreshNotifications(null);
-            },
             color: primaryColor,
+            onRefresh: () => controller.refreshNotifications(null),
             child: ListView(
               controller: controller.scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 18.sp),
               physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 18.sp),
               children: [
                 height20,
                 Text(
                   "Notifications",
-                  style: AppTextStyle.normalExtraBold
-                      .copyWith(fontSize: 26.sp, color: primaryBlack),
+                  style: AppTextStyle.normalExtraBold.copyWith(
+                    fontSize: 26.sp,
+                    color: primaryBlack,
+                  ),
                 ),
-
                 height20,
 
-                _filterRow(), // <-- add filter row
-
+                /// FILTERS
+                _filterRow(),
                 height10,
 
+                /// LOADING
                 if (controller.isLoading.value)
-                  ...List.generate(6, (_) => const NotificationShimmerCard()),
+                  ...List.generate(
+                    6,
+                    (_) => const NotificationShimmerCard(),
+                  ),
 
+                /// EMPTY STATE
                 if (!controller.isLoading.value &&
                     controller.notificationList.isEmpty)
-                  NoDataFound(),
+                  const NoDataFound(),
 
+                /// LIST
                 ...controller.notificationList.map(_buildTile),
 
+                /// PAGINATION LOADING
                 if (controller.isPaginationLoading.value)
-                  ...List.generate(2, (_) => const NotificationShimmerCard()),
+                  ...List.generate(
+                    2,
+                    (_) => const NotificationShimmerCard(),
+                  ),
               ],
             ),
           ),
@@ -82,19 +91,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
+// ───────────────── FILTER ROW ─────────────────
   Widget _filterRow() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Obx(
         () => Row(
           children: [
-            _filterChip(0, "All", CupertinoIcons.bell_fill),
+            // ALL — neutral notifications
+            _filterChip(
+              0,
+              "All",
+              CupertinoIcons.bell, // outline, neutral
+            ),
             width10,
-            _filterChip(1, "System", CupertinoIcons.gear_alt_fill),
+
+            // SYSTEM — autoship, rank, billing, account events
+            _filterChip(
+              1,
+              "System",
+              CupertinoIcons.shield, // platform / system related
+            ),
             width10,
-            _filterChip(2, "Marketing", CupertinoIcons.gift_fill),
+
+            // MARKETING — offers, pricing, promotions
+            _filterChip(
+              2,
+              "Marketing",
+              CupertinoIcons.tag, // professional commerce icon
+            ),
             width10,
-            _filterChip(3, "Announcement", Icons.campaign_rounded),
+
+            // ANNOUNCEMENT — broadcast, updates
+            _filterChip(
+              3,
+              "Announcement",
+              CupertinoIcons.speaker_3, // outline broadcast
+            ),
           ],
         ),
       ),
@@ -102,7 +135,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _filterChip(int index, String text, IconData icon) {
-    final selected = controller.selectedFilter.value == index;
+    final bool selected = controller.selectedFilter.value == index;
 
     return GestureDetector(
       onTap: () => controller.changeFilter(index: index, context: Get.context),
@@ -113,7 +146,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           vertical: 8.sp,
         ),
         decoration: BoxDecoration(
-          color: selected ? primaryColor : primaryColor.withOpacity(.15),
+          color: selected ? primaryColor : primaryColor.withOpacity(0.15),
           borderRadius: BorderRadius.circular(30.sp),
         ),
         child: Row(
@@ -124,8 +157,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               size: 16.sp,
               color: selected ? Colors.white : primaryColor,
             ),
-
-            /// show label only if selected
             if (selected) ...[
               width06,
               Text(
@@ -143,18 +174,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
+  // ───────────────── NOTIFICATION TILE ─────────────────
+
   Widget _buildTile(NotificationModel element) {
-    final isRead = element.isRead == true || element.isRead == 1;
+    final bool isRead = element.isRead == true || element.isRead == 1;
 
     return InkWell(
       onTap: () async {
         await Get.to(
-          () => NotificationDetailsScreen(notificationId: "${element.id}"),
+          () => NotificationDetailsScreen(
+            notificationId: "${element.id}",
+          ),
         );
         controller.refreshNotifications(null);
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 250),
         margin: EdgeInsets.only(bottom: 14.sp),
         padding: EdgeInsets.all(14.sp),
         decoration: BoxDecoration(
@@ -167,9 +202,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: bgPrimaryShadowColor,
               radius: 24.sp,
-              child: Icon(element.icon, color: primaryColor),
+              backgroundColor: bgPrimaryShadowColor,
+              child: Icon(
+                element.icon,
+                color: primaryColor,
+              ),
             ),
             width14,
             Expanded(
@@ -179,10 +217,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   if (element.createdOn != null)
                     Text(
                       CommonMethod.formatTimeIsoDateString(
-                          element.createdOn!.toIso8601String()),
+                        element.createdOn!.toIso8601String(),
+                      ),
                       style: AppTextStyle.normalRegular14.copyWith(
-                        color: hintGreyColor,
                         fontSize: 12.sp,
+                        color: hintGreyColor,
                       ),
                     ),
                   height06,
@@ -200,8 +239,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.normalRegular14.copyWith(
-                      color: lightBlackColor,
                       fontSize: 14.sp,
+                      color: lightBlackColor,
                     ),
                   ),
                 ],
