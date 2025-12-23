@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
-import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/colors.dart';
+import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
-import '../marketing/tmris_leads_screen.dart';
 import '../order/my_orders_screen.dart';
-import '../account/my_recurring_order_screen.dart';
-import '../account/my_referral_orders_screen.dart';
-
-import '../profile/change_password_screen.dart';
 import '../profile/my_profile_screen.dart';
-import '../profile/user_role_screen.dart';
 import '../profile/welcome_tag_screen.dart';
-import '../support/support_tickets_list_screen.dart';
 import '../support/create_support_ticket_screen.dart';
-import '../profile/my_addresses_screen.dart';
+import '../support/support_tickets_list_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   MenuScreen({super.key});
@@ -115,15 +107,16 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.file_present_outlined,
             onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
-          MenuItem(
-            title: "Text Message Info System",
-            icon: Icons.group_outlined,
-            onTap: () => Get.to(() => MyLeadsScreen()),
-          ),
+          // MenuItem(
+          //   title: "Text Message Info System",
+          //   icon: Icons.group_outlined,
+          //   onTap: () => Get.to(() => MyLeadsScreen()),
+          // ),
           MenuItem(
             title: "My Generated Leads",
             icon: Icons.analytics_outlined,
-            onTap: () => Get.to(() => TmrisLeadsScreen()),
+            onTap: () => Get.to(() => MyLeadsScreen()),
+            // onTap: () => Get.to(() => TmrisLeadsScreen()),
           ),
         ],
       ),

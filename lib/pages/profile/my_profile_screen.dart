@@ -59,8 +59,8 @@ class MyProfileScreen extends StatelessWidget {
                     "Has Government ID",
                     profile.hasGovernmentId == true ? "Yes" : "No",
                   ),
-                  if (profile.hasGovernmentId == true)
-                    _info("Government ID", profile.governmentId),
+                  // if (profile.hasGovernmentId == true)
+                  //   _info("Government ID", profile.governmentId),
                   height20,
                 ],
               ),
