@@ -187,63 +187,80 @@ class NotificationModel {
 
 IconData getNotificationIcon(NotificationType type) {
   switch (type) {
-    // ───── AUTOSHIP ─────
+    // ───── AUTOSHIP / PAYMENT ─────
     case NotificationType.autoshipCardDecline:
-      return CupertinoIcons.creditcard; // payment issue
+      return CupertinoIcons.exclamationmark_triangle;
+    // Payment failed (warning)
 
     case NotificationType.autoshipNoCard:
       return CupertinoIcons.creditcard;
+    // No card on file
 
     case NotificationType.autoshipComing:
-      return CupertinoIcons.calendar;
+      return CupertinoIcons.clock;
+    // Upcoming autoship
 
     // ───── ORDER FLOW ─────
     case NotificationType.orderPlaced:
       return CupertinoIcons.cube_box;
+    // Order created
 
     case NotificationType.orderInTransit:
-      return CupertinoIcons.car;
+      return CupertinoIcons.car_detailed;
+    // Shipping / transit (truck alternative)
 
     case NotificationType.orderDelivered:
       return CupertinoIcons.checkmark_seal;
+    // Delivered successfully
 
     case NotificationType.badShippingAddress:
       return CupertinoIcons.location_slash;
+    // Invalid address
 
     // ───── COMMENTS / SUPPORT ─────
     case NotificationType.orderComment:
       return CupertinoIcons.text_bubble;
+    // Order discussion
 
     case NotificationType.supportTicketComment:
       return CupertinoIcons.chat_bubble_2;
+    // Support reply
 
     // ───── RANK ─────
     case NotificationType.rankDemotion:
       return CupertinoIcons.arrow_down_circle;
+    // Rank demotion
 
     // ───── ANNOUNCEMENTS ─────
     case NotificationType.callAnnouncement:
       return CupertinoIcons.phone;
+    // Call related
 
     case NotificationType.otherAnnouncements:
       return CupertinoIcons.speaker_3;
+    // Announcement / broadcast
 
     case NotificationType.smsBroadcast:
-      return CupertinoIcons.chat_bubble;
+      return CupertinoIcons.chat_bubble_text;
+    // Mass SMS
 
     // ───── USER ─────
     case NotificationType.newSignUp:
       return CupertinoIcons.person_add;
+    // New member
 
     // ───── MARKETING ─────
     case NotificationType.filesMarketing:
       return CupertinoIcons.doc;
+    // File marketing
 
     case NotificationType.flyerMarketing:
       return CupertinoIcons.doc_text;
+    // Flyer / document
 
     case NotificationType.smsLead:
-      return CupertinoIcons.chat_bubble_text;
+      return CupertinoIcons.envelope;
+    // Incoming SMS lead
 
     // ───── FALLBACK ─────
     case NotificationType.unknown:

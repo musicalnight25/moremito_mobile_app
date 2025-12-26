@@ -28,6 +28,13 @@ class AppConstants {
   static const String getSupportTickets = 'get-support-tickets';
   static const String getTicketPriorities = 'get-ticket-priorities';
   static const String getTicketModules = 'get-ticket-modules';
+  static const String getTmrisContent = 'tmris-content';
+  static const String getPushNotificationSettings =
+      'get-push-notification-settings';
+  static const String savePushNotificationSetting =
+      'save-push-notification-setting';
+  static const String savePushNotificationSettingsBulk =
+      'save-push-notification-settings-bulk';
   static const String getTicketComments = 'get-ticket-comments';
   static const String createSupportTicket = 'create-support-ticket';
   static const String addTicketComment = 'add-ticket-comment';

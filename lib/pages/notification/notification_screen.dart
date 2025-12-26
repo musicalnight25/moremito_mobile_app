@@ -102,7 +102,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             _filterChip(
               0,
               "All",
-              CupertinoIcons.bell, // outline, neutral
+              CupertinoIcons.bell,
             ),
             width10,
 
@@ -110,7 +110,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             _filterChip(
               1,
               "System",
-              CupertinoIcons.shield, // platform / system related
+              CupertinoIcons.shield,
             ),
             width10,
 
@@ -118,15 +118,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             _filterChip(
               2,
               "Marketing",
-              CupertinoIcons.tag, // professional commerce icon
+              CupertinoIcons.tag,
             ),
             width10,
 
-            // ANNOUNCEMENT — broadcast, updates
+            // ANNOUNCEMENT — broadcasts & updates
             _filterChip(
               3,
               "Announcement",
-              CupertinoIcons.speaker_3, // outline broadcast
+              CupertinoIcons.speaker_3,
             ),
           ],
         ),

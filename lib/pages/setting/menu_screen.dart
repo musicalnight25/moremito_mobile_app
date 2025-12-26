@@ -9,6 +9,8 @@ import 'package:more_mitro_app/utils/static_decoration.dart';
 
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
+import '../marketing/tmris_info_screen.dart';
+import '../notification/notification_settings_screen.dart';
 import '../order/my_orders_screen.dart';
 import '../profile/my_profile_screen.dart';
 import '../profile/welcome_tag_screen.dart';
@@ -39,11 +41,17 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.account_circle_outlined,
             onTap: () => Get.to(() => MyProfileScreen()),
           ),
+
           // MenuItem(
           //   title: "My Addresses",
           //   icon: Icons.location_on_outlined,
           //   onTap: () => Get.to(() => MyAddressesScreen()),
           // ),
+          MenuItem(
+            title: "Notification Settings",
+            icon: Icons.notifications_outlined,
+            onTap: () => Get.to(() => const NotificationSettingsScreen()),
+          ),
           MenuItem(
             title: "Welcome Tag",
             icon: Icons.badge_outlined,
@@ -107,16 +115,15 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.file_present_outlined,
             onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
-          // MenuItem(
-          //   title: "Text Message Info System",
-          //   icon: Icons.group_outlined,
-          //   onTap: () => Get.to(() => MyLeadsScreen()),
-          // ),
+          MenuItem(
+            title: "Text Message Request Info System",
+            icon: Icons.group_outlined,
+            onTap: () => Get.to(() => TmrisInfoScreen()),
+          ),
           MenuItem(
             title: "My Generated Leads",
             icon: Icons.analytics_outlined,
             onTap: () => Get.to(() => MyLeadsScreen()),
-            // onTap: () => Get.to(() => TmrisLeadsScreen()),
           ),
         ],
       ),

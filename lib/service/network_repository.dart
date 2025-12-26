@@ -100,6 +100,12 @@ class NetworkRepository {
   Future<dynamic> getTicketModules(BuildContext? context) =>
       getRequest(context, AppConstants.getTicketModules);
 
+  Future<dynamic> getTmrisContent() =>
+      getRequest(null, AppConstants.getTmrisContent);
+
+  Future<dynamic> getPushNotificationSettings() =>
+      getRequest(null, AppConstants.getPushNotificationSettings);
+
   Future<dynamic> getTicketComments(BuildContext? context, var ticketId) =>
       getRequest(context,
           AppConstants.getTicketComments + "?TicketId=${ticketId.toString()}");
@@ -202,6 +208,16 @@ class NetworkRepository {
 
   Future<dynamic> changeUserRole({BuildContext? context, var body}) =>
       postRequest(context, AppConstants.changeUserRole, data: body);
+
+  Future<dynamic> savePushNotificationSetting(
+          {BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.savePushNotificationSetting,
+          data: body);
+
+  Future<dynamic> savePushNotificationSettingsBulk(
+          {BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.savePushNotificationSettingsBulk,
+          data: body);
 
   // ---------- INTERNAL HANDLERS ----------
 
