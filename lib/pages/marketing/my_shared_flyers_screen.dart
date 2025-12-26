@@ -35,9 +35,9 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
   final Map<String, String> _labelMap = {
     "last72hours": "Last 72 Hours",
     "last7days": "Last 7 Days",
-    "days8to14": "8–14 Days Ago",
-    "days15to21": "15–21 Days Ago",
-    "days22to28": "22–28 Days Ago",
+    "days8to14": "Last 2 Weeks",
+    "days15to21": "Last 3 Weeks",
+    "days22to28": "Last 4 Weeks",
     "lifetime": "Lifetime",
   };
 

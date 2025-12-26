@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/utils/base_background_widget.dart';
+import 'package:more_mitro_app/utils/input_text_field_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../controller/flyers_controller.dart';
 import '../../model/shared_flyers_model.dart';
@@ -9,7 +11,8 @@ import '../../utils/app_text_style.dart';
 import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
 import '../../utils/no_data_found.dart';
-import '../../utils/static_decoration.dart';
+import '../../utils/base_background_widget.dart';
+import '../../utils/shadow_container_widget.dart';
 import 'flyer_activity_screen.dart';
 
 class SharedFlyersScreen extends StatefulWidget {
@@ -29,155 +32,375 @@ class SharedFlyersScreen extends StatefulWidget {
 class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   final FlyersController controller = Get.put(FlyersController());
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
 
-    // Safety: load first page if opened directly
-    if (controller.sharedFlyers.isEmpty) {
-      controller.getSharedFlyers(filterKey: widget.filterKey);
-    }
+    controller.getSharedFlyers(filterKey: widget.filterKey);
 
-    _scrollController.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    if (!controller.hasMore) return;
-    if (controller.loadMoreLoading.value) return;
-
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.8) {
-      controller.getSharedFlyers(filterKey: widget.filterKey);
-    }
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.9) {
+        if (!controller.loadMoreLoading.value && controller.hasMore) {
+          controller.getSharedFlyers(filterKey: widget.filterKey);
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
 
-  // ------------------------------------------------------------
-  // CARD (FIGMA MATCH)
-  // ------------------------------------------------------------
-  Widget _tile(SharedFlyerItem item) {
-    final int total = item.totalInteractions ?? 0;
-    final bool isViewEnabled = total > 0;
+  Widget _filterSection() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // 🔍 Search Field
+          TextFormFieldWidget(
+            controller: _searchController,
+            hintText: "Search recipient",
+            prefixIcon: const Icon(Icons.search, size: 20),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            onChanged: (value) {
+              _debounce?.cancel();
+              _debounce = Timer(const Duration(milliseconds: 350), () {
+                controller.currentSearch = value;
+                controller.resetPagination();
+                controller.getSharedFlyers(
+                  filterKey: widget.filterKey,
+                  search: value,
+                  fileType: controller.currentFileType,
+                );
+              });
+            },
+          ),
+
+          const SizedBox(height: 10),
+
+          // FILTER ROW
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: controller.currentFileType ?? "All",
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      items: const [
+                        DropdownMenuItem(value: "All", child: Text("All")),
+                        DropdownMenuItem(value: "Files", child: Text("Files")),
+                        DropdownMenuItem(
+                            value: "Flyers", child: Text("Flyers")),
+                        DropdownMenuItem(value: "SMS", child: Text("SMS")),
+                      ],
+                      onChanged: (value) {
+                        controller.currentFileType =
+                            value == "All" ? null : value;
+                        controller.resetPagination();
+                        controller.getSharedFlyers(
+                          filterKey: widget.filterKey,
+                          search: controller.currentSearch,
+                          fileType: controller.currentFileType,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              // Clear Button
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  _searchController.clear();
+                  controller.currentSearch = null;
+                  controller.currentFileType = null;
+                  controller.resetPagination();
+                  controller.getSharedFlyers(filterKey: widget.filterKey);
+                },
+                child: Container(
+                  height: 44,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.close, size: 20),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ────────────────────────────────────────────────
+  // CARD
+  // ────────────────────────────────────────────────
+  Widget _buildCard(SharedFlyerItem item) {
+    final hasData = (item.totalInteractions ?? 0) > 0;
+
     return InkWell(
-      borderRadius: BorderRadius.circular(14.sp),
-      onTap: isViewEnabled
-          ? () {
-              Get.to(() => FlyerActivityScreen(
-                    sharedFlyerId: item.fileShareId!,
-                    title: item.title ?? "",
-                    sharedTo: item.sharedTo ?? "",
-                  ));
-            }
+      onTap: hasData
+          ? () => Get.to(() => FlyerActivityScreen(
+                sharedFlyerId: item.fileShareId!,
+                title: item.title ?? "",
+                sharedTo: item.sharedTo ?? "",
+              ))
           : null,
       child: Container(
         margin: EdgeInsets.only(bottom: 14.sp),
         padding: EdgeInsets.all(16.sp),
         decoration: BoxDecoration(
-          color: primaryWhite,
-          borderRadius: BorderRadius.circular(16.sp),
-          border: Border.all(
-            color: Colors.grey.shade300,
-            width: 1,
-          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TITLE
-            Text(
-              item.title ?? "Untitled",
-              style: AppTextStyle.normalSemiBold16,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            SizedBox(height: 4.sp),
-
-            // SUBTITLE
-            if ((item.subTitle ?? "").isNotEmpty)
-              Text(
-                item.subTitle!,
+            Text(item.title ?? "Untitled",
+                style: AppTextStyle.normalSemiBold16),
+            const SizedBox(height: 4),
+            Text(item.subTitle ?? '',
                 style: AppTextStyle.normalRegular14
-                    .copyWith(color: Colors.black54),
-              ),
-
-            SizedBox(height: 4.sp),
-
-            // DATE
+                    .copyWith(color: Colors.black54)),
+            const SizedBox(height: 6),
             Text(
-              _formatDate(item.sharedOn),
+              "Shared on: ${_formatDate(item.sharedOn)}",
               style: AppTextStyle.normalRegular13.copyWith(color: Colors.grey),
             ),
-
-            SizedBox(height: 14.sp),
-
-            // SHARED TO + LAST ACTIVITY
+            const SizedBox(height: 12),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.person_outline,
-                  size: 20.sp,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 10.sp),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Shared To:",
-                      style: AppTextStyle.normalRegular14
-                          .copyWith(color: Colors.black54),
-                    ),
-                    SizedBox(height: 2.sp),
-                    Text(
-                      item.sharedTo ?? "-",
-                      style: AppTextStyle.normalSemiBold16,
-                    ),
-                    SizedBox(height: 2.sp),
-                    Text(
-                      "Last Activity: ${_lastActivityText(item)}",
-                      style: AppTextStyle.normalRegular13
-                          .copyWith(color: Colors.grey),
-                    ),
-                  ],
-                ),
+                Icon(Icons.refresh, size: 18, color: primaryColor),
+                const SizedBox(width: 6),
+                Text("Total: ${item.totalInteractions ?? 0}",
+                    style: AppTextStyle.normalSemiBold14),
+                const Spacer(),
+                if (hasData)
+                  const Icon(Icons.remove_red_eye_outlined, size: 22),
               ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ────────────────────────────────────────────────
+  // SHIMMER
+  // ────────────────────────────────────────────────
+  Widget _shimmerList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: _shimmerCard(),
+      ),
+    );
+  }
+
+  Widget _shimmerCard() {
+    return ShadowContainerWidget(
+      widget: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              height: 14,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Subtitle
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              height: 12,
+              width: 180,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Date row
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              height: 12,
+              width: 120,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Bottom row (icon + count)
+          Row(
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  height: 14,
+                  width: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  height: 12,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  height: 14,
+                  width: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: const CommonAppBar(visibleBackButton: true),
+      body: BaseBackgroundWidget(
+        child: Column(
+          children: [
+            // ---------------- FILTER SECTION ----------------
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.title, style: AppTextStyle.normalBold20),
+                  const SizedBox(height: 6),
+                  Text(
+                    "Below is the list of activities from your recipients",
+                    style: AppTextStyle.normalRegular14
+                        .copyWith(color: Colors.black54),
+                  ),
+                  const SizedBox(height: 12),
+                  _filterSection(),
+                ],
+              ),
             ),
 
-            SizedBox(height: 14.sp),
+            // ---------------- CONTENT ----------------
+            Expanded(
+              child: Obx(() {
+                // 1️⃣ SHOW SHIMMER WHEN LOADING FIRST TIME
+                if (controller.listLoading.value &&
+                    controller.sharedFlyers.isEmpty) {
+                  return _shimmerList();
+                }
 
-            Divider(color: Colors.grey.shade300),
+                // 2️⃣ EMPTY STATE
+                if (controller.sharedFlyers.isEmpty) {
+                  return const NoDataFound(title: "Shared Flyers");
+                }
 
-            SizedBox(height: 8.sp),
+                // 3️⃣ LIST VIEW
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    controller.resetPagination();
+                    await controller.getSharedFlyers(
+                      filterKey: widget.filterKey,
+                    );
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: controller.sharedFlyers.length +
+                        (controller.loadMoreLoading.value ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < controller.sharedFlyers.length) {
+                        return _buildCard(controller.sharedFlyers[index]);
+                      }
 
-            // TOTAL + EYE ICON
-            Row(
-              children: [
-                Icon(
-                  Icons.refresh,
-                  size: 20.sp,
-                  color: primaryColor,
-                ),
-                SizedBox(width: 6.sp),
-                Text(
-                  "Total: ${item.totalInteractions ?? 0}",
-                  style: AppTextStyle.normalSemiBold14,
-                ),
-                const Spacer(),
-                if (isViewEnabled)
-                  Icon(
-                    Icons.remove_red_eye_outlined,
-                    size: 22.sp,
-                    color: Colors.black,
+                      // bottom loading
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
                   ),
-              ],
+                );
+              }),
             ),
           ],
         ),
@@ -185,114 +408,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     );
   }
 
-  String _lastActivityText(SharedFlyerItem item) {
-    if (item.lastInteractionDate == null || item.lastInteractionDate!.isEmpty) {
-      return "No activity";
-    }
-    return _formatDate(item.lastInteractionDate);
-  }
-
-  // ------------------------------------------------------------
-  // DATE FORMAT
-  // ------------------------------------------------------------
-  String _formatDate(String? isoDate) {
-    if (isoDate == null || isoDate.isEmpty) return "-";
-    try {
-      final dt = DateTime.parse(isoDate).toLocal();
-      return "${dt.day.toString().padLeft(2, '0')}/"
-          "${dt.month.toString().padLeft(2, '0')}/"
-          "${dt.year}";
-    } catch (_) {
-      return "-";
-    }
-  }
-
-  // ------------------------------------------------------------
-  // BUILD
-  // ------------------------------------------------------------
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(
-        // title: widget.title,
-        visibleBackButton: true,
-      ),
-      body: BaseBackgroundWidget(
-        child: Obx(() {
-          // INITIAL LOADING
-          if (controller.listLoading.value && controller.sharedFlyers.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          // EMPTY STATE
-          if (controller.sharedFlyers.isEmpty) {
-            return const NoDataFound(title: "Shared Flyers");
-          }
-
-          return RefreshIndicator(
-            color: primaryColor,
-            onRefresh: () async {
-              controller.resetPagination();
-              await controller.getSharedFlyers(
-                filterKey: widget.filterKey,
-              );
-            },
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16.sp),
-              itemCount: controller.sharedFlyers.length +
-                  (controller.loadMoreLoading.value ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < controller.sharedFlyers.length) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      index == 0
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.title,
-                                  style: AppTextStyle.normalBold20.copyWith(
-                                    color: primaryBlack,
-                                    height: 1.4,
-                                  ),
-                                ),
-                                height04,
-                                Text(
-                                  _getDescriptionByTitle(widget.title),
-                                  style: AppTextStyle.normalRegular14.copyWith(
-                                    color: Colors.black54,
-                                    height: 1.4,
-                                  ),
-                                ),
-                                height10
-                              ],
-                            )
-                          : SizedBox(),
-                      _tile(controller.sharedFlyers[index]),
-                    ],
-                  );
-                } else {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.sp),
-                    child: Center(
-                      child: CircularProgressIndicator(color: primaryColor),
-                    ),
-                  );
-                }
-              },
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  String _getDescriptionByTitle(String title) {
-    // return "Below is the list of flyers you shared during $title.";
-    return "Below is list of activities from the your recipients";
+  String _formatDate(String? iso) {
+    if (iso == null || iso.isEmpty) return "-";
+    final d = DateTime.tryParse(iso);
+    if (d == null) return "-";
+    return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}";
   }
 }

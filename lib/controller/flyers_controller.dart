@@ -5,16 +5,15 @@ import '../model/flyer_interaction_model.dart';
 import '../model/flyer_tracking_stats_model.dart';
 import '../model/shared_flyers_model.dart';
 import '../service/network_repository.dart';
-import '../utils/common_method.dart';
 
 class FlyersController extends GetxController {
   final NetworkRepository _repo = NetworkRepository();
 
-  // -------- STATS --------
+  // ---------------- STATS ----------------
   RxBool statsLoading = false.obs;
   Rxn<FlyerTrackingStats> stats = Rxn();
 
-  // -------- SHARED FLYERS --------
+  // ---------------- SHARED FLYERS ----------------
   RxBool listLoading = false.obs;
   RxBool loadMoreLoading = false.obs;
   RxList<SharedFlyerItem> sharedFlyers = <SharedFlyerItem>[].obs;
@@ -22,11 +21,17 @@ class FlyersController extends GetxController {
   int page = 1;
   bool hasMore = true;
 
-// -------- ACTIVITY --------
+  // Current applied filters
+  String? currentSearch;
+  String? currentFileType;
+
+  // ---------------- ACTIVITY ----------------
   RxBool activityLoading = false.obs;
   RxList<FlyerInteractionModel> interactions = <FlyerInteractionModel>[].obs;
 
-  // ---------------- GET STATS ----------------
+  // ============================================================
+  // FETCH STATS
+  // ============================================================
   Future<void> getFlyerTrackingStats() async {
     statsLoading.value = true;
     try {
@@ -44,28 +49,39 @@ class FlyersController extends GetxController {
     }
   }
 
-  // ---------------- GET SHARED FLYERS ----------------
-  Future<void> getSharedFlyers({required String filterKey}) async {
+  // ============================================================
+  // FETCH SHARED FLYERS (WITH FILTERS)
+  // ============================================================
+  Future<void> getSharedFlyers({
+    required String filterKey,
+    String? search,
+    String? fileType,
+  }) async {
     if (!hasMore && page != 1) return;
 
     page == 1 ? listLoading.value = true : loadMoreLoading.value = true;
+
+    currentSearch = search;
+    currentFileType = fileType;
 
     try {
       final response = await _repo.getSharedFlyers({
         "pageNumber": page,
         "pageSize": 10,
         "filterDays": filterKey,
+        if (search != null && search.isNotEmpty) "search": search,
+        if (fileType != null && fileType.isNotEmpty) "fileType": fileType,
       });
 
       if (response != null) {
         final model = sharedFlyersResponseFromJson(json.encode(response));
 
-        if (model.status == true && model.data != null) {
+        if (model.status == true) {
           if (page == 1) sharedFlyers.clear();
 
-          sharedFlyers.addAll(model.data!.items ?? []);
+          sharedFlyers.addAll(model.data?.items ?? []);
 
-          hasMore = page < (model.data!.totalPages ?? 1);
+          hasMore = page < (model.data?.totalPages ?? 1);
           if (hasMore) page++;
         }
       }
@@ -77,7 +93,18 @@ class FlyersController extends GetxController {
     }
   }
 
-  // ---------------- GET FLYER ACTIVITY ----------------
+  // ============================================================
+  // RESET PAGINATION
+  // ============================================================
+  void resetPagination() {
+    page = 1;
+    hasMore = true;
+    sharedFlyers.clear();
+  }
+
+  // ============================================================
+  // FETCH ACTIVITY
+  // ============================================================
   Future<void> getFlyerInteractions({required int sharedFlyerId}) async {
     activityLoading.value = true;
     interactions.clear();
@@ -85,6 +112,7 @@ class FlyersController extends GetxController {
     try {
       final response =
           await _repo.getFlyerInteractions({'sharedLinkId': sharedFlyerId});
+
       if (response != null) {
         final model =
             flyerInteractionResponseModelFromJson(json.encode(response));
@@ -97,11 +125,5 @@ class FlyersController extends GetxController {
     } finally {
       activityLoading.value = false;
     }
-  }
-
-  void resetPagination() {
-    page = 1;
-    hasMore = true;
-    sharedFlyers.clear();
   }
 }

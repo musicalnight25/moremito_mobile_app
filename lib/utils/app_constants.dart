@@ -46,6 +46,8 @@ class AppConstants {
   static const String getTmrisLeads = 'get-tmris-leads';
   static const String archiveTmrisLead = 'archive-tmris-lead';
   static const String getMyProfile = 'my-info';
+  static const String getFlyerTemplates = 'get-flyer-templates';
+  static const String getFlyerTemplateDetail = 'get-flyer-template-detail';
   static const String updateMyProfile = 'update-my-info';
   static const String getMyAddresses = 'my-addresses';
   static const String saveAddress = 'save-address';

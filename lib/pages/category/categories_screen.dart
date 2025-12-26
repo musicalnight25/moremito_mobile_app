@@ -1,14 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/controller/categories_controller.dart';
-import 'package:more_mitro_app/utils/app_text_style.dart';
-import 'package:more_mitro_app/utils/colors.dart';
-import 'package:more_mitro_app/utils/common_app_bar.dart';
-import 'package:more_mitro_app/utils/common_category_widget.dart';
-import 'package:more_mitro_app/utils/no_data_found.dart';
+import 'package:more_mitro_app/utils/input_text_field_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
+import '../../controller/categories_controller.dart';
+import '../../utils/app_text_style.dart';
+import '../../utils/colors.dart';
+import '../../utils/common_app_bar.dart';
+import '../../utils/no_data_found.dart';
 import '../../utils/static_decoration.dart';
+import '../../utils/common_category_widget.dart';
 import 'sub_categories_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -19,78 +22,123 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  final controller = Get.put(CategoriesController());
+  final CategoriesController controller = Get.put(CategoriesController());
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getCategoriesList(context);
-    });
+    controller.getCategoriesList(context);
   }
 
-  Future<void> _onRefresh() async {
-    await controller.getCategoriesList(context);
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
+  // ---------------- SHIMMER ----------------
+  Widget _shimmerGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.8,
+      ),
+      itemBuilder: (_, __) => Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------- SEARCH BAR ----------------
+  Widget _searchBar() {
+    return TextFormFieldWidget(
+      controller: _searchController,
+      onChanged: (value) {
+        _debounce?.cancel();
+        _debounce = Timer(const Duration(milliseconds: 350), () {
+          // controller.searchCategory(value);
+        });
+      },
+      hintText: "Search files, categories, sub categories, tags…",
+      prefixIcon: Icon(Icons.search),
+    );
+  }
+
+  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(),
-      body: Obx(
-        () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
-            : controller.categoriesList.isEmpty
-                ? NoDataFound(title: 'Categories')
-                : RefreshIndicator(
-                    onRefresh: _onRefresh,
-                    color: primaryColor,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(horizontal: 16.sp),
-                      children: [
-                        height20,
-                        Text(
-                          "Categories",
-                          style: AppTextStyle.normalExtraBold,
-                        ),
-                        height20,
-                        Obx(
-                          () => GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 200,
-                              mainAxisSpacing: 10.sp,
-                              crossAxisSpacing: 10.sp,
-                              childAspectRatio: 1.8,
-                            ),
-                            itemCount: controller.categoriesList.length,
-                            itemBuilder: (context, index) {
-                              final category = controller.categoriesList[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  controller.subCategoriesList.clear();
-                                  Get.to(() => SubCategoriesScreen(
-                                        data: category,
-                                      ));
-                                },
-                                child: CommonCategoryWidget(
-                                  category: category,
-                                  isSelected: category.isPopular ?? false,
-                                  isSubCategory: false,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        height20,
-                      ],
-                    ),
+      appBar: const CommonAppBar(),
+      body: Obx(() {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Categories",
+                    style: AppTextStyle.normalExtraBold,
                   ),
-      ),
+                  const SizedBox(height: 10),
+                  _searchBar(),
+                ],
+              ),
+            ),
+
+            // CONTENT
+            Expanded(
+              child: controller.isLoading.value
+                  ? _shimmerGrid()
+                  : controller.categoriesList.isEmpty
+                      ? const NoDataFound(title: "Categories")
+                      : GridView.builder(
+                          padding: const EdgeInsets.all(16),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.8,
+                          ),
+                          itemCount: controller.categoriesList.length,
+                          itemBuilder: (context, index) {
+                            final category = controller.categoriesList[index];
+
+                            return GestureDetector(
+                              onTap: () {
+                                controller.subCategoriesList.clear();
+                                Get.to(() => SubCategoriesScreen(
+                                      data: category,
+                                    ));
+                              },
+                              child: CommonCategoryWidget(
+                                category: category,
+                                isSelected: category.isPopular ?? false,
+                                isSubCategory: false,
+                              ),
+                            );
+                          },
+                        ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

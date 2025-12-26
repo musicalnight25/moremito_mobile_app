@@ -7,6 +7,7 @@ import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
+import '../marketing/flyer_templates_screen.dart';
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/tmris_info_screen.dart';
@@ -110,6 +111,11 @@ class _MenuScreenState extends State<MenuScreen> {
         title: "Marketing",
         icon: Icons.campaign_outlined,
         items: [
+          MenuItem(
+            title: "Customize & Share My Flyer's",
+            icon: Icons.design_services_outlined,
+            onTap: () => Get.to(() => FlyerTemplatesScreen()),
+          ),
           MenuItem(
             title: "My Shared Links & Tracking",
             icon: Icons.file_present_outlined,
