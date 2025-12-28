@@ -193,6 +193,11 @@ class NetworkRepository {
       getRequest(context, AppConstants.getFlyerTemplateDetail,
           queryParameters: queryParameters);
 
+  Future<dynamic> getFlyerPreview(
+          {BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getFlyerPreview,
+          queryParameters: queryParameters);
+
   Future<dynamic> getMyAddresses(
           {BuildContext? context, var queryParameters}) =>
       getRequest(context, AppConstants.getMyAddresses,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import '../model/flyer_template_detail_model.dart';
 import '../model/flyer_template_model.dart';
+import '../model/preview_response_model.dart';
 import '../service/network_repository.dart';
 
 class FlyerTemplatesController extends GetxController {
@@ -10,8 +11,9 @@ class FlyerTemplatesController extends GetxController {
   RxBool isLoading = true.obs;
 
   RxList<FlyerTemplateModel> templates = <FlyerTemplateModel>[].obs;
-  Rx<FlyerTemplateDetail?> template = Rx<FlyerTemplateDetail?>(null);
-  Rx<UserFlyerInfo?> userInfo = Rx<UserFlyerInfo?>(null);
+  Rx<FlyerTemplateDetailModel?> flyerTemplateDetailModel =
+      Rx<FlyerTemplateDetailModel?>(null);
+  Rx<PreviewModel?> previewModel = Rx<PreviewModel?>(null);
 
   Future<void> fetchTemplates() async {
     try {
@@ -31,10 +33,26 @@ class FlyerTemplatesController extends GetxController {
       final response = await _repo
           .getFlyerTemplateDetail(queryParameters: {'templateId': templateId});
 
-      final parsed = FlyerTemplateDetailResponse.fromJson(response);
+      final parsed = FlyerTemplateDetailResponseModel.fromJson(response);
 
-      template.value = parsed.template;
-      userInfo.value = parsed.user;
+      flyerTemplateDetailModel.value = parsed.data;
+      flyerTemplateDetailModel.refresh();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchFlyerPreview(int templateId) async {
+    try {
+      isLoading.value = true;
+
+      final response = await _repo
+          .getFlyerPreview(queryParameters: {'templateId': templateId});
+
+      final parsed = PreviewResponseModel.fromJson(response);
+
+      previewModel.value = parsed.data;
+      previewModel.refresh();
     } finally {
       isLoading.value = false;
     }

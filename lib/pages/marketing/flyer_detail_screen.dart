@@ -30,31 +30,39 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F5), // Light greyish background
-      appBar: const CommonAppBar(title: "Flyer Details"),
+      extendBodyBehindAppBar: true,
+      appBar: const CommonAppBar(
+        visibleBackButton: true,
+        title: "Customize Flyer",
+      ),
       body: BaseBackgroundWidget(
         child: Obx(() {
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final template = controller.template.value;
-          final user = controller.userInfo.value;
-
-          if (template == null) {
+          if (controller.flyerTemplateDetailModel.value?.template == null) {
             return const Center(child: Text("No flyer data found"));
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              children: [
-                _header(template),
-                const SizedBox(height: 30),
-                _infoCard(user),
-                const SizedBox(height: 40),
-                _bottomActionButtons(),
-              ],
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPreviewBanner(
+                      controller.flyerTemplateDetailModel.value?.template),
+                  const SizedBox(height: 25),
+                  _buildSectionHeader(
+                      "Personal Details", "Update how you appear on the flyer"),
+                  _infoCard(
+                      controller.flyerTemplateDetailModel.value?.userFlyer),
+                  const SizedBox(height: 30),
+                  _bottomActionButtons(),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           );
         }),
@@ -62,108 +70,111 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
     );
   }
 
-  // ---------------- HEADER ----------------
-  Widget _header(template) {
+  // 1. TOP PREVIEW BANNER (Visual Focus)
+  Widget _buildPreviewBanner(template) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E4691), // Solid dark blue from image
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            (template.title ?? "MOREMITO HEALTH SOLUTIONS").toUpperCase(),
-            style: AppTextStyle.normalBold20
-                .copyWith(color: Colors.white, letterSpacing: 1.2),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            template.subtitle ?? "Reboot your Mitochondria!",
-            style: AppTextStyle.normalRegular14.copyWith(color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------- FORM CARD ----------------
-  Widget _infoCard(user) {
-    return Container(
-      padding: const EdgeInsets.all(30),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [primaryColor, primaryColor.withOpacity(0.8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
+              color: primaryColor.withOpacity(0.3),
+              blurRadius: 10,
               offset: const Offset(0, 5))
         ],
       ),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          // Section Title with Orange Underline
-          Column(
-            children: [
-              Text(
-                "Customize With Your Information",
-                style: AppTextStyle.normalBold18
-                    .copyWith(color: const Color(0xFF1E4691)),
-              ),
-              const SizedBox(height: 4),
-              Container(height: 2, width: 40, color: Colors.orange),
-            ],
+          const Icon(Icons.auto_awesome, color: Colors.white, size: 30),
+          const SizedBox(height: 12),
+          Text(
+            (template.title ?? "Flyer Template").toUpperCase(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 1.1,
+            ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 30),
-
-          // Grid-like layout for inputs
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: _input("Full Name *", user?.name,
-                      "This will appear as the contact person on your flyer")),
-              const SizedBox(width: 20),
-              Expanded(
-                  child: _input("Email Address", user?.email,
-                      "Your email for customer inquiries")),
-            ],
+          const SizedBox(height: 6),
+          Text(
+            template.subtitle ?? "Customize your business outreach",
+            style:
+                TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: _input("Phone Number", user?.phone,
-                      "Your contact phone number")),
-              const SizedBox(width: 20),
-              Expanded(
-                  child: _input("Website URL", user?.websiteLink,
-                      "Your personal website")),
-            ],
-          ),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 40),
+  Widget _buildSectionHeader(String title, String sub) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: AppTextStyle.normalBold18.copyWith(color: Colors.black87)),
+          Text(sub, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
 
-          // Update Button
+  // 2. MODERN FORM CARD
+  Widget _infoCard(user) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          _modernInput("Full Name", Icons.person_outline, user?.name),
+          const SizedBox(height: 16),
+          _modernInput("Email Address", Icons.email_outlined, user?.email),
+          const SizedBox(height: 16),
+          _modernInput(
+              "Phone Number", Icons.phone_android_outlined, user?.phone),
+          const SizedBox(height: 16),
+          _modernInput(
+              "Website URL", Icons.language_outlined, user?.websiteLink),
+          const SizedBox(height: 24),
           SizedBox(
-            width: 200,
-            child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.save, size: 18, color: Colors.white),
-              label: const Text("UPDATE FLYER",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white)),
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Get.snackbar("Success", "Information updated locally!",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.white);
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1E4691),
-                padding: const EdgeInsets.symmetric(vertical: 18),
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
+                    borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
               ),
+              child: const Text("SAVE CHANGES",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -171,75 +182,85 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
     );
   }
 
-  // ---------------- BOTTOM ACTIONS (PREVIEW, DOWNLOAD, SHARE) ----------------
-  Widget _bottomActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _pillButton("PREVIEW", Icons.visibility, const Color(0xFF26C281)),
-        const SizedBox(width: 15),
-        _pillButton("DOWNLOAD", Icons.download, const Color(0xFFFF912C)),
-        const SizedBox(width: 15),
-        _pillButton("SHARE", Icons.share, const Color(0xFF7E57C2)),
-      ],
-    );
-  }
-
-  // ---------------- HELPERS ----------------
-  Widget _input(String label, String? value, String helper) {
+  // 3. HELPER FOR MODERN TEXT FIELDS
+  Widget _modernInput(String label, IconData icon, String? initialValue) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: AppTextStyle.normalBold14
-                .copyWith(color: const Color(0xFF1E4691))),
-        const SizedBox(height: 8),
-        TextFormField(
-          initialValue: value ?? "",
-          style: const TextStyle(fontSize: 14),
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: const Color(0xFFF9F9F9),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Text(label,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54)),
         ),
-        const SizedBox(height: 4),
-        Text(
-          helper,
-          style: const TextStyle(
-              fontSize: 11, color: Colors.grey, fontStyle: FontStyle.italic),
+        TextFormField(
+          initialValue: initialValue ?? "",
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, size: 20, color: primaryColor),
+            filled: true,
+            fillColor: Colors.grey.shade200,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          ),
         ),
       ],
     );
   }
 
-  Widget _pillButton(String label, IconData icon, Color color) {
-    return Expanded(
-      child: ElevatedButton.icon(
-        onPressed: () {
-          Get.to(() => FlyerPreviewScreen());
-        },
-        icon: Icon(icon, size: 16, color: Colors.white),
-        label: Text(label,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold)),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+  // 4. BOTTOM ACTION ROW
+  Widget _bottomActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _actionButton(
+              "PREVIEW",
+              Icons.remove_red_eye_rounded,
+              orangeColor,
+              () => Get.to(() => FlyerPreviewScreen(
+                    templateId: widget.templateId,
+                  ))),
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: _actionButton("SHARE FLYER", Icons.share_rounded,
+              const Color(0xFF6C63FF), () {}),
+        ),
+      ],
+    );
+  }
+
+  Widget _actionButton(
+      String label, IconData icon, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+                color: color.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4))
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(label,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14)),
+          ],
         ),
       ),
     );

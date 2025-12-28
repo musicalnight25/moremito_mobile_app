@@ -48,6 +48,7 @@ class AppConstants {
   static const String getMyProfile = 'my-info';
   static const String getFlyerTemplates = 'get-flyer-templates';
   static const String getFlyerTemplateDetail = 'get-flyer-template-detail';
+  static const String getFlyerPreview = 'get-flyer-data';
   static const String updateMyProfile = 'update-my-info';
   static const String getMyAddresses = 'my-addresses';
   static const String saveAddress = 'save-address';

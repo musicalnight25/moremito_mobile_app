@@ -1,36 +1,31 @@
 // To parse this JSON data, do
 //
-//     final flyerTemplateDetailResponseModel = flyerTemplateDetailResponseModelFromJson(jsonString);
+//     final previewResponseModel = previewResponseModelFromJson(jsonString);
 
 import 'dart:convert';
 
-FlyerTemplateDetailResponseModel flyerTemplateDetailResponseModelFromJson(
-        String str) =>
-    FlyerTemplateDetailResponseModel.fromJson(json.decode(str));
+PreviewResponseModel previewResponseModelFromJson(String str) =>
+    PreviewResponseModel.fromJson(json.decode(str));
 
-String flyerTemplateDetailResponseModelToJson(
-        FlyerTemplateDetailResponseModel data) =>
+String previewResponseModelToJson(PreviewResponseModel data) =>
     json.encode(data.toJson());
 
-class FlyerTemplateDetailResponseModel {
+class PreviewResponseModel {
   bool? status;
   dynamic message;
-  FlyerTemplateDetailModel? data;
+  PreviewModel? data;
 
-  FlyerTemplateDetailResponseModel({
+  PreviewResponseModel({
     this.status,
     this.message,
     this.data,
   });
 
-  factory FlyerTemplateDetailResponseModel.fromJson(
-          Map<String, dynamic> json) =>
-      FlyerTemplateDetailResponseModel(
+  factory PreviewResponseModel.fromJson(Map<String, dynamic> json) =>
+      PreviewResponseModel(
         status: json["Status"],
         message: json["Message"],
-        data: json["Data"] == null
-            ? null
-            : FlyerTemplateDetailModel.fromJson(json["Data"]),
+        data: json["Data"] == null ? null : PreviewModel.fromJson(json["Data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -40,50 +35,25 @@ class FlyerTemplateDetailResponseModel {
       };
 }
 
-class FlyerTemplateDetailModel {
-  Template? template;
-  UserFlyer? userFlyer;
-
-  FlyerTemplateDetailModel({
-    this.template,
-    this.userFlyer,
-  });
-
-  factory FlyerTemplateDetailModel.fromJson(Map<String, dynamic> json) =>
-      FlyerTemplateDetailModel(
-        template: json["Template"] == null
-            ? null
-            : Template.fromJson(json["Template"]),
-        userFlyer: json["UserFlyer"] == null
-            ? null
-            : UserFlyer.fromJson(json["UserFlyer"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Template": template?.toJson(),
-        "UserFlyer": userFlyer?.toJson(),
-      };
-}
-
-class Template {
+class PreviewModel {
   int? id;
   int? templateId;
   String? templateName;
-  dynamic templateCode;
+  String? templateCode;
   String? title;
   String? subtitle;
-  dynamic videoUrl;
-  dynamic scientistTitle;
-  dynamic scientistIntro;
+  String? videoUrl;
+  String? scientistTitle;
+  String? scientistIntro;
   bool? isActive;
   DateTime? createdOn;
-  dynamic modifiedOn;
+  DateTime? modifiedOn;
   List<dynamic>? sections;
-  List<dynamic>? products;
+  List<ProductModel>? products;
   List<dynamic>? testimonials;
-  dynamic userFlyerInfo;
+  UserFlyerInfoModel? userFlyerInfo;
 
-  Template({
+  PreviewModel({
     this.id,
     this.templateId,
     this.templateName,
@@ -102,7 +72,7 @@ class Template {
     this.userFlyerInfo,
   });
 
-  factory Template.fromJson(Map<String, dynamic> json) => Template(
+  factory PreviewModel.fromJson(Map<String, dynamic> json) => PreviewModel(
         id: json["Id"],
         templateId: json["TemplateId"],
         templateName: json["TemplateName"],
@@ -116,17 +86,22 @@ class Template {
         createdOn: json["CreatedOn"] == null
             ? null
             : DateTime.parse(json["CreatedOn"]),
-        modifiedOn: json["ModifiedOn"],
+        modifiedOn: json["ModifiedOn"] == null
+            ? null
+            : DateTime.parse(json["ModifiedOn"]),
         sections: json["Sections"] == null
             ? []
             : List<dynamic>.from(json["Sections"]!.map((x) => x)),
         products: json["Products"] == null
             ? []
-            : List<dynamic>.from(json["Products"]!.map((x) => x)),
+            : List<ProductModel>.from(
+                json["Products"]!.map((x) => ProductModel.fromJson(x))),
         testimonials: json["Testimonials"] == null
             ? []
             : List<dynamic>.from(json["Testimonials"]!.map((x) => x)),
-        userFlyerInfo: json["userFlyerInfo"],
+        userFlyerInfo: json["userFlyerInfo"] == null
+            ? null
+            : UserFlyerInfoModel.fromJson(json["userFlyerInfo"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -141,19 +116,56 @@ class Template {
         "ScientistIntro": scientistIntro,
         "IsActive": isActive,
         "CreatedOn": createdOn?.toIso8601String(),
-        "ModifiedOn": modifiedOn,
+        "ModifiedOn": modifiedOn?.toIso8601String(),
         "Sections":
             sections == null ? [] : List<dynamic>.from(sections!.map((x) => x)),
-        "Products":
-            products == null ? [] : List<dynamic>.from(products!.map((x) => x)),
+        "Products": products == null
+            ? []
+            : List<dynamic>.from(products!.map((x) => x.toJson())),
         "Testimonials": testimonials == null
             ? []
             : List<dynamic>.from(testimonials!.map((x) => x)),
-        "userFlyerInfo": userFlyerInfo,
+        "userFlyerInfo": userFlyerInfo?.toJson(),
       };
 }
 
-class UserFlyer {
+class ProductModel {
+  int? id;
+  String? productName;
+  String? productDescription;
+  String? productLink;
+  int? displayOrder;
+  bool? isActive;
+
+  ProductModel({
+    this.id,
+    this.productName,
+    this.productDescription,
+    this.productLink,
+    this.displayOrder,
+    this.isActive,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+        id: json["Id"],
+        productName: json["ProductName"],
+        productDescription: json["ProductDescription"],
+        productLink: json["ProductLink"],
+        displayOrder: json["DisplayOrder"],
+        isActive: json["IsActive"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "Id": id,
+        "ProductName": productName,
+        "ProductDescription": productDescription,
+        "ProductLink": productLink,
+        "DisplayOrder": displayOrder,
+        "IsActive": isActive,
+      };
+}
+
+class UserFlyerInfoModel {
   int? id;
   int? userId;
   String? name;
@@ -164,13 +176,13 @@ class UserFlyer {
   String? qrCodeImagePath;
   dynamic productDescription;
   DateTime? createdOn;
-  dynamic modifiedOn;
+  DateTime? modifiedOn;
   bool? isDeleted;
   int? templateId;
   String? flyerGuid;
   dynamic userName;
 
-  UserFlyer({
+  UserFlyerInfoModel({
     this.id,
     this.userId,
     this.name,
@@ -188,7 +200,8 @@ class UserFlyer {
     this.userName,
   });
 
-  factory UserFlyer.fromJson(Map<String, dynamic> json) => UserFlyer(
+  factory UserFlyerInfoModel.fromJson(Map<String, dynamic> json) =>
+      UserFlyerInfoModel(
         id: json["Id"],
         userId: json["UserId"],
         name: json["Name"],
@@ -201,7 +214,9 @@ class UserFlyer {
         createdOn: json["CreatedOn"] == null
             ? null
             : DateTime.parse(json["CreatedOn"]),
-        modifiedOn: json["ModifiedOn"],
+        modifiedOn: json["ModifiedOn"] == null
+            ? null
+            : DateTime.parse(json["ModifiedOn"]),
         isDeleted: json["IsDeleted"],
         templateId: json["TemplateId"],
         flyerGuid: json["FlyerGuid"],
@@ -219,7 +234,7 @@ class UserFlyer {
         "QRCodeImagePath": qrCodeImagePath,
         "ProductDescription": productDescription,
         "CreatedOn": createdOn?.toIso8601String(),
-        "ModifiedOn": modifiedOn,
+        "ModifiedOn": modifiedOn?.toIso8601String(),
         "IsDeleted": isDeleted,
         "TemplateId": templateId,
         "FlyerGuid": flyerGuid,
