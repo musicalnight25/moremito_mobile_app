@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../controller/flyer_templates_controller.dart';
 import '../../model/flyer_template_model.dart';
+import '../../model/preview_response_model.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/base_background_widget.dart';
 import '../../utils/common_app_bar.dart';

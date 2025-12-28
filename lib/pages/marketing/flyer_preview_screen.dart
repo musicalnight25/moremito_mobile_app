@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/utils/app_asset.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:more_mitro_app/utils/common_web_view.dart';
 import 'package:more_mitro_app/utils/network_image_widget.dart';
 import '../../controller/flyer_templates_controller.dart';
 import '../../model/preview_response_model.dart';
@@ -25,8 +26,9 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch data dynamically on load
-    controller.fetchFlyerPreview(widget.templateId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchFlyerPreview(widget.templateId);
+    });
   }
 
   @override
@@ -76,6 +78,10 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
                       const SizedBox(height: 16),
                       _buildFDAWarningCard(),
                       const SizedBox(height: 16),
+                      buildForwardInfoButton(onTap: () async {
+                        await controller.shareTemplates(preview);
+                      }),
+                      const SizedBox(height: 16),
                       if (user != null) _buildQRCard(user),
                       const SizedBox(height: 24),
                       _buildFooter(preview),
@@ -83,7 +89,6 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
                   ),
                 ),
               ),
-              _buildBottomActionButtons(),
             ],
           );
         }),
@@ -92,7 +97,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Header Card (Dynamic Title/Subtitle) ---
-  Widget _buildFlyerHeader(PreviewModel preview) {
+  Widget _buildFlyerHeader(FlyerTemplateModel preview) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
@@ -143,7 +148,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Hero Image Section (Dynamic Content) ---
-  Widget _buildHeroImage(PreviewModel preview) {
+  Widget _buildHeroImage(FlyerTemplateModel preview) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),
       child: Stack(
@@ -212,7 +217,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Dynamic Video Card ---
-  Widget _buildVideoCard(BuildContext context, PreviewModel preview) {
+  Widget _buildVideoCard(BuildContext context, FlyerTemplateModel preview) {
     return _cardWrapper(
       title: "Company Overview & Testimonials",
       child: Column(
@@ -303,7 +308,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Scientist Card (Dynamic) ---
-  Widget _buildScientistCard(PreviewModel preview) {
+  Widget _buildScientistCard(FlyerTemplateModel preview) {
     return _cardWrapper(
       child: Text(
         preview.scientistTitle ??
@@ -316,7 +321,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Dynamic Intro Highlight ---
-  Widget _buildInfoHighlightCard(PreviewModel preview) {
+  Widget _buildInfoHighlightCard(FlyerTemplateModel preview) {
     return _cardWrapper(
       child: Text(
         preview.scientistIntro ??
@@ -329,46 +334,62 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
 
   // --- Dynamic Product List ---
   Widget _buildProductList(List<ProductModel> products) {
+    if (products.isEmpty) return const SizedBox();
+
     return Column(
       children: products
-          .map((product) => Column(
-                children: [
-                  _productItem(
-                      product.productName ?? "",
-                      product.productDescription ?? "",
-                      product.productLink ?? ""),
-                  const SizedBox(height: 12),
-                ],
+          .map((product) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildProductItem(product),
               ))
           .toList(),
     );
   }
 
-  Widget _productItem(String title, String desc, String link) {
+  Widget _buildProductItem(ProductModel product) {
     return _cardWrapper(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(
-                  color: primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16)),
+          Text(
+            product.productName ?? "",
+            style: TextStyle(
+              color: primaryColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
           const SizedBox(height: 6),
-          Text(desc,
-              style: const TextStyle(
-                  fontSize: 13, color: Colors.black87, height: 1.4)),
+          Text(
+            product.productDescription ?? "",
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+              height: 1.4,
+            ),
+          ),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              if (product.productLink != null &&
+                  product.productLink!.isNotEmpty) {
+                Get.to(() => CommonWebView(
+                      url: product.productLink!,
+                      title: product.productName ?? "Product",
+                    ));
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: greenColor,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 20),
             ),
-            child: const Text("Click Here",
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            child: const Text(
+              "Click Here",
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            ),
           )
         ],
       ),
@@ -429,6 +450,57 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
     );
   }
 
+  Widget buildForwardInfoButton({
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 130,
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 48,
+              width: 48,
+              decoration: const BoxDecoration(
+                color: primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward,
+                color: Colors.white,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "FORWARD MY INFO",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.6,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // --- Dynamic QR Code ---
   Widget _buildQRCard(UserFlyerInfoModel user) {
     return _cardWrapper(
@@ -454,7 +526,7 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
   }
 
   // --- Dynamic Footer ---
-  Widget _buildFooter(PreviewModel preview) {
+  Widget _buildFooter(FlyerTemplateModel preview) {
     return Column(
       children: [
         Text(preview.templateName ?? "MoreMito Health Solutions",
@@ -467,41 +539,6 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
         Text("Generated on: ${preview.createdOn?.toString() ?? "N/A"}",
             style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
       ],
-    );
-  }
-
-  // --- Bottom PDF Actions ---
-  Widget _buildBottomActionButtons() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      child: Row(
-        children: [
-          Expanded(
-              child:
-                  _actionBtn(Icons.picture_as_pdf, "Print PDF", primaryColor)),
-          const SizedBox(width: 12),
-          Expanded(
-              child: _actionBtn(Icons.download, "Download PDF", primaryColor)),
-        ],
-      ),
-    );
-  }
-
-  Widget _actionBtn(IconData icon, String label, Color color) {
-    return ElevatedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon, size: 18, color: Colors.white),
-      label: Text(label,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
     );
   }
 

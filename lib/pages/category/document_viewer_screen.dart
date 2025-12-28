@@ -38,8 +38,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
   final homeController = Get.put(HomeController());
   final controller = Get.put(CategoriesController());
   final contactController = Get.put(ContactController());
-  final TextEditingController nameTextController = TextEditingController();
-  final TextEditingController messageTextController = TextEditingController();
+  final nameTextController = TextEditingController();
+  final messageTextController = TextEditingController();
 
   @override
   void initState() {

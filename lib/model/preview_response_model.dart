@@ -13,7 +13,7 @@ String previewResponseModelToJson(PreviewResponseModel data) =>
 class PreviewResponseModel {
   bool? status;
   dynamic message;
-  PreviewModel? data;
+  FlyerTemplateModel? data;
 
   PreviewResponseModel({
     this.status,
@@ -25,7 +25,9 @@ class PreviewResponseModel {
       PreviewResponseModel(
         status: json["Status"],
         message: json["Message"],
-        data: json["Data"] == null ? null : PreviewModel.fromJson(json["Data"]),
+        data: json["Data"] == null
+            ? null
+            : FlyerTemplateModel.fromJson(json["Data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -35,7 +37,7 @@ class PreviewResponseModel {
       };
 }
 
-class PreviewModel {
+class FlyerTemplateModel {
   int? id;
   int? templateId;
   String? templateName;
@@ -53,7 +55,7 @@ class PreviewModel {
   List<dynamic>? testimonials;
   UserFlyerInfoModel? userFlyerInfo;
 
-  PreviewModel({
+  FlyerTemplateModel({
     this.id,
     this.templateId,
     this.templateName,
@@ -72,7 +74,8 @@ class PreviewModel {
     this.userFlyerInfo,
   });
 
-  factory PreviewModel.fromJson(Map<String, dynamic> json) => PreviewModel(
+  factory FlyerTemplateModel.fromJson(Map<String, dynamic> json) =>
+      FlyerTemplateModel(
         id: json["Id"],
         templateId: json["TemplateId"],
         templateName: json["TemplateName"],

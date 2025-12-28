@@ -227,8 +227,12 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
         ),
         const SizedBox(width: 15),
         Expanded(
-          child: _actionButton("SHARE FLYER", Icons.share_rounded,
-              const Color(0xFF6C63FF), () {}),
+          child: _actionButton(
+              "SHARE FLYER", Icons.share_rounded, const Color(0xFF6C63FF),
+              () async {
+            await controller.shareTemplates(
+                controller.flyerTemplateDetailModel.value!.template!);
+          }),
         ),
       ],
     );
