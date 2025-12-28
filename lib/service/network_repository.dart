@@ -234,6 +234,9 @@ class NetworkRepository {
       postRequest(context, AppConstants.savePushNotificationSettingsBulk,
           data: body);
 
+  Future<dynamic> saveFlyerDetails({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.saveFlyerDetails, data: body);
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

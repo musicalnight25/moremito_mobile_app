@@ -57,4 +57,5 @@ class AppConstants {
   static const String getUserRoleInfo = 'user-role-info';
   static const String changePassword = 'change-password';
   static const String changeUserRole = 'change-user-role';
+  static const String saveFlyerDetails = 'save-flyer';
 }

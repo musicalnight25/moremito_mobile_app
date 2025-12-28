@@ -59,6 +59,42 @@ class FlyerTemplatesController extends GetxController {
     }
   }
 
+  Future<void> saveFlyerDetails({
+    required int templateId,
+    required String name,
+    required String email,
+    required String phone,
+    required String website,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      final body = {
+        "TemplateId": templateId,
+        "Name": name,
+        "Email": email,
+        "Phone": phone,
+        "WebsiteLink": website,
+      };
+
+      final response = await _repo.saveFlyerDetails(
+        body: body,
+      );
+
+      if (response["Status"] == true) {
+        CommonMethod.getXSnackBar(
+          "Success",
+          response["Message"] ?? "Flyer updated successfully",
+          greenColor,
+        );
+      }
+    } catch (e) {
+      print("Error in saveFlyerDetails: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> fetchFlyerPreview(int templateId) async {
     try {
       isLoading.value = true;
@@ -84,12 +120,13 @@ class FlyerTemplatesController extends GetxController {
     required BuildContext context,
     required String fileId,
     required String SharedTo,
+    required String UserFlyerGuid,
   }) async {
     try {
       var data = {
         "FileId": fileId,
         "SharedTo": SharedTo,
-        "UserFlyerGuid": "b86e1133-3ccc-457a-9b6b-07ce674d555e"
+        "UserFlyerGuid": UserFlyerGuid
       };
       var response = await _repo.generateLink(context, data);
       if (response != null && response['Data'] != null) {
@@ -179,6 +216,8 @@ class FlyerTemplatesController extends GetxController {
                       context: Get.context!,
                       fileId: data.id.toString(),
                       SharedTo: nameTextController.text.trim(),
+                      UserFlyerGuid: data.userFlyerInfo?.flyerGuid ??
+                          "437ca342-b192-4bc7-bd9c-3c1f9522f9ca",
                     );
                     if (link == null || link.isEmpty) {
                       CommonMethod.getXSnackBar(

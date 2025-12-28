@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import '../../controller/flyer_templates_controller.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/base_background_widget.dart';
@@ -18,12 +19,28 @@ class FlyerDetailScreen extends StatefulWidget {
 
 class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
   final controller = Get.put(FlyerTemplatesController());
+  final nameCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final websiteCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchTemplateDetail(widget.templateId);
+
+    refreshPage();
+  }
+
+  refreshPage() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.fetchTemplateDetail(widget.templateId);
+      final user = controller.flyerTemplateDetailModel.value?.userFlyer;
+      if (user != null) {
+        nameCtrl.text = user.name ?? "";
+        emailCtrl.text = user.email ?? "";
+        phoneCtrl.text = user.phone ?? "";
+        websiteCtrl.text = user.websiteLink ?? "";
+      }
     });
   }
 
@@ -147,23 +164,22 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
       ),
       child: Column(
         children: [
-          _modernInput("Full Name", Icons.person_outline, user?.name),
-          const SizedBox(height: 16),
-          _modernInput("Email Address", Icons.email_outlined, user?.email),
-          const SizedBox(height: 16),
-          _modernInput(
-              "Phone Number", Icons.phone_android_outlined, user?.phone),
-          const SizedBox(height: 16),
-          _modernInput(
-              "Website URL", Icons.language_outlined, user?.websiteLink),
+          _modernInput("Full Name", Icons.person_outline, nameCtrl),
+          _modernInput("Email Address", Icons.email_outlined, emailCtrl),
+          _modernInput("Phone Number", Icons.phone_android_outlined, phoneCtrl),
+          _modernInput("Website URL", Icons.language_outlined, websiteCtrl),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                Get.snackbar("Success", "Information updated locally!",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.white);
+              onPressed: () async {
+                await controller.saveFlyerDetails(
+                  templateId: widget.templateId,
+                  name: nameCtrl.text.trim(),
+                  email: emailCtrl.text.trim(),
+                  phone: phoneCtrl.text.trim(),
+                  website: websiteCtrl.text.trim(),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
@@ -183,32 +199,13 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
   }
 
   // 3. HELPER FOR MODERN TEXT FIELDS
-  Widget _modernInput(String label, IconData icon, String? initialValue) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(label,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54)),
-        ),
-        TextFormField(
-          initialValue: initialValue ?? "",
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, size: 20, color: primaryColor),
-            filled: true,
-            fillColor: Colors.grey.shade200,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          ),
-        ),
-      ],
+  Widget _modernInput(
+      String label, IconData icon, TextEditingController controller) {
+    return TextFormFieldWidget(
+      controller: controller,
+      labelText: label,
+      prefixIcon: Icon(icon, size: 20, color: primaryColor),
+      contentPadding: const EdgeInsets.symmetric(vertical: 14),
     );
   }
 
@@ -218,12 +215,15 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
       children: [
         Expanded(
           child: _actionButton(
-              "PREVIEW",
-              Icons.remove_red_eye_rounded,
-              orangeColor,
-              () => Get.to(() => FlyerPreviewScreen(
-                    templateId: widget.templateId,
-                  ))),
+            "PREVIEW",
+            Icons.remove_red_eye_rounded,
+            orangeColor,
+            () => Get.to(
+              () => FlyerPreviewScreen(
+                templateId: widget.templateId,
+              ),
+            ),
+          ),
         ),
         const SizedBox(width: 15),
         Expanded(
