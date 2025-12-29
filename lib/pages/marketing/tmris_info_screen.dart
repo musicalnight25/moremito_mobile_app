@@ -31,7 +31,7 @@ class TmrisInfoScreen extends StatelessWidget {
 
               /// ───── TITLE ─────
               Text(
-                "Text Message Request Info System",
+                "Allow Others to Request MoreMito Info from Me",
                 style: AppTextStyle.normalExtraBold.copyWith(fontSize: 24.sp),
               ),
 

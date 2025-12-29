@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/marketing/tmris_info_screen.dart';
 
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/text_primary_button.dart';
@@ -57,10 +59,37 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
                   style: AppTextStyle.normalExtraBold.copyWith(fontSize: 26.sp),
                 ),
                 height06,
-                Text(
-                  "The following prospect data comes directly from the Text Message Request Info System.",
-                  style: AppTextStyle.normalRegular14
-                      .copyWith(color: hintGreyColor),
+
+                RichText(
+                  text: TextSpan(
+                    style: AppTextStyle.normalRegular14.copyWith(
+                      color: hintGreyColor,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text:
+                            "The following prospect data comes directly from the ",
+                      ),
+                      TextSpan(
+                        text: "Text Message Request Info System",
+                        style: AppTextStyle.normalRegular14.copyWith(
+                          color: primaryColor, // clickable color
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Get.to(() => TmrisInfoScreen());
+                            debugPrint(
+                                "Text Message Request Info System clicked");
+                          },
+                      ),
+                      const TextSpan(
+                        text:
+                            ". The system captures prospect data and stores the data here for future reference.",
+                      ),
+                    ],
+                  ),
                 ),
 
                 height16,

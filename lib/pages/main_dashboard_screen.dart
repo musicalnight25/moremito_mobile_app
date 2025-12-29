@@ -35,7 +35,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   LoginController loginController = Get.put(LoginController());
   final List<Widget> widgetList = [
     HomeScreen(key: ValueKey('HomeScreen')),
-    CategoriesScreen(key: ValueKey('CategoriesScreen')),
+    CategoriesScreen(
+      key: ValueKey('CategoriesScreen'),
+      isFromMenu: false,
+    ),
     NotificationScreen(key: ValueKey('NotificationScreen')),
     SettingScreen(key: ValueKey('SettingScreen')),
   ];

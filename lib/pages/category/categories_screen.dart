@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -15,7 +16,10 @@ import '../../utils/common_category_widget.dart';
 import 'sub_categories_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({Key? key}) : super(key: key);
+  final bool isFromMenu;
+
+  const CategoriesScreen({Key? key, required this.isFromMenu})
+      : super(key: key);
 
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
@@ -29,7 +33,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getCategoriesList(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getCategoriesList(context);
+    });
   }
 
   @override
@@ -81,64 +87,69 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: const CommonAppBar(),
-      body: Obx(() {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Categories",
-                    style: AppTextStyle.normalExtraBold,
-                  ),
-                  const SizedBox(height: 10),
-                  _searchBar(),
-                ],
+      appBar: CommonAppBar(
+        visibleBackButton: widget.isFromMenu,
+      ),
+      body: BaseBackgroundWidget(
+        child: Obx(() {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Categories",
+                      style: AppTextStyle.normalExtraBold,
+                    ),
+                    const SizedBox(height: 10),
+                    _searchBar(),
+                  ],
+                ),
               ),
-            ),
 
-            // CONTENT
-            Expanded(
-              child: controller.isLoading.value
-                  ? _shimmerGrid()
-                  : controller.categoriesList.isEmpty
-                      ? const NoDataFound(title: "Categories")
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(16),
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 1.8,
+              // CONTENT
+              Expanded(
+                child: controller.isLoading.value
+                    ? _shimmerGrid()
+                    : controller.categoriesList.isEmpty
+                        ? const NoDataFound(title: "Categories")
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(16),
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 1.8,
+                            ),
+                            itemCount: controller.categoriesList.length,
+                            itemBuilder: (context, index) {
+                              final category = controller.categoriesList[index];
+
+                              return GestureDetector(
+                                onTap: () {
+                                  controller.subCategoriesList.clear();
+                                  Get.to(() => SubCategoriesScreen(
+                                        data: category,
+                                      ));
+                                },
+                                child: CommonCategoryWidget(
+                                  category: category,
+                                  isSelected: category.isPopular ?? false,
+                                  isSubCategory: false,
+                                ),
+                              );
+                            },
                           ),
-                          itemCount: controller.categoriesList.length,
-                          itemBuilder: (context, index) {
-                            final category = controller.categoriesList[index];
-
-                            return GestureDetector(
-                              onTap: () {
-                                controller.subCategoriesList.clear();
-                                Get.to(() => SubCategoriesScreen(
-                                      data: category,
-                                    ));
-                              },
-                              child: CommonCategoryWidget(
-                                category: category,
-                                isSelected: category.isPopular ?? false,
-                                isSubCategory: false,
-                              ),
-                            );
-                          },
-                        ),
-            ),
-          ],
-        );
-      }),
+              ),
+            ],
+          );
+        }),
+      ),
     );
   }
 }

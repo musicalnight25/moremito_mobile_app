@@ -6,6 +6,7 @@ import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
+import 'package:more_mitro_app/pages/category/categories_screen.dart';
 
 import '../marketing/flyer_templates_screen.dart';
 import '../marketing/my_leads_screen.dart';
@@ -108,28 +109,33 @@ class _MenuScreenState extends State<MenuScreen> {
         ],
       ),
       MenuSection(
-        title: "Marketing",
+        title: "Share MoreMito Info",
         icon: Icons.campaign_outlined,
         items: [
           MenuItem(
-            title: "Customize & Share My Flyer's",
-            icon: Icons.design_services_outlined,
+            title: "Customize & Share My Flyers",
+            icon: Icons.brush_outlined, // design / customize
             onTap: () => Get.to(() => FlyerTemplatesScreen()),
           ),
           MenuItem(
-            title: "My Shared Links & Tracking",
-            icon: Icons.file_present_outlined,
-            onTap: () => Get.to(() => MySharedFlyersScreen()),
+            title: "Share Audios, Videos & Docs",
+            icon: Icons.perm_media_outlined, // media sharing
+            onTap: () => Get.to(() => CategoriesScreen(isFromMenu: true)),
           ),
           MenuItem(
-            title: "Text Message Request Info System",
-            icon: Icons.group_outlined,
+            title: "Allow Others to Request MoreMito Info",
+            icon: Icons.group_add_outlined, // people requesting access
             onTap: () => Get.to(() => TmrisInfoScreen()),
           ),
           MenuItem(
-            title: "My Generated Leads",
-            icon: Icons.analytics_outlined,
+            title: "See My Generated Leads",
+            icon: Icons.trending_up_outlined, // leads / analytics
             onTap: () => Get.to(() => MyLeadsScreen()),
+          ),
+          MenuItem(
+            title: "See & Track Activity From My Shared Links",
+            icon: Icons.track_changes_outlined, // tracking activity
+            onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
         ],
       ),

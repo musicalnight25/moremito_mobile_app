@@ -201,7 +201,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "My Shared Links & Tracking",
+                "My Mito Info Shared Links Tracking",
                 style: AppTextStyle.normalBold20.copyWith(
                   color: primaryBlack,
                   height: 1.4,
@@ -212,7 +212,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "View all the links you’ve shared and track how people interact with them. See recipient counts and activity details in one place.",
+                "Track and monitor all your shared links. View recipient activity and interaction details.",
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: Colors.black54,
                   height: 1.4,
