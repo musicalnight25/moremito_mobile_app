@@ -49,12 +49,12 @@ class _FlyerTemplatesScreenState extends State<FlyerTemplatesScreen> {
             children: [
               /// 🔹 HEADER
               Text(
-                "List of Flyers",
+                "Flyer Templates",
                 style: AppTextStyle.normalBold20,
               ),
               const SizedBox(height: 6),
               Text(
-                "Tap a flyer to preview, customize, or share",
+                "Choose from our professionally designed templates to create your perfect flyer",
                 style: AppTextStyle.normalRegular14
                     .copyWith(color: Colors.black54),
               ),
@@ -108,7 +108,7 @@ class _FlyerTemplatesScreenState extends State<FlyerTemplatesScreen> {
               children: const [
                 Icon(Icons.visibility, size: 18),
                 SizedBox(width: 6),
-                Text("Preview & Customize"),
+                Text("Preview, Customize & Share"),
                 Spacer(),
                 Icon(Icons.arrow_forward_ios, size: 16),
               ],

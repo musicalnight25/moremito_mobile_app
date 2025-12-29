@@ -153,8 +153,9 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
       borderRadius: BorderRadius.circular(18),
       child: Stack(
         children: [
-          Image.network(
-            "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1200",
+          NetworkImageWidget(
+            imageUrl:
+                "https://moremito.com/assets/images/flyer/moremito-hero.png",
             height: 330.sp,
             width: double.infinity,
             fit: BoxFit.cover,
@@ -240,8 +241,9 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image.network(
-                    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1000",
+                  NetworkImageWidget(
+                    imageUrl:
+                        "https://moremito.com/assets/images/flyer/moremito-hero.png",
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,

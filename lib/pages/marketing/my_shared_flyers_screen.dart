@@ -29,81 +29,170 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
     controller.getFlyerTrackingStats();
   }
 
-  // ------------------------------------------------------------
-  // LABEL MAP
-  // ------------------------------------------------------------
+  // KEY MAP (DO NOT CHANGE KEYS)
   final Map<String, String> _labelMap = {
-    "last72hours": "Last 72 Hours",
-    "last7days": "Last 7 Days",
-    "days8to14": "Last 2 Weeks",
-    "days15to21": "Last 3 Weeks",
-    "days22to28": "Last 4 Weeks",
-    "lifetime": "Lifetime",
+    "Last72Hours": "Last 72 Hours",
+    "Last7Days": "Last 7 Days",
+    "Last2Weeks": "Last 2 Weeks",
+    "Last3Weeks": "Last 3 Weeks",
+    "Last4Weeks": "Last 4 Weeks",
+    "Lifetime": "Lifetime",
   };
 
-  // ------------------------------------------------------------
-  // HELPERS
-  // ------------------------------------------------------------
-  int _recipients(FlyerTrackingStats? stats, String key) {
-    final r = stats?.recipients;
-    switch (key) {
-      case "last72hours":
-        return r?.last72Hours ?? 0;
-      case "last7days":
-        return r?.last7Days ?? 0;
-      case "days8to14":
-        return r?.days8To14 ?? 0;
-      case "days15to21":
-        return r?.days15To21 ?? 0;
-      case "days22to28":
-        return r?.days22To28 ?? 0;
-      case "lifetime":
-        return r?.lifetime ?? 0;
-      default:
-        return 0;
+  // ---------------- FIXED DATA ACCESS ----------------
+  int _getValue(FlyerTrackingStats? stats, String key, bool isActivity) {
+    if (stats == null) return 0;
+
+    if (isActivity) {
+      final a = stats.activity;
+      switch (key) {
+        case "Last72Hours":
+          return a?.last72Hours ?? 0;
+        case "Last7Days":
+          return a?.last7Days ?? 0;
+        case "Last2Weeks":
+          return a?.last2Weeks ?? 0;
+        case "Last3Weeks":
+          return a?.last3Weeks ?? 0;
+        case "Last4Weeks":
+          return a?.last4Weeks ?? 0;
+        case "Lifetime":
+          return a?.lifetime ?? 0;
+      }
+    } else {
+      final r = stats.recipients;
+      switch (key) {
+        case "Last72Hours":
+          return r?.last72Hours ?? 0;
+        case "Last7Days":
+          return r?.last7Days ?? 0;
+        case "Last2Weeks":
+          return r?.last2Weeks ?? 0;
+        case "Last3Weeks":
+          return r?.last3Weeks ?? 0;
+        case "Last4Weeks":
+          return r?.last4Weeks ?? 0;
+        case "Lifetime":
+          return r?.lifetime ?? 0;
+      }
     }
+    return 0;
   }
 
-  int _activity(FlyerTrackingStats? stats, String key) {
-    final a = stats?.activity;
-    switch (key) {
-      case "last72hours":
-        return a?.last72Hours ?? 0;
-      case "last7days":
-        return a?.last7Days ?? 0;
-      case "days8to14":
-        return a?.days8To14 ?? 0;
-      case "days15to21":
-        return a?.days15To21 ?? 0;
-      case "days22to28":
-        return a?.days22To28 ?? 0;
-      case "lifetime":
-        return a?.lifetime ?? 0;
-      default:
-        return 0;
-    }
-  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: const CommonAppBar(visibleBackButton: true),
+      body: BaseBackgroundWidget(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            height10,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+              child: Text(
+                "My Mito Info Shared Links Tracking",
+                style: AppTextStyle.normalBold20,
+              ),
+            ),
+            height04,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+              child: Text(
+                "Track and monitor all your shared links.",
+                style: AppTextStyle.normalRegular14,
+              ),
+            ),
+            Expanded(
+              child: Obx(() {
+                if (controller.statsLoading.value) {
+                  return GridView.count(
+                    padding: EdgeInsets.all(16.sp),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12.sp,
+                    mainAxisSpacing: 12.sp,
+                    children: List.generate(6, (_) => _shimmerTile()),
+                  );
+                }
 
-  // ------------------------------------------------------------
-  // SHIMMER TILE
-  // ------------------------------------------------------------
-  Widget _shimmerTile() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        height: 120.sp,
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.circular(12.sp),
+                final stats = controller.stats.value;
+
+                return GridView.count(
+                  padding: EdgeInsets.all(16.sp),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12.sp,
+                  mainAxisSpacing: 12.sp,
+                  children: _labelMap.entries.map((entry) {
+                    return _tile(
+                      title: entry.value,
+                      recipients: _getValue(stats, entry.key, false),
+                      activity: _getValue(stats, entry.key, true),
+                      onTap: () {
+                        Get.to(() => SharedFlyersScreen(
+                              title: entry.value,
+                              filterKey: entry.key,
+                            ));
+                      },
+                    );
+                  }).toList(),
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // ------------------------------------------------------------
-  // STAT TILE
-  // ------------------------------------------------------------
+  Widget _shimmerTile() {
+    return Container(
+      height: 120.sp,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.sp),
+      ),
+      child: Column(
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(12.sp),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(12.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child: Container(
+                          height: 12, width: 120, color: Colors.grey)),
+                  const SizedBox(height: 8),
+                  Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child:
+                          Container(height: 12, width: 80, color: Colors.grey)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _tile({
     required String title,
     required int recipients,
@@ -127,7 +216,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
         ),
         child: Column(
           children: [
-            // HEADER
+            // Header
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 10.sp),
               decoration: BoxDecoration(
@@ -141,16 +230,15 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
                   Expanded(
                     child: Text(
                       title,
-                      style: AppTextStyle.normalSemiBold14
-                          .copyWith(fontSize: 14.sp),
+                      style: AppTextStyle.normalSemiBold14,
                     ),
                   ),
-                  Icon(Icons.chevron_right, size: 18.sp),
+                  const Icon(Icons.chevron_right, size: 18),
                 ],
               ),
             ),
 
-            // BODY
+            // Body
             Expanded(
               child: Padding(
                 padding:
@@ -158,7 +246,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
                 child: Column(
                   children: [
                     _row("Recipients", recipients.toString()),
-                    SizedBox(height: 8.sp),
+                    const SizedBox(height: 8),
                     _row("Activity", activity.toString()),
                   ],
                 ),
@@ -174,104 +262,17 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style:
-                AppTextStyle.normalRegular14.copyWith(color: Colors.black54)),
-        Text(value, style: AppTextStyle.normalSemiBold16),
-      ],
-    );
-  }
-
-  // ------------------------------------------------------------
-  // BUILD
-  // ------------------------------------------------------------
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(
-        visibleBackButton: true,
-      ),
-      body: BaseBackgroundWidget(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            height10,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              child: Text(
-                "My Mito Info Shared Links Tracking",
-                style: AppTextStyle.normalBold20.copyWith(
-                  color: primaryBlack,
-                  height: 1.4,
-                ),
-              ),
-            ),
-            height04,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              child: Text(
-                "Track and monitor all your shared links. View recipient activity and interaction details.",
-                style: AppTextStyle.normalRegular14.copyWith(
-                  color: Colors.black54,
-                  height: 1.4,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Obx(() {
-                // LOADING STATE
-                if (controller.statsLoading.value &&
-                    controller.stats.value == null) {
-                  return GridView.count(
-                    padding: EdgeInsets.all(16.sp),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12.sp,
-                    mainAxisSpacing: 12.sp,
-                    children: List.generate(6, (_) => _shimmerTile()),
-                  );
-                }
-
-                final stats = controller.stats.value;
-
-                return RefreshIndicator(
-                  color: primaryColor,
-                  onRefresh: () async {
-                    await controller.getFlyerTrackingStats();
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.all(16.sp),
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12.sp,
-                      mainAxisSpacing: 12.sp,
-                      children: _labelMap.keys.map((key) {
-                        return _tile(
-                          title: _labelMap[key]!,
-                          recipients: _recipients(stats, key),
-                          activity: _activity(stats, key),
-                          onTap: () async {
-                            controller.resetPagination();
-                            await controller.getSharedFlyers(filterKey: key);
-                            Get.to(() => SharedFlyersScreen(
-                                  title: _labelMap[key]!,
-                                  filterKey: key,
-                                ));
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ],
+        Text(
+          label,
+          style: AppTextStyle.normalRegular14.copyWith(
+            color: Colors.black54,
+          ),
         ),
-      ),
+        Text(
+          value,
+          style: AppTextStyle.normalSemiBold16,
+        ),
+      ],
     );
   }
 }

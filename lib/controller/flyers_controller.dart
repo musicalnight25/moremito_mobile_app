@@ -11,19 +11,18 @@ class FlyersController extends GetxController {
 
   // ---------------- STATS ----------------
   RxBool statsLoading = false.obs;
-  Rxn<FlyerTrackingStats> stats = Rxn();
+  Rxn<FlyerTrackingStats> stats = Rxn<FlyerTrackingStats>();
 
   // ---------------- SHARED FLYERS ----------------
   RxBool listLoading = false.obs;
   RxBool loadMoreLoading = false.obs;
+
   RxList<SharedFlyerItem> sharedFlyers = <SharedFlyerItem>[].obs;
 
   int page = 1;
   bool hasMore = true;
 
-  // Current applied filters
-  String? currentSearch;
-  String? currentFileType;
+  RxnString currentFileType = RxnString();
 
   // ---------------- ACTIVITY ----------------
   RxBool activityLoading = false.obs;
@@ -50,7 +49,7 @@ class FlyersController extends GetxController {
   }
 
   // ============================================================
-  // FETCH SHARED FLYERS (WITH FILTERS)
+  // FETCH SHARED FLYERS (WITH PAGINATION)
   // ============================================================
   Future<void> getSharedFlyers({
     required String filterKey,
@@ -61,16 +60,15 @@ class FlyersController extends GetxController {
 
     page == 1 ? listLoading.value = true : loadMoreLoading.value = true;
 
-    currentSearch = search;
-    currentFileType = fileType;
+    currentFileType.value = fileType;
 
     try {
       final response = await _repo.getSharedFlyers({
         "pageNumber": page,
         "pageSize": 10,
         "filterDays": filterKey,
-        if (search != null && search.isNotEmpty) "search": search,
-        if (fileType != null && fileType.isNotEmpty) "fileType": fileType,
+        "sharedTo": search?.isEmpty == true ? null : search,
+        "filterType": _mapFileTypeToApi(fileType),
       });
 
       if (response != null) {
@@ -82,7 +80,7 @@ class FlyersController extends GetxController {
           sharedFlyers.addAll(model.data?.items ?? []);
 
           hasMore = page < (model.data?.totalPages ?? 1);
-          if (hasMore) page++;
+          page++; // 🚀 next page
         }
       }
     } catch (e) {
@@ -124,6 +122,22 @@ class FlyersController extends GetxController {
       debugPrint("Flyer activity error: $e");
     } finally {
       activityLoading.value = false;
+    }
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  int? _mapFileTypeToApi(String? value) {
+    switch (value) {
+      case "Files":
+        return 1;
+      case "Flyers":
+        return 2;
+      case "SMS":
+        return 3;
+      default:
+        return null;
     }
   }
 }

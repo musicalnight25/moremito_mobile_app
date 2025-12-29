@@ -78,8 +78,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           // controller.searchCategory(value);
         });
       },
-      hintText: "Search files, categories, sub categories, tags…",
-      prefixIcon: Icon(Icons.search),
+      suffixIcon: IconButton(
+        icon: const Icon(Icons.search, size: 20),
+        onPressed: () {},
+      ),
+      hintText: "Search Audio, Video & Doc...",
     );
   }
 
@@ -101,11 +104,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('MoreMito Library', style: AppTextStyle.normalBold20),
+                    const SizedBox(height: 6),
                     Text(
-                      "Categories",
-                      style: AppTextStyle.normalExtraBold,
+                      "Browse categories or search by sub categories, filenames, or tags.",
+                      style: AppTextStyle.normalRegular14
+                          .copyWith(color: Colors.black54),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     _searchBar(),
                   ],
                 ),

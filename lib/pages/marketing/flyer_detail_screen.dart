@@ -50,7 +50,7 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
       extendBodyBehindAppBar: true,
       appBar: const CommonAppBar(
         visibleBackButton: true,
-        title: "Customize Flyer",
+        title: "Customize & Share Flyer",
       ),
       body: BaseBackgroundWidget(
         child: Obx(() {
@@ -71,8 +71,7 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
                   _buildPreviewBanner(
                       controller.flyerTemplateDetailModel.value?.template),
                   const SizedBox(height: 25),
-                  _buildSectionHeader(
-                      "Personal Details", "Update how you appear on the flyer"),
+                  _buildSectionHeader("Customize With Your Information"),
                   _infoCard(
                       controller.flyerTemplateDetailModel.value?.userFlyer),
                   const SizedBox(height: 30),
@@ -108,8 +107,6 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const Icon(Icons.auto_awesome, color: Colors.white, size: 30),
-          const SizedBox(height: 12),
           Text(
             (template.title ?? "Flyer Template").toUpperCase(),
             style: const TextStyle(
@@ -132,7 +129,7 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, String sub) {
+  Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 16),
       child: Column(
@@ -140,7 +137,6 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
         children: [
           Text(title,
               style: AppTextStyle.normalBold18.copyWith(color: Colors.black87)),
-          Text(sub, style: const TextStyle(fontSize: 13, color: Colors.grey)),
         ],
       ),
     );
@@ -204,6 +200,7 @@ class _FlyerDetailScreenState extends State<FlyerDetailScreen> {
     return TextFormFieldWidget(
       controller: controller,
       labelText: label,
+      enabled: label != "Website URL",
       prefixIcon: Icon(icon, size: 20, color: primaryColor),
       contentPadding: const EdgeInsets.symmetric(vertical: 14),
     );

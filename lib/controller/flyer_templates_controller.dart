@@ -180,7 +180,7 @@ class FlyerTemplatesController extends GetxController {
     final RxString generatedLink = ''.obs;
 
     CommonMethod.showCustomBottomSheet(
-      title: 'Generate Link',
+      title: 'Generate Link To Share',
       message: null,
       showCancelButton: true,
       cancelButtonTitle: "Close",

@@ -1,96 +1,118 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
+
   const VideoPlayerWidget({super.key, required this.videoUrl});
 
   @override
-  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  VideoPlayerController? _videoPlayerController;
+  VideoPlayerController? _videoController;
   ChewieController? _chewieController;
+
   final VideoController videoController = Get.put(VideoController());
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializePlayer();
+    _initPlayer();
   }
 
-  Future<void> _initializePlayer() async {
-    _videoPlayerController = VideoPlayerController.network(widget.videoUrl)
-      ..addListener(() {
-        if (_videoPlayerController != null &&
-            _videoPlayerController!.value.isPlaying) {
-          videoController.setActiveVideo(_videoPlayerController!);
-        }
-      })
-      ..setLooping(true);
+  Future<void> _initPlayer() async {
+    _videoController = VideoPlayerController.network(widget.videoUrl);
 
-    await _videoPlayerController?.initialize();
+    await _videoController!.initialize();
 
     _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController!,
-      autoPlay: false,
+      videoPlayerController: _videoController!,
+      autoPlay: true,
       looping: true,
       showControls: true,
       allowFullScreen: true,
-      autoInitialize: true,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: Colors.redAccent,
+        handleColor: Colors.white,
+        backgroundColor: Colors.grey.shade600,
+        bufferedColor: Colors.white54,
+      ),
     );
 
+    videoController.setActiveVideo(_videoController!);
+
     if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   void dispose() {
-    _videoPlayerController?.dispose();
     _chewieController?.dispose();
+    _videoController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading ||
-        _chewieController == null ||
-        !_videoPlayerController!.value.isInitialized) {
-      return SafeArea(child: _buildShimmerEffect());
-    }
-    return SafeArea(child: Chewie(controller: _chewieController!));
-  }
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            /// Video or Loader
+            Positioned.fill(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : Chewie(controller: _chewieController!),
+            ),
 
-  Widget _buildShimmerEffect() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: double.infinity,
-        height: 200, // Adjust height as needed
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+            /// Back Button
+            Positioned(
+              top: 12,
+              left: 12,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+/// Manages active video to avoid multiple playing
 class VideoController extends GetxController {
   VideoPlayerController? currentVideo;
 
   void setActiveVideo(VideoPlayerController controller) {
     if (currentVideo != null && currentVideo != controller) {
-      currentVideo?.pause();
+      currentVideo!.pause();
     }
     currentVideo = controller;
   }

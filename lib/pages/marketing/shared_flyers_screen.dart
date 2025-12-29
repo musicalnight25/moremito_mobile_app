@@ -34,11 +34,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
-  Timer? _debounce;
-
   @override
   void initState() {
     super.initState();
+    controller.resetPagination();
 
     controller.getSharedFlyers(filterKey: widget.filterKey);
 
@@ -54,7 +53,6 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -79,21 +77,19 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           TextFormFieldWidget(
             controller: _searchController,
             hintText: "Search recipient",
-            prefixIcon: const Icon(Icons.search, size: 20),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            onChanged: (value) {
-              _debounce?.cancel();
-              _debounce = Timer(const Duration(milliseconds: 350), () {
-                controller.currentSearch = value;
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.search, size: 20),
+              onPressed: () {
                 controller.resetPagination();
                 controller.getSharedFlyers(
                   filterKey: widget.filterKey,
-                  search: value,
-                  fileType: controller.currentFileType,
+                  search: _searchController.text,
+                  fileType: controller.currentFileType.value,
                 );
-              });
-            },
+              },
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
 
           const SizedBox(height: 10),
@@ -109,29 +105,36 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: controller.currentFileType ?? "All",
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                      items: const [
-                        DropdownMenuItem(value: "All", child: Text("All")),
-                        DropdownMenuItem(value: "Files", child: Text("Files")),
-                        DropdownMenuItem(
-                            value: "Flyers", child: Text("Flyers")),
-                        DropdownMenuItem(value: "SMS", child: Text("SMS")),
-                      ],
-                      onChanged: (value) {
-                        controller.currentFileType =
-                            value == "All" ? null : value;
-                        controller.resetPagination();
-                        controller.getSharedFlyers(
-                          filterKey: widget.filterKey,
-                          search: controller.currentSearch,
-                          fileType: controller.currentFileType,
-                        );
-                      },
-                    ),
+                  child: IgnorePointer(
+                    ignoring: false,
+                    child: Obx(() => DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: controller.currentFileType.value ?? "All",
+                            icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                            items: const [
+                              DropdownMenuItem(
+                                  value: "All", child: Text("All")),
+                              DropdownMenuItem(
+                                  value: "Files", child: Text("Files")),
+                              DropdownMenuItem(
+                                  value: "Flyers", child: Text("Flyers")),
+                              DropdownMenuItem(
+                                  value: "SMS", child: Text("SMS")),
+                            ],
+                            onChanged: (value) {
+                              controller.currentFileType.value =
+                                  value == "All" ? null : value;
+
+                              controller.resetPagination();
+                              controller.getSharedFlyers(
+                                filterKey: widget.filterKey,
+                                search: _searchController.text,
+                                fileType: controller.currentFileType.value,
+                              );
+                            },
+                          ),
+                        )),
                   ),
                 ),
               ),
@@ -143,8 +146,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
                   _searchController.clear();
-                  controller.currentSearch = null;
-                  controller.currentFileType = null;
+                  controller.currentFileType.value = null;
                   controller.resetPagination();
                   controller.getSharedFlyers(filterKey: widget.filterKey);
                 },
@@ -384,6 +386,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                     );
                   },
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: controller.sharedFlyers.length +
                         (controller.loadMoreLoading.value ? 1 : 0),
