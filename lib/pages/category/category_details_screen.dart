@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/category/widget/category_file_shimmer.dart';
+import 'package:more_mitro_app/pages/category/widget/category_file_tile.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 import 'package:share_plus/share_plus.dart';
@@ -26,163 +29,118 @@ class CategoryDetailsScreen extends StatefulWidget {
 }
 
 class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
-  final controller = Get.put(CategoriesController());
+  final CategoriesController controller = Get.put(CategoriesController());
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.getSubCategoriesFiles(null, widget.data.subCategoryId ?? "0");
+      controller.resetAndSearch(null, widget.data.subCategoryId ?? "");
     });
-  }
-
-  /// Pull-to-refresh function
-  Future<void> _onRefresh() async {
-    await controller.getSubCategoriesFiles(
-        null, widget.data.subCategoryId ?? "0");
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          controller.hasMore.value &&
+          !controller.isLoading.value) {
+        controller.getSubCategoriesFiles(
+          null,
+          widget.data.subCategoryId ?? "",
+          loadMore: true,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: CommonAppBar(
-        visibleBackButton: true,
-      ),
+      appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          final allFiles = controller.categoriesFileList;
-          final bestCategories =
-              allFiles.where((e) => e.isPopular == true).toList();
-          final remainingCategories =
-              allFiles.where((e) => e.isPopular == false).toList();
+          final list = controller.categoriesFileList;
 
-          if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+          if (controller.isLoading.value && list.isEmpty) {
+            return _buildShimmer();
           }
 
-          if (allFiles.isEmpty) {
-            return NoDataFound(title: "Files");
-          }
+          return Column(
+            children: [
+              _searchBar(),
+              Expanded(
+                child: list.isEmpty
+                    ? const NoDataFound(title: "Files")
+                    : ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                        controller: _scrollController,
+                        itemCount:
+                            list.length + (controller.hasMore.value ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == list.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
 
-          return RefreshIndicator(
-            onRefresh: _onRefresh,
-            color: primaryColor,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              children: [
-                height20,
-                Text(
-                  widget.data.subCategoryName ?? "-",
-                  style: AppTextStyle.normalExtraBold,
-                ),
-                height20,
-                if (bestCategories.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Best Categories',
-                          style: AppTextStyle.normalBold16
-                              .copyWith(color: lightBlackColor)),
-                      customHeight(12),
-                      Column(
-                        children: bestCategories
-                            .map((element) => buildFileViewWidget(element))
-                            .toList(),
+                          return CategoryFileTile(data: list[index]);
+                        },
                       ),
-                    ],
-                  ),
-                if (remainingCategories.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      height20,
-                      Text('Remaining Categories',
-                          style: AppTextStyle.normalBold16
-                              .copyWith(color: lightBlackColor)),
-                      customHeight(12),
-                      Column(
-                        children: remainingCategories
-                            .map((element) => buildFileViewWidget(element))
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                height20,
-              ],
-            ),
+              ),
+            ],
           );
         }),
       ),
     );
   }
 
-  Widget buildFileViewWidget(CategoryFileModel data) {
-    bool isAudio = data.filePath != null &&
-        (GetUtils.isAudio(data.filePath!) ||
-            data.filePath!.toLowerCase().endsWith('.m4a'));
-    bool isVideo = data.filePath != null && GetUtils.isVideo(data.filePath!);
-    bool isPDF = data.filePath != null && GetUtils.isPDF(data.filePath!);
-    bool isImage = data.filePath != null && GetUtils.isImage(data.filePath!);
-
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => DocumentViewerScreen(data: data));
-      },
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 10.sp),
-        child: ShadowContainerWidget(
-          padding: 12.sp,
-          radius: 12.sp,
-          blurRadius: 0,
-          borderWidth: 1,
-          widget: ClipRRect(
-            borderRadius: BorderRadius.circular(8.sp),
-            child: Row(
-              children: [
-                Icon(isVideo
-                    ? CupertinoIcons.video_camera
-                    : isImage
-                        ? Icons.photo_outlined
-                        : isAudio
-                            ? CupertinoIcons.music_note_2
-                            : CupertinoIcons.doc_text),
-                customWidth(8),
-                Expanded(
-                  child: Text(
-                    data.fileName ?? "-",
-                    style: AppTextStyle.normalBold14,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 10,
-                  ),
-                ),
-                customWidth(8),
-                Icon(isVideo || isAudio
-                    ? CupertinoIcons.play_circle
-                    : CupertinoIcons.eye),
-              ],
-            ),
-          ),
+  Widget _searchBar() {
+    return Obx(() {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: TextFormFieldWidget(
+          controller: _searchController,
+          hintText: "Search files...",
+          suffixIcon: controller.searchText.value.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    _searchController.clear();
+                    controller.resetAndSearch(
+                      null,
+                      widget.data.subCategoryId ?? "",
+                    );
+                  },
+                )
+              : IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    controller.resetAndSearch(
+                      _searchController.text.trim(),
+                      widget.data.subCategoryId ?? "",
+                    );
+                  },
+                ), // 🔥 Trigger search on keyboard submit
+          onFieldSubmitted: (value) {
+            controller.resetAndSearch(
+              value?.trim(),
+              widget.data.subCategoryId ?? "",
+            );
+          },
         ),
-      ),
+      );
+    });
+  }
+
+  Widget _buildShimmer() {
+    return ListView.builder(
+      itemCount: 16,
+      padding: EdgeInsets.symmetric(horizontal: 16.sp),
+      itemBuilder: (_, __) => const CategoryFileShimmer(),
     );
   }
-}
-
-void shareFile(CategoryFileModel data) {
-  const subject = "File has been shared by Shubham!";
-  final body = """
-Dear User,
-
-File has been shared by Shubham (Shubham Kumar):
-
-${data.shareUrl}
-
-Best Regards,  
-Shubham Kumar
-  """;
-
-  Share.share(body, subject: subject);
 }

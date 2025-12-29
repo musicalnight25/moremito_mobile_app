@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/category/widget/category_file_shimmer.dart';
+import 'package:more_mitro_app/pages/category/widget/category_file_tile.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:shimmer/shimmer.dart';
@@ -68,22 +70,33 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  // ---------------- SEARCH BAR ----------------
   Widget _searchBar() {
-    return TextFormFieldWidget(
-      controller: _searchController,
-      onChanged: (value) {
-        _debounce?.cancel();
-        _debounce = Timer(const Duration(milliseconds: 350), () {
-          // controller.searchCategory(value);
-        });
-      },
-      suffixIcon: IconButton(
-        icon: const Icon(Icons.search, size: 20),
-        onPressed: () {},
-      ),
-      hintText: "Search Audio, Video & Doc...",
-    );
+    return Obx(() {
+      return TextFormFieldWidget(
+        controller: _searchController,
+        hintText: "Search Audios, Videos & Docs",
+        suffixIcon: controller.isGlobalSearch.value
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _searchController.clear();
+                  controller.resetGlobalSearch();
+                },
+              )
+            : IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  controller.globalSearchFiles(
+                    _searchController.text.trim(),
+                  );
+                },
+              ),
+        // 🔥 Trigger search when user presses "Search" on keyboard
+        onFieldSubmitted: (value) {
+          controller.globalSearchFiles(value?.trim());
+        },
+      );
+    });
   }
 
   // ---------------- UI ----------------
@@ -96,66 +109,89 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         visibleBackButton: widget.isFromMenu,
       ),
       body: BaseBackgroundWidget(
-        child: Obx(() {
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('MoreMito Library', style: AppTextStyle.normalBold20),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Browse categories or search by sub categories, filenames, or tags.",
-                      style: AppTextStyle.normalRegular14
-                          .copyWith(color: Colors.black54),
-                    ),
-                    const SizedBox(height: 12),
-                    _searchBar(),
-                  ],
+          child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('MoreMito Library', style: AppTextStyle.normalBold20),
+                const SizedBox(height: 6),
+                Text(
+                  "Browse categories or search by sub categories, filenames, or tags.",
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(color: Colors.black54),
                 ),
-              ),
+                const SizedBox(height: 12),
+                _searchBar(),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Obx(() {
+              // 🔍 GLOBAL SEARCH RESULT (FILES)
+              if (controller.isGlobalSearch.value) {
+                if (controller.isLoading.value &&
+                    controller.categoriesFileList.isEmpty) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 6,
+                    itemBuilder: (_, __) => const CategoryFileShimmer(),
+                  );
+                }
 
-              // CONTENT
-              Expanded(
-                child: controller.isLoading.value
-                    ? _shimmerGrid()
-                    : controller.categoriesList.isEmpty
-                        ? const NoDataFound(title: "Categories")
-                        : GridView.builder(
-                            padding: const EdgeInsets.all(16),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 200,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio: 1.8,
-                            ),
-                            itemCount: controller.categoriesList.length,
-                            itemBuilder: (context, index) {
-                              final category = controller.categoriesList[index];
+                if (controller.categoriesFileList.isEmpty) {
+                  return const NoDataFound(title: "Files");
+                }
 
-                              return GestureDetector(
-                                onTap: () {
-                                  controller.subCategoriesList.clear();
-                                  Get.to(() => SubCategoriesScreen(
-                                        data: category,
-                                      ));
-                                },
-                                child: CommonCategoryWidget(
-                                  category: category,
-                                  isSelected: category.isPopular ?? false,
-                                  isSubCategory: false,
-                                ),
-                              );
-                            },
-                          ),
-              ),
-            ],
-          );
-        }),
-      ),
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.categoriesFileList.length,
+                  itemBuilder: (context, index) {
+                    final file = controller.categoriesFileList[index];
+                    return CategoryFileTile(data: file);
+                  },
+                );
+              }
+
+              // 📂 NORMAL CATEGORY VIEW
+              if (controller.isLoading.value) {
+                return _shimmerGrid();
+              }
+
+              if (controller.categoriesList.isEmpty) {
+                return const NoDataFound(title: "Categories");
+              }
+
+              return GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.8,
+                ),
+                itemCount: controller.categoriesList.length,
+                itemBuilder: (context, index) {
+                  final category = controller.categoriesList[index];
+                  return GestureDetector(
+                    onTap: () {
+                      controller.subCategoriesList.clear();
+                      Get.to(() => SubCategoriesScreen(data: category));
+                    },
+                    child: CommonCategoryWidget(
+                      category: category,
+                      isSelected: category.isPopular ?? false,
+                      isSubCategory: false,
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      )),
     );
   }
 }

@@ -17,6 +17,12 @@ class CategoriesController extends GetxController {
   RxList<CategoryFileModel> categoriesFileList = <CategoryFileModel>[].obs;
   RxList<CategoryModel> subCategoriesList = <CategoryModel>[].obs;
   RxBool isLoading = false.obs;
+  RxBool hasMore = true.obs;
+  int _page = 1;
+  RxString searchText = ''.obs;
+  RxBool isGlobalSearch = false.obs;
+  RxString globalSearchText = ''.obs;
+
   Future<void> getCategoriesList(BuildContext context) async {
     isLoading.value = true;
     try {
@@ -54,22 +60,71 @@ class CategoriesController extends GetxController {
   }
 
   Future<void> getSubCategoriesFiles(
-      BuildContext? context, String categoryID) async {
+    BuildContext? context,
+    String subCategoryId, {
+    String? searchText,
+    bool loadMore = false,
+  }) async {
+    if (isLoading.value) return;
+
+    if (!loadMore) {
+      _page = 1;
+      categoriesFileList.clear();
+      hasMore.value = true;
+    }
+
     isLoading.value = true;
+
     try {
-      var response =
-          await _networkRepository.getSubCategoriesFiles(context, categoryID);
-      if (response != null) {
-        final model = categoryFileResponseModelFromJson(json.encode(response));
-        if (model.status == true) {
-          categoriesFileList.value = model.data ?? [];
+      final response = await _networkRepository.getSubCategoriesFiles(
+        context,
+        subCategoryId,
+        searchText: searchText,
+        pageNumber: _page,
+      );
+
+      final model = CategoryFileResponseModel.fromJson(response);
+
+      if (model.data != null) {
+        categoriesFileList.addAll(model.data!.files);
+        hasMore.value = model.data!.hasMore;
+
+        if (model.data!.hasMore) {
+          _page++;
         }
       }
     } catch (e) {
-      print("Error in getSubCategoriesFiles: $e");
+      debugPrint("getSubCategoriesFiles error: $e");
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void globalSearchFiles(String? searchText) {
+    isGlobalSearch.value = searchText != null && searchText.isNotEmpty;
+    globalSearchText.value = searchText ?? '';
+
+    getSubCategoriesFiles(
+      null,
+      "", // ✅ SubCategoryId MUST be null/empty
+      searchText: searchText,
+      loadMore: false,
+    );
+  }
+
+  void resetGlobalSearch() {
+    isGlobalSearch.value = false;
+    globalSearchText.value = '';
+    categoriesFileList.clear();
+  }
+
+  void resetAndSearch(String? text, String subCategoryId) {
+    searchText.value = text ?? "";
+
+    _page = 1;
+    categoriesFileList.clear();
+    hasMore.value = true;
+    getSubCategoriesFiles(null, subCategoryId, searchText: text);
   }
 
   Future<void> mobileSaveFileShare({

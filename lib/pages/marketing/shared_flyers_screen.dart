@@ -116,11 +116,13 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                               DropdownMenuItem(
                                   value: "All", child: Text("All")),
                               DropdownMenuItem(
-                                  value: "Files", child: Text("Files")),
+                                  value: "Files",
+                                  child: Text("Audios, Videos & Docs")),
                               DropdownMenuItem(
                                   value: "Flyers", child: Text("Flyers")),
                               DropdownMenuItem(
-                                  value: "SMS", child: Text("SMS")),
+                                  value: "SMS",
+                                  child: Text("SMS requested info ")),
                             ],
                             onChanged: (value) {
                               controller.currentFileType.value =

@@ -2,18 +2,10 @@
 //
 //     final categoryFileResponseModel = categoryFileResponseModelFromJson(jsonString);
 
-import 'dart:convert';
-
-CategoryFileResponseModel categoryFileResponseModelFromJson(String str) =>
-    CategoryFileResponseModel.fromJson(json.decode(str));
-
-String categoryFileResponseModelToJson(CategoryFileResponseModel data) =>
-    json.encode(data.toJson());
-
 class CategoryFileResponseModel {
   bool? status;
-  dynamic message;
-  List<CategoryFileModel>? data;
+  String? message;
+  FileData? data;
 
   CategoryFileResponseModel({
     this.status,
@@ -21,23 +13,35 @@ class CategoryFileResponseModel {
     this.data,
   });
 
-  factory CategoryFileResponseModel.fromJson(Map<String, dynamic> json) =>
-      CategoryFileResponseModel(
-        status: json["Status"],
-        message: json["Message"],
-        data: json["Data"] == null
-            ? []
-            : List<CategoryFileModel>.from(
-                json["Data"]!.map((x) => CategoryFileModel.fromJson(x))),
-      );
+  factory CategoryFileResponseModel.fromJson(Map<String, dynamic> json) {
+    return CategoryFileResponseModel(
+      status: json["Status"],
+      message: json["Message"],
+      data: json["Data"] != null ? FileData.fromJson(json["Data"]) : null,
+    );
+  }
+}
 
-  Map<String, dynamic> toJson() => {
-        "Status": status,
-        "Message": message,
-        "Data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-      };
+class FileData {
+  List<CategoryFileModel> files;
+  int totalCount;
+  bool hasMore;
+
+  FileData({
+    required this.files,
+    required this.totalCount,
+    required this.hasMore,
+  });
+
+  factory FileData.fromJson(Map<String, dynamic> json) {
+    return FileData(
+      files: (json["Files"] as List)
+          .map((e) => CategoryFileModel.fromJson(e))
+          .toList(),
+      totalCount: json["TotalCount"] ?? 0,
+      hasMore: json["HasMore"] ?? false,
+    );
+  }
 }
 
 class CategoryFileModel {

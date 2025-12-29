@@ -11,8 +11,7 @@ class AppConstants {
   static const String saveSurvey = 'save-survey';
   static const String getCategories = 'get-categories';
   static const String getSubCategories = 'get-sub-categories?Categoryid=';
-  static const String getSubCategoriesFiles =
-      'get-sub-categories-files?SubCategoryId=';
+  static const String getSubCategoriesFiles = 'get-sub-categories-files';
   static const String getNotification = 'get-notifications';
   static const String getDashboard = 'get-dashboard';
   static const String getOrders = 'get-order-list';

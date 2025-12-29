@@ -5,6 +5,7 @@ import 'package:more_mitro_app/model/categories_model.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../controller/categories_controller.dart';
 import '../../utils/app_text_style.dart';
@@ -50,9 +51,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
         child: Obx(() {
           List<CategoryModel> subCategories =
               controller.subCategoriesList.value;
-
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return buildCategoryShimmer();
           }
 
           if (subCategories.isEmpty) {
@@ -117,6 +117,29 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
           ),
           height20,
         ],
+      ),
+    );
+  }
+
+  Widget buildCategoryShimmer() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.8,
+      ),
+      itemBuilder: (_, __) => Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
       ),
     );
   }

@@ -153,8 +153,23 @@ class NetworkRepository {
       getRequest(null, AppConstants.getSubCategories + categoryID);
 
   Future<dynamic> getSubCategoriesFiles(
-          BuildContext? context, String categoryID) =>
-      getRequest(null, AppConstants.getSubCategoriesFiles + categoryID);
+    BuildContext? context,
+    String subCategoryId, {
+    String? searchText,
+    int pageNumber = 1,
+  }) async {
+    final params = {
+      "SubCategoryId": subCategoryId,
+      "SearchText": searchText,
+      "PageNumber": pageNumber.toString(),
+    };
+
+    return getRequest(
+      null,
+      AppConstants.getSubCategoriesFiles,
+      queryParameters: params,
+    );
+  }
 
   Future<dynamic> mobileSaveFileShare(BuildContext context, var data) =>
       postRequest(context, AppConstants.mobileSaveFileShare, data: data);
