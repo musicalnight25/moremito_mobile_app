@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/utils/app_asset.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_web_view.dart';
 import 'package:more_mitro_app/utils/network_image_widget.dart';
+
 import '../../controller/flyer_templates_controller.dart';
 import '../../model/preview_response_model.dart';
 import '../../utils/colors.dart';
@@ -159,11 +159,6 @@ class _FlyerPreviewScreenState extends State<FlyerPreviewScreen> {
             height: 330.sp,
             width: double.infinity,
             fit: BoxFit.cover,
-          ),
-          Positioned(
-            top: 16,
-            left: 16,
-            child: Image.asset(AppAsset.logo, height: 36),
           ),
           Positioned(
             left: 16,

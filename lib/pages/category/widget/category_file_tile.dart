@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/model/category_file_model.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
-import 'package:more_mitro_app/utils/colors.dart';
-import 'package:more_mitro_app/model/category_file_model.dart';
 
 import '../document_viewer_screen.dart';
 
@@ -29,16 +28,16 @@ class CategoryFileTile extends StatelessWidget {
         data.filePath != null && GetUtils.isImage(data.filePath!);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6, top: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: ShadowContainerWidget(
-        padding: 12,
-        radius: 12,
+        radius: 14,
         borderWidth: 1,
         widget: InkWell(
           onTap: () {
             Get.to(() => DocumentViewerScreen(data: data));
           },
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 isVideo
@@ -48,22 +47,28 @@ class CategoryFileTile extends StatelessWidget {
                         : isAudio
                             ? CupertinoIcons.music_note_2
                             : CupertinoIcons.doc_text,
-                size: 26,
+                size: 28,
               ),
               const SizedBox(width: 12),
+
+              /// File name (expandable)
               Expanded(
                 child: Text(
                   data.fileName ?? "",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.normalBold14,
+                  softWrap: true,
+                  // maxLines: 4, // 👈 allows longer filenames
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 8),
+
+              const SizedBox(width: 10),
+
               Icon(
                 isVideo || isAudio
                     ? CupertinoIcons.play_circle
                     : CupertinoIcons.eye,
+                size: 26,
               ),
             ],
           ),
