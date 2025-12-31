@@ -9,6 +9,7 @@ EdgeInsets customVerticalHorizontal20({double vertical = 0}) =>
 
 // Sizedbox
 SizedBox customWidth(double width) => SizedBox(width: width.sp);
+SizedBox width04 = SizedBox(width: 4.sp);
 SizedBox width05 = SizedBox(width: 5.sp);
 SizedBox width06 = SizedBox(width: 6.sp);
 SizedBox width08 = SizedBox(width: 8.sp);

@@ -150,7 +150,7 @@ class FlyerTemplatesController extends GetxController {
           children: [
             PrimaryTextButton(
               title: "Choose from Contacts",
-              onPressed: () {
+              onPressed: () async {
                 Get.back();
                 Get.to(() => ContactScreen())!.then((value) {
                   if (contactController.selectedContact.value.isNotEmpty) {

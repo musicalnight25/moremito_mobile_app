@@ -162,7 +162,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                           children: [
                             PrimaryTextButton(
                               title: "Choose from Contacts",
-                              onPressed: () {
+                              onPressed: () async {
                                 Get.back();
                                 Get.to(() => ContactScreen())!.then((value) {
                                   if (contactController

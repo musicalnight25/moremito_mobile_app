@@ -30,8 +30,7 @@ class CategoryFileTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: ShadowContainerWidget(
-        radius: 14,
-        borderWidth: 1,
+        padding: 16,
         widget: InkWell(
           onTap: () {
             Get.to(() => DocumentViewerScreen(data: data));
@@ -56,9 +55,9 @@ class CategoryFileTile extends StatelessWidget {
                 child: Text(
                   data.fileName ?? "",
                   style: AppTextStyle.normalBold14,
-                  softWrap: true,
+                  // softWrap: true,
                   // maxLines: 4, // 👈 allows longer filenames
-                  overflow: TextOverflow.ellipsis,
+                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
 

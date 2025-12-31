@@ -13,6 +13,7 @@ import '../../utils/common_app_bar.dart';
 import '../../utils/no_data_found.dart';
 import '../../utils/base_background_widget.dart';
 import '../../utils/shadow_container_widget.dart';
+import '../../utils/static_decoration.dart';
 import 'flyer_activity_screen.dart';
 
 class SharedFlyersScreen extends StatefulWidget {
@@ -169,9 +170,6 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     );
   }
 
-  // ────────────────────────────────────────────────
-  // CARD
-  // ────────────────────────────────────────────────
   Widget _buildCard(SharedFlyerItem item) {
     final hasData = (item.totalInteractions ?? 0) > 0;
 
@@ -187,39 +185,113 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
         margin: EdgeInsets.only(bottom: 14.sp),
         padding: EdgeInsets.all(16.sp),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade300),
+          color: primaryWhite,
+          borderRadius: BorderRadius.circular(16.sp),
+          border: Border.all(color: borderGreyColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item.title ?? "Untitled",
-                style: AppTextStyle.normalSemiBold16),
-            const SizedBox(height: 4),
-            Text(item.subTitle ?? '',
-                style: AppTextStyle.normalRegular14
-                    .copyWith(color: Colors.black54)),
-            const SizedBox(height: 6),
-            Text(
-              "Shared on: ${_formatDate(item.sharedOn)}",
-              style: AppTextStyle.normalRegular13.copyWith(color: Colors.grey),
+            // Title and Interaction Eye Icon
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title ?? "Untitled Flyer",
+                    style:
+                        AppTextStyle.normalBold16.copyWith(color: primaryBlack),
+                  ),
+                ),
+                if (hasData)
+                  Icon(Icons.visibility_outlined,
+                      size: 20.sp, color: primaryColor),
+              ],
             ),
-            const SizedBox(height: 12),
+
+            if (item.subTitle != null && item.subTitle!.isNotEmpty) ...[
+              height04,
+              Text(
+                item.subTitle!,
+                style: AppTextStyle.normalRegular14
+                    .copyWith(color: lightBlackColor),
+              ),
+            ],
+
+            const Divider(height: 24, color: borderGreyColor),
+
+            // Shared Details Section
             Row(
               children: [
-                Icon(Icons.refresh, size: 18, color: primaryColor),
-                const SizedBox(width: 6),
-                Text("Total: ${item.totalInteractions ?? 0}",
-                    style: AppTextStyle.normalSemiBold14),
+                _infoTile(
+                  icon: Icons.person_outline,
+                  label: "Shared To",
+                  value: item.sharedTo ?? "N/A",
+                ),
                 const Spacer(),
-                if (hasData)
-                  const Icon(Icons.remove_red_eye_outlined, size: 22),
+                _infoTile(
+                  icon: Icons.calendar_today_outlined,
+                  label: "Date",
+                  value: _formatDate(item.sharedOn),
+                ),
               ],
-            )
+            ),
+
+            height12,
+
+            // Interaction Footer
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.analytics_outlined,
+                    size: 16.sp, color: primaryBlack),
+                width08,
+                Text(
+                  "Total Interactions: ",
+                  style: AppTextStyle.normalRegular13
+                      .copyWith(color: primaryBlack),
+                ),
+                Text(
+                  "${item.totalInteractions ?? 0}",
+                  style:
+                      AppTextStyle.normalBold14.copyWith(color: primaryBlack),
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+// Small helper widget for the Shared To and Date info
+  Widget _infoTile(
+      {required IconData icon, required String label, required String value}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 14.sp, color: hintGreyColor),
+            width04,
+            Text(label,
+                style: AppTextStyle.normalRegular12
+                    .copyWith(color: hintGreyColor)),
+          ],
+        ),
+        height04,
+        Text(
+          value,
+          style: AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
+        ),
+      ],
     );
   }
 

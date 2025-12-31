@@ -15,23 +15,21 @@ class ContactController extends GetxController {
 
   late Box contactsBox;
 
-  @override
-  void onInit() {
-    super.onInit();
-    contactsBox = Hive.box('contactsBox');
-
-    // 🔥 Register debounce ONCE
+  // Manual Setup triggered from Screen
+  void setupSearchListener() {
+    // This ensures search works without putting it in onInit
     debounce(
       searchQuery,
       (query) => _filterContacts(query.toString()),
       time: const Duration(milliseconds: 300),
     );
-
-    loadContacts();
   }
 
   // ---------------- LOAD CONTACTS ----------------
   Future<void> loadContacts() async {
+    isLoading.value = true;
+    contactsBox = Hive.box('contactsBox');
+
     final storedContacts = contactsBox.get('contacts');
 
     if (storedContacts != null) {
@@ -44,6 +42,9 @@ class ContactController extends GetxController {
       }).toList();
 
       filteredContacts.assignAll(contacts);
+      // Small delay so shimmer is actually visible to user
+      await Future.delayed(const Duration(milliseconds: 600));
+      isLoading.value = false;
     } else {
       await fetchContacts();
     }
@@ -65,7 +66,6 @@ class ContactController extends GetxController {
     }
 
     final fetched = await FlutterContacts.getContacts(withProperties: true);
-
     final validContacts = _removeInvalidContacts(fetched);
 
     contacts.assignAll(validContacts);
@@ -80,17 +80,14 @@ class ContactController extends GetxController {
     }).toList();
 
     await contactsBox.put('contacts', jsonEncode(contactList));
-
     isLoading.value = false;
   }
 
-  // ---------------- FILTER CONTACTS ----------------
   void _filterContacts(String query) {
     if (query.isEmpty) {
       filteredContacts.assignAll(contacts);
       return;
     }
-
     filteredContacts.assignAll(
       contacts.where(
         (c) => c.displayName.toLowerCase().contains(query.toLowerCase()),
@@ -98,30 +95,20 @@ class ContactController extends GetxController {
     );
   }
 
-  // ---------------- REMOVE DUPLICATES ----------------
   List<Contact> _removeInvalidContacts(List<Contact> list) {
     final seen = <String>{};
-
     return list.where((c) {
       if (c.phones.isEmpty) return false;
-
-      final phone = c.phones.first.number;
+      final phone = c.phones.first.number.replaceAll(RegExp(r'\s+'), '');
       if (phone.isEmpty || seen.contains(phone)) return false;
-
       seen.add(phone);
       return true;
     }).toList();
   }
 
-  // ---------------- SELECT CONTACT ----------------
   void selectContact(Contact contact) {
     selectedContact.value =
         "${contact.displayName}, ${contact.phones.first.number}";
-    Get.back();
-  }
-
-  // ---------------- REFRESH ----------------
-  Future<void> refreshContacts() async {
-    await fetchContacts();
+    Get.back(result: contact);
   }
 }

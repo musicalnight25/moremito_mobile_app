@@ -65,6 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 1. Beta Disclaimer Added Here
+                  _betaDisclaimer(),
+                  height16,
                   _welcomeCard(user),
                   height20,
                   _callAnnouncementCard(user),
@@ -79,9 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //////////////////////////////////////////////////////////////////////////
-  ///                          WELCOME CARD                               ///
-  //////////////////////////////////////////////////////////////////////////
   Widget _welcomeCard(DashboardModel user) {
     return Container(
       width: Get.width,
@@ -133,9 +133,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //////////////////////////////////////////////////////////////////////////
-  ///                    CALL ANNOUNCEMENT CARD                          ///
-  //////////////////////////////////////////////////////////////////////////
   Widget _callAnnouncementCard(DashboardModel user) {
     CallDetails? call = user.callDetails;
     if (call == null) return const SizedBox();
@@ -214,9 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  //////////////////////////////////////////////////////////////////////////
-  ///                         ANNOUNCEMENTS CARD                         ///
-  //////////////////////////////////////////////////////////////////////////
   Widget _announcementCard(DashboardModel user) {
     List<AnnouncementDetails> list = user.announcementDetails ?? [];
     if (list.isEmpty) return const SizedBox();
@@ -278,6 +272,125 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _betaDisclaimer() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: primaryWhite,
+        borderRadius: BorderRadius.circular(16.sp),
+        // Solid professional shadow using your theme shadow color
+        boxShadow: [
+          BoxShadow(
+            color: bgPrimaryShadowColor.withOpacity(0.4),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.sp),
+        child: Stack(
+          children: [
+            // Background Decoration: Soft Gradient Blobs
+            Positioned(
+              right: -20,
+              top: -20,
+              child: CircleAvatar(
+                radius: 50.r,
+                backgroundColor: paleYellowColor.withOpacity(0.5),
+              ),
+            ),
+
+            // Layout with Accent Bar
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  // Solid Primary Accent Bar
+                  Container(
+                    width: 6.w,
+                    decoration: const BoxDecoration(
+                      color: primaryColor, // Your solid theme primary color
+                    ),
+                  ),
+
+                  // Content Section
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 14.h),
+                      decoration: BoxDecoration(
+                        // Using your paleYellowColor as a soft glass effect
+                        color: paleYellowColor.withOpacity(0.3),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              // Badge Style Icon
+                              Container(
+                                padding: EdgeInsets.all(6.sp),
+                                decoration: BoxDecoration(
+                                    color: primaryWhite,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: primaryColor.withOpacity(0.2)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: primaryColor.withOpacity(0.1),
+                                        blurRadius: 4,
+                                      )
+                                    ]),
+                                child: Icon(Icons.auto_awesome,
+                                    color: primaryColor, size: 14.sp),
+                              ),
+                              width10,
+                              Text(
+                                "BETA VERSION",
+                                style: AppTextStyle.normalBold12.copyWith(
+                                  color: primaryColor,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                              const Spacer(),
+                              // Optional Close or Tag
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w, vertical: 2.h),
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  "v1.0.0",
+                                  style: AppTextStyle.normalBold10
+                                      .copyWith(color: primaryColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                          height10,
+                          Text(
+                            "This app is currently in Beta, which means some features may be incomplete, under testing, or subject to change. You may experience occasional issues or variations. We appreciate your feedback as we work to improve the app.",
+                            style: AppTextStyle.normalRegular13.copyWith(
+                              color: lightBlackColor,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
