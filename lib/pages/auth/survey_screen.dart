@@ -148,10 +148,14 @@ class SurveyScreen extends StatelessWidget {
                                                           .normalBold14,
                                                     ),
                                                   ),
-                                                  SvgPicture.asset(isSelect
-                                                      ? AppAsset.selectedCheck
-                                                      : AppAsset
-                                                          .unselectedCheck),
+                                                  isSelect
+                                                      ? SvgPicture.asset(
+                                                          AppAsset
+                                                              .selectedCheck)
+                                                      : Icon(
+                                                          Icons.circle_outlined,
+                                                          color: Colors.grey,
+                                                        ),
                                                 ],
                                               ),
                                             ),

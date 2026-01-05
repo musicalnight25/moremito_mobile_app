@@ -21,6 +21,7 @@ import '../utils/common_method.dart';
 import 'notification/notification_screen.dart';
 
 var homeController = Get.put(HomeController());
+RxInt unreadNotificationCount = 0.obs;
 
 class MainHomeScreen extends StatefulWidget {
   MainHomeScreen({Key? key}) : super(key: key);
@@ -190,8 +191,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   Widget _buildNotificationIcon() {
     return Obx(() {
-      int unreadCount =
-          homeController.dashboardModel.value?.unreadNotificationCount ?? 0;
+      int unreadCount = unreadNotificationCount.value;
       String displayCount = unreadCount > 99 ? '99+' : unreadCount.toString();
 
       return Stack(

@@ -144,11 +144,11 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "${(data.sizeInMb ?? 0).toStringAsFixed(2)} MB",
-                  style: AppTextStyle.normalRegular12
-                      .copyWith(color: hintGreyColor),
-                ),
+                // Text(
+                //   "${(data.sizeInMb ?? 0).toStringAsFixed(2)} MB",
+                //   style: AppTextStyle.normalRegular12
+                //       .copyWith(color: hintGreyColor),
+                // ),
                 IconButton(
                   onPressed: () async {
                     CommonMethod.showCustomBottomSheet(

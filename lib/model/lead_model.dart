@@ -100,4 +100,35 @@ class LeadModel {
       pageType: json["PageType"],
     );
   }
+
+  /// ✅ ADD THIS METHOD
+  LeadModel copyWith({
+    int? id,
+    String? name,
+    String? phone,
+    String? email,
+    String? notes,
+    bool? contactMe,
+    DateTime? createdDate,
+    bool? isContacted,
+    DateTime? contactedDate,
+    String? adminNotes,
+    bool? isArchived,
+    String? pageType,
+  }) {
+    return LeadModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      notes: notes ?? this.notes,
+      contactMe: contactMe ?? this.contactMe,
+      createdDate: createdDate ?? this.createdDate,
+      isContacted: isContacted ?? this.isContacted,
+      contactedDate: contactedDate ?? this.contactedDate,
+      adminNotes: adminNotes ?? this.adminNotes,
+      isArchived: isArchived ?? this.isArchived,
+      pageType: pageType ?? this.pageType,
+    );
+  }
 }

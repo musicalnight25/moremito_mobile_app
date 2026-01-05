@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/pages/notification/widget/notification_shimmer_card.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
@@ -49,12 +50,34 @@ class _NotificationScreenState extends State<NotificationScreen> {
               padding: EdgeInsets.symmetric(horizontal: 18.sp),
               children: [
                 height20,
-                Text(
-                  "Notifications",
-                  style: AppTextStyle.normalExtraBold.copyWith(
-                    fontSize: 26.sp,
-                    color: primaryBlack,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Notifications",
+                      style: AppTextStyle.normalExtraBold.copyWith(
+                        fontSize: 26.sp,
+                        color: primaryBlack,
+                      ),
+                    ),
+                    // NEW BUTTON
+                    Obx(
+                      () => controller.isMarkingRead.value
+                          ? const CupertinoActivityIndicator()
+                          : TextButton(
+                              onPressed: () =>
+                                  controller.markAllAsRead(context),
+                              child: Text(
+                                "Mark all read",
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
                 height20,
 
@@ -181,12 +204,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return InkWell(
       onTap: () async {
+        bool wasUnread = !isRead;
         await Get.to(
           () => NotificationDetailsScreen(
             notificationId: "${element.id}",
           ),
         );
         controller.refreshNotifications(null);
+        if (wasUnread) {
+          unreadNotificationCount.value--;
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),

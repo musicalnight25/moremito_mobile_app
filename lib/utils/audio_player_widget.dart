@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:more_mitro_app/utils/colors.dart';
-
 import 'app_text_style.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
@@ -16,48 +16,61 @@ class AudioPlayerWidget extends StatefulWidget {
 
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
     with SingleTickerProviderStateMixin {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  Duration _position = Duration.zero;
-  Duration _duration = Duration.zero;
-  bool isPlaying = false;
+  late AudioPlayer _audioPlayer;
   late AnimationController _animationController;
+
+  Duration _duration = Duration.zero;
+  bool _isSourceSet = false;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+    _audioPlayer = AudioPlayer();
 
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    // Set global context only once
+    _setupGlobalAudio();
+    _initSource();
+  }
 
-    _audioPlayer.onPositionChanged.listen((Duration p) {
-      setState(() => _position = p);
-    });
+  void _setupGlobalAudio() {
+    AudioPlayer.global.setAudioContext(AudioContext(
+      iOS: AudioContextIOS(category: AVAudioSessionCategory.playback),
+      android: AudioContextAndroid(usageType: AndroidUsageType.media),
+    ));
+  }
 
-    _audioPlayer.onDurationChanged.listen((Duration d) {
-      setState(() => _duration = d);
-    });
+  Future<void> _initSource() async {
+    try {
+      // Use 'Source' instead of 'setSource' directly to let it buffer in the background
+      await _audioPlayer.setSourceUrl(widget.audioUrl);
 
-    _audioPlayer.onPlayerComplete.listen((event) {
-      setState(() {
-        isPlaying = false;
-        _animationController.reverse();
+      _audioPlayer.onDurationChanged.listen((d) {
+        if (mounted) setState(() => _duration = d);
       });
-    });
+
+      _audioPlayer.onPlayerStateChanged.listen((state) {
+        if (mounted) {
+          state == PlayerState.playing
+              ? _animationController.forward()
+              : _animationController.reverse();
+        }
+      });
+
+      _isSourceSet = true;
+    } catch (e) {
+      debugPrint("Instant load error: $e");
+    }
   }
 
   void _togglePlayPause() async {
-    if (isPlaying) {
+    if (_audioPlayer.state == PlayerState.playing) {
       await _audioPlayer.pause();
-      _animationController.reverse();
     } else {
-      await _audioPlayer.play(UrlSource(widget.audioUrl));
-      _animationController.forward();
+      // Calling resume on a pre-set source is the fastest way to start
+      await _audioPlayer.resume();
     }
-    setState(() => isPlaying = !isPlaying);
-  }
-
-  void _seekTo(Duration position) async {
-    await _audioPlayer.seek(position);
   }
 
   @override
@@ -69,83 +82,107 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
-    return "${twoDigits(duration.inMinutes)}:${twoDigits(duration.inSeconds.remainder(60))}";
+    return "${twoDigits(duration.inMinutes.remainder(60))}:${twoDigits(duration.inSeconds.remainder(60))}";
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              primaryColor.withOpacity(.8),
-              primaryBlack.withOpacity(.9)
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SliderTheme(
-              data: SliderThemeData(
-                trackHeight: 4.h,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: primaryColor.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          // THE PLAY BUTTON
+          GestureDetector(
+            onTap: _togglePlayPause,
+            child: Container(
+              height: 40.sp,
+              width: 40.sp,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                shape: BoxShape.circle,
               ),
-              child: Slider(
-                min: 0,
-                max: _duration.inSeconds.toDouble(),
-                value: _position.inSeconds.toDouble(),
-                onChanged: (value) => _seekTo(Duration(seconds: value.toInt())),
-                activeColor: Colors.white,
-                inactiveColor: Colors.white38,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(_formatDuration(_position),
-                      style: AppTextStyle.normalBold14
-                          .copyWith(color: Colors.white)),
-                  Text(_formatDuration(_duration),
-                      style: AppTextStyle.normalBold14
-                          .copyWith(color: Colors.white)),
-                ],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            GestureDetector(
-              onTap: _togglePlayPause,
-              child: Container(
-                padding: EdgeInsets.all(8.sp),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: primaryWhite.withOpacity(.8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
+              child: Center(
                 child: AnimatedIcon(
                   icon: AnimatedIcons.play_pause,
                   progress: _animationController,
-                  size: 36.sp,
-                  color: primaryBlack,
+                  size: 22.sp,
+                  color: Colors.white,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(width: 12.w),
+
+          // THE SLIDER & POSITION
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StreamBuilder<Duration>(
+                  stream: _audioPlayer.onPositionChanged,
+                  builder: (context, snapshot) {
+                    final position = snapshot.data ?? Duration.zero;
+                    double max = _duration.inSeconds.toDouble();
+                    double value = position.inSeconds.toDouble();
+
+                    if (value > max) value = max;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 3.h,
+                            thumbShape:
+                                RoundSliderThumbShape(enabledThumbRadius: 5.r),
+                            overlayShape:
+                                RoundSliderOverlayShape(overlayRadius: 12.r),
+                            activeTrackColor: primaryColor,
+                            inactiveTrackColor: primaryColor.withOpacity(0.1),
+                            thumbColor: primaryColor,
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: Slider(
+                            min: 0,
+                            max: max > 0 ? max : 1.0,
+                            value: value,
+                            onChanged: (v) {
+                              _audioPlayer.seek(Duration(seconds: v.toInt()));
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 4.w),
+                          child: Text(
+                            _formatDuration(position),
+                            style: AppTextStyle.normalRegular10.copyWith(
+                              color: hintGreyColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

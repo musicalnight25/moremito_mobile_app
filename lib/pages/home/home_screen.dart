@@ -9,6 +9,7 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
+import '../auth/start_survey_screen.dart';
 import 'announcement_detail_screen.dart';
 import 'call_detail_screen.dart';
 
@@ -65,7 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Beta Disclaimer Added Here
                   _betaDisclaimer(),
                   height16,
                   _welcomeCard(user),

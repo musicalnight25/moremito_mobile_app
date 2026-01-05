@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
+import 'package:more_mitro_app/utils/primary_text_button.dart';
+import 'package:more_mitro_app/utils/text_primary_button.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../controller/flyers_controller.dart';
@@ -38,15 +40,20 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   @override
   void initState() {
     super.initState();
-    controller.resetPagination();
-
-    controller.getSharedFlyers(filterKey: widget.filterKey);
-
+// Initial reset and fetch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.resetPagination();
+      controller.getSharedFlyers(filterKey: widget.filterKey);
+    });
     _scrollController.addListener(() {
+      // Trigger when user is 90% down the list
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent * 0.9) {
-        if (!controller.loadMoreLoading.value && controller.hasMore) {
-          controller.getSharedFlyers(filterKey: widget.filterKey);
+        if (controller.hasMore &&
+            !controller.loadMoreLoading.value &&
+            !controller.listLoading.value) {
+          controller.getSharedFlyers(
+              filterKey: widget.filterKey, search: _searchController.text);
         }
       }
     });
@@ -173,125 +180,130 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   Widget _buildCard(SharedFlyerItem item) {
     final hasData = (item.totalInteractions ?? 0) > 0;
 
-    return InkWell(
-      onTap: hasData
-          ? () => Get.to(() => FlyerActivityScreen(
-                sharedFlyerId: item.fileShareId!,
-                title: item.title ?? "",
-                sharedTo: item.sharedTo ?? "",
-              ))
-          : null,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 14.sp),
-        padding: EdgeInsets.all(16.sp),
-        decoration: BoxDecoration(
-          color: primaryWhite,
-          borderRadius: BorderRadius.circular(16.sp),
-          border: Border.all(color: borderGreyColor),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title and Interaction Eye Icon
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    item.title ?? "Untitled Flyer",
-                    style:
-                        AppTextStyle.normalBold16.copyWith(color: primaryBlack),
+    void navigateToDetails() {
+      if (hasData) {
+        Get.to(() => FlyerActivityScreen(
+              sharedFlyerId: item.fileShareId!,
+              title: item.title ?? "",
+              fileType: item.fileType ?? 1,
+              sharedTo: item.sharedTo ?? "",
+            ));
+      }
+    }
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 14.sp),
+      padding: EdgeInsets.all(16.sp),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.sp),
+        // Smoother edges like the image
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Title Section
+          Text(
+            item.title ?? "Untitled Flyer",
+            style: AppTextStyle.normalBold16.copyWith(color: Colors.black87),
+          ),
+
+          SizedBox(height: 16.sp),
+
+          // 2. Info List Section (Vertical as per image)
+          _infoRow(
+            icon: Icons.person_search_outlined,
+            // Closer to the "Shared To" icon
+            label: "Shared To:",
+            value: item.sharedTo ?? "N/A",
+            valueColor: Colors.grey.shade600,
+          ),
+          _infoRow(
+            icon: Icons.share_outlined,
+            label: "Shared By:",
+            value: item.sharedBy ?? "whatsapp", // Added Shared By
+            valueColor: Colors.grey.shade600,
+          ),
+          _infoRow(
+            icon: Icons.calendar_month_outlined,
+            label: "Shared On:",
+            value: _formatDate(item.sharedOn),
+            valueColor: Colors.grey.shade600,
+          ),
+          _infoRow(
+            icon: Icons.access_time,
+            label: "Last Activity:",
+            value: _formatDate(item.lastInteractionDate) ?? "N/A",
+            valueColor: Colors.grey.shade600,
+          ),
+
+          const Divider(height: 25, color: borderGreyColor),
+
+          // 3. Footer Section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Total Interactions
+              Row(
+                children: [
+                  Icon(Icons.ads_click,
+                      size: 20.sp, color: Colors.green.shade700),
+                  SizedBox(width: 8.sp),
+                  Text(
+                    "Total: ${item.totalInteractions ?? 0}",
+                    style: AppTextStyle.normalBold14
+                        .copyWith(color: Colors.green.shade900),
                   ),
-                ),
-                if (hasData)
-                  Icon(Icons.visibility_outlined,
-                      size: 20.sp, color: primaryColor),
-              ],
-            ),
-
-            if (item.subTitle != null && item.subTitle!.isNotEmpty) ...[
-              height04,
-              Text(
-                item.subTitle!,
-                style: AppTextStyle.normalRegular14
-                    .copyWith(color: lightBlackColor),
+                ],
               ),
+              if (item.totalInteractions != 0)
+                TextPrimaryButton(
+                    title: "View Details", onPressed: navigateToDetails)
             ],
-
-            const Divider(height: 24, color: borderGreyColor),
-
-            // Shared Details Section
-            Row(
-              children: [
-                _infoTile(
-                  icon: Icons.person_outline,
-                  label: "Shared To",
-                  value: item.sharedTo ?? "N/A",
-                ),
-                const Spacer(),
-                _infoTile(
-                  icon: Icons.calendar_today_outlined,
-                  label: "Date",
-                  value: _formatDate(item.sharedOn),
-                ),
-              ],
-            ),
-
-            height12,
-
-            // Interaction Footer
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.analytics_outlined,
-                    size: 16.sp, color: primaryBlack),
-                width08,
-                Text(
-                  "Total Interactions: ",
-                  style: AppTextStyle.normalRegular13
-                      .copyWith(color: primaryBlack),
-                ),
-                Text(
-                  "${item.totalInteractions ?? 0}",
-                  style:
-                      AppTextStyle.normalBold14.copyWith(color: primaryBlack),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-// Small helper widget for the Shared To and Date info
-  Widget _infoTile(
-      {required IconData icon, required String label, required String value}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 14.sp, color: hintGreyColor),
-            width04,
-            Text(label,
-                style: AppTextStyle.normalRegular12
-                    .copyWith(color: hintGreyColor)),
-          ],
-        ),
-        height04,
-        Text(
-          value,
-          style: AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
-        ),
-      ],
+// Helper Widget for the rows
+  Widget _infoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color valueColor,
+    bool isHighlighted = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.sp),
+      child: Row(
+        children: [
+          Icon(icon, size: 20.sp, color: Colors.black87),
+          SizedBox(width: 12.sp),
+          SizedBox(
+            width: 90.sp, // Keeps labels aligned
+            child: Text(
+              label,
+              style: AppTextStyle.normalBold14.copyWith(
+                color: Colors.black87,
+                backgroundColor:
+                    isHighlighted ? Colors.blue.withOpacity(0.1) : null,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: AppTextStyle.normalRegular14.copyWith(
+                color: isHighlighted ? Colors.blue.shade800 : valueColor,
+                backgroundColor:
+                    isHighlighted ? Colors.blue.withOpacity(0.1) : null,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -467,13 +479,16 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                     itemBuilder: (context, index) {
                       if (index < controller.sharedFlyers.length) {
                         return _buildCard(controller.sharedFlyers[index]);
+                      } else {
+                        // This shows the loader only if there is actually more data to fetch
+                        return controller.hasMore
+                            ? const Padding(
+                                padding: EdgeInsets.all(16),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )
+                            : const SizedBox.shrink();
                       }
-
-                      // bottom loading
-                      return const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
                     },
                   ),
                 );

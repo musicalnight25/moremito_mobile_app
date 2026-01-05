@@ -24,6 +24,7 @@ class AppConstants {
       'get-notification-detail?NotificationId=';
   static const String mobileSaveFileShare = 'save-file-share';
   static const String generateLink = 'generate-link';
+  static const String generateFlyerShareLink = 'generate-flyer-share-link';
   static const String getSupportTickets = 'get-support-tickets';
   static const String getTicketPriorities = 'get-ticket-priorities';
   static const String getTicketModules = 'get-ticket-modules';
@@ -40,6 +41,7 @@ class AppConstants {
   static const String getFlyerTrackingStats = 'get-flyer-tracking-stats';
   static const String getSharedFlyers = 'get-shared-flyers';
   static const String getFlyerInteractions = 'get-flyer-interactions';
+  static const String getLinkActivityDetails = 'get-link-activity-details';
   static const String archiveLead = 'archive-lead';
   static const String getMyLeads = 'my-leads';
   static const String getTmrisLeads = 'get-tmris-leads';
@@ -57,4 +59,8 @@ class AppConstants {
   static const String changePassword = 'change-password';
   static const String changeUserRole = 'change-user-role';
   static const String saveFlyerDetails = 'save-flyer';
+  static const String markAllNotificationsRead =
+      'mark-all-notifications-as-read';
+  static const String saveLeadNotes = 'save-lead-notes';
+  static const String markLeadAsContacted = 'mark-lead-as-contacted';
 }

@@ -55,15 +55,15 @@ class NotificationSettingsScreen extends StatelessWidget {
               height10,
 
               // CATEGORIES
-              _buildCategoryCard(
-                title: "System Updates",
-                subtitle: "Security, account, and technical alerts",
-                toggle: c.isSystemEnabled,
-                list: c.systemList,
-                onCategoryToggle: (v) =>
-                    c.toggleCategory(c.isSystemEnabled, c.systemList, v),
-                onItemToggle: c.toggleSingle,
-              ),
+              // _buildCategoryCard(
+              //   title: "System Updates",
+              //   subtitle: "Security, account, and technical alerts",
+              //   toggle: c.isSystemEnabled,
+              //   list: c.systemList,
+              //   onCategoryToggle: (v) =>
+              //       c.toggleCategory(c.isSystemEnabled, c.systemList, v),
+              //   onItemToggle: c.toggleSingle,
+              // ),
 
               _buildCategoryCard(
                 title: "Marketing & Offers",

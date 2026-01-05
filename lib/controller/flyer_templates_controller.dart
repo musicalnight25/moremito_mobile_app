@@ -128,9 +128,9 @@ class FlyerTemplatesController extends GetxController {
         "SharedTo": SharedTo,
         "UserFlyerGuid": UserFlyerGuid
       };
-      var response = await _repo.generateLink(context, data);
+      var response = await _repo.generateFlyerShareLink(context, data);
       if (response != null && response['Data'] != null) {
-        return response['Data'];
+        return response['Data']['ShareUrl'];
       }
     } catch (e) {
       print("Error in generateLink: $e");
@@ -214,7 +214,7 @@ class FlyerTemplatesController extends GetxController {
                     }
                     final link = await generateLink(
                       context: Get.context!,
-                      fileId: data.id.toString(),
+                      fileId: data.templateId.toString(),
                       SharedTo: nameTextController.text.trim(),
                       UserFlyerGuid: data.userFlyerInfo?.flyerGuid ??
                           "437ca342-b192-4bc7-bd9c-3c1f9522f9ca",

@@ -20,7 +20,7 @@ class MyLeadController extends GetxController {
   int pageNumber = 1;
   final int pageSize = 5;
 
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() {
@@ -46,7 +46,7 @@ class MyLeadController extends GetxController {
     isLoading.value = false;
   }
 
-  /// TAB SWITCH (Archived / Active)
+  /// TAB SWITCH
   Future<void> changeArchiveTab(bool archived) async {
     isArchivedTab.value = archived;
     await refreshLeads();
@@ -128,5 +128,68 @@ class MyLeadController extends GetxController {
         errorMessage3: stack.toString(),
       );
     }
+  }
+
+  /// SAVE INTERNAL NOTES
+  Future<bool> saveInternalNotes({
+    required int leadId,
+    required String notes,
+  }) async {
+    try {
+      final response = await _networkRepository.saveLeadNotes(
+        data: {
+          "LeadId": leadId,
+          "InternalNotes": notes,
+        },
+      );
+
+      if (response != null && response["Status"] == true) {
+        return true;
+      }
+    } catch (e, stack) {
+      await ErrorLogger.logErrorToServer(
+        pageType: "LeadDetails",
+        actionType: "SaveNotes",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
+    }
+    return false;
+  }
+
+  /// MARK LEAD AS CONTACTED (REAL-TIME UPDATE)
+  Future<DateTime?> markAsContacted(int leadId) async {
+    try {
+      final response = await _networkRepository.markLeadAsContacted(
+        data: {"LeadId": leadId},
+      );
+
+      if (response != null && response["Status"] == true) {
+        final dateString = response["Data"]?["ContactedDate"];
+
+        if (dateString != null) {
+          final contactedDate = DateTime.tryParse(dateString);
+
+          /// 🔥 UPDATE LIST IN REAL TIME
+          final index = leadList.indexWhere((e) => e.id == leadId);
+          if (index != -1) {
+            leadList[index] = leadList[index].copyWith(
+              isContacted: true,
+              contactedDate: contactedDate,
+            );
+          }
+
+          return contactedDate;
+        }
+      }
+    } catch (e, stack) {
+      await ErrorLogger.logErrorToServer(
+        pageType: "LeadDetails",
+        actionType: "MarkContacted",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
+    }
+    return null;
   }
 }

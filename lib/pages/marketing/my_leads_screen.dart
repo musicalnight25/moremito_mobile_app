@@ -31,11 +31,15 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.initialLoad();
-    });
+    refreshPage();
   }
 
+
+  refreshPage(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+     await controller.initialLoad();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,68 +52,24 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
             color: primaryColor,
             child: ListView(
               controller: controller.scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 18.sp),
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 height20,
-
-                /// ───── TITLE ─────
                 Text(
                   "My Leads",
                   style: AppTextStyle.normalExtraBold.copyWith(fontSize: 26.sp),
                 ),
-                height06,
-
-                RichText(
-                  text: TextSpan(
-                    style: AppTextStyle.normalRegular14.copyWith(
-                      color: hintGreyColor,
-                    ),
-                    children: [
-                      const TextSpan(
-                        text:
-                            "The following prospect data comes directly from the ",
-                      ),
-                      TextSpan(
-                        text: "Text Message Request Info System",
-                        style: AppTextStyle.normalRegular14.copyWith(
-                          color: primaryColor, // clickable color
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Get.to(() => TmrisInfoScreen());
-                            debugPrint(
-                                "Text Message Request Info System clicked");
-                          },
-                      ),
-                      const TextSpan(
-                        text:
-                            ". The system captures prospect data and stores the data here for future reference.",
-                      ),
-                    ],
-                  ),
-                ),
-
+                height08,
+                _infoText(),
                 height16,
-
-                /// ───── TABS ─────
                 _archiveTabs(),
-                height16,
-
-                /// ───── LOADING ─────
+                height20,
                 if (controller.isLoading.value)
                   ...List.generate(6, (_) => const NotificationShimmerCard()),
-
-                /// ───── EMPTY ─────
                 if (!controller.isLoading.value && controller.leadList.isEmpty)
                   const NoDataFound(),
-
-                /// ───── LIST ─────
                 ...controller.leadList.map(_leadCard),
-
-                /// ───── PAGINATION ─────
                 if (controller.isPaginationLoading.value)
                   ...List.generate(2, (_) => const NotificationShimmerCard()),
               ],
@@ -120,16 +80,54 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
     );
   }
 
-  // ───────────────── TABS ─────────────────
+  // ───────────────── INFO TEXT ─────────────────
+
+  Widget _infoText() {
+    return RichText(
+      text: TextSpan(
+        style: AppTextStyle.normalRegular14.copyWith(
+          color: hintGreyColor,
+          height: 1.4,
+        ),
+        children: [
+          const TextSpan(
+            text: "The following prospect data comes directly from the ",
+          ),
+          TextSpan(
+            text: "Text Message Request Info System",
+            style: AppTextStyle.normalSemiBold14.copyWith(
+              color: primaryColor,
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                Get.to(() => TmrisInfoScreen());
+              },
+          ),
+          const TextSpan(
+            text:
+                ". The system captures prospect data and stores the data here for future reference.",
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _archiveTabs() {
     return Obx(
-      () => Row(
-        children: [
-          _tab("Active Leads", false),
-          width10,
-          _tab("Archived Leads", true),
-        ],
+      () => Container(
+        padding: EdgeInsets.all(4.sp),
+        decoration: BoxDecoration(
+          color: primaryColor.withOpacity(.06),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _tab("Active Leads", false),
+            _tab("Archived", true),
+          ],
+        ),
       ),
     );
   }
@@ -137,154 +135,180 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
   Widget _tab(String text, bool archived) {
     final selected = controller.isArchivedTab.value == archived;
 
-    return GestureDetector(
-      onTap: () => controller.changeArchiveTab(archived),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 18.sp, vertical: 8.sp),
-        decoration: BoxDecoration(
-          color: selected ? primaryColor : primaryColor.withOpacity(.12),
-          borderRadius: BorderRadius.circular(30.sp),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: selected ? Colors.white : primaryColor,
-            fontWeight: FontWeight.w600,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => controller.changeArchiveTab(archived),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.sp,
+            vertical: 8.sp,
+          ),
+          margin: EdgeInsets.symmetric(horizontal: 2.sp),
+          decoration: BoxDecoration(
+            color: selected ? primaryWhite : Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(.06),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : [],
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: selected ? primaryColor : hintGreyColor,
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  // ───────────────── LEAD CARD (PRO / VERTICAL) ─────────────────
+  // ───────────────── VERTICAL LEAD CARD ─────────────────
 
   Widget _leadCard(LeadModel lead) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16.sp),
+      margin: EdgeInsets.only(bottom: 18.sp),
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: primaryWhite,
-        borderRadius: BorderRadius.circular(14.sp),
-        border: Border.all(color: borderGreyColor),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 10,
+            offset: const Offset(0, 6),
           ),
         ],
+        border: Border.all(color: borderGreyColor.withOpacity(.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// ───── HEADER ─────
-          Text(
-            lead.name ?? "—",
-            style: AppTextStyle.normalSemiBold18.copyWith(
-              color: primaryColor,
-            ),
+          /// NAME + STATUS
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  lead.name ?? "-",
+                  style: AppTextStyle.normalSemiBold18
+                      .copyWith(color: primaryColor),
+                ),
+              ),
+              if (lead.isContacted == true) _contactedBadge(),
+            ],
           ),
-          height04,
-          if (lead.createdDate != null)
-            Text(
-              CommonMethod.formatDateFromDateTime(lead.createdDate),
-              style:
-                  AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
-            ),
 
-          height14,
+          height06,
+          Text(
+            CommonMethod.formatDateFromDateTime(lead.createdDate),
+            style: AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
+          ),
 
-          /// ───── INFO ─────
-          _verticalInfo("Phone Number", lead.phone),
-          height10,
-          _verticalInfo("Email Address", lead.email),
-          height10,
-          _verticalInfo("Call Me", lead.contactMe == true ? "Yes" : "No"),
-          height10,
-          _verticalInfo("Interest", lead.pageType),
+          Divider(height: 22.sp),
 
-          /// ───── NOTES ─────
+          _verticalItem("Phone", lead.phone),
+          _verticalItem("Email", lead.email),
+          _verticalItem("Call me", lead.contactMe == true ? "Yes" : "No"),
+          _verticalItem("Interest", lead.pageType),
+
           if ((lead.notes ?? "").isNotEmpty) ...[
             height16,
-            _notesSection(lead.notes),
+            _highlightBox("Message from Lead", lead.notes!),
+          ],
+
+          if ((lead.adminNotes ?? "").isNotEmpty) ...[
+            height12,
+            _highlightBox("My Notes about this lead", lead.adminNotes!),
           ],
 
           height18,
 
-          /// ───── ACTION ─────
           TextPrimaryButton(
-            onPressed: () {
-              Get.to(() => LeadDetailsScreen(lead: lead));
-            },
             title: "View Details",
+            onPressed: () {
+              Get.to(() => LeadDetailsScreen(lead: lead))!.then((value){
+                refreshPage();
+              });
+            },
           ),
         ],
       ),
     );
   }
 
-  // ───────────────── NOTES (CLASSY) ─────────────────
+  // ───────────────── SMALL WIDGETS ─────────────────
 
-  Widget _notesSection(String? notes) {
+  Widget _verticalItem(String label, String? value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10.sp),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
+          ),
+          height04,
+          Text(
+            value ?? "-",
+            style: AppTextStyle.normalRegular15,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _highlightBox(String title, String value) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16.sp),
+      padding: EdgeInsets.all(12.sp),
       decoration: BoxDecoration(
         color: bgPrimaryShadowColor,
-        borderRadius: BorderRadius.circular(12.sp),
-        border: Border.all(color: borderGreyColor),
+        borderRadius: BorderRadius.circular(10),
+        border: Border(
+          left: BorderSide(color: primaryColor, width: 3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              width10,
-              Text(
-                "Notes",
-                style:
-                    AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
-              ),
-            ],
-          ),
-          height10,
           Text(
-            notes ?? "",
-            style: AppTextStyle.normalRegular14.copyWith(
-              color: primaryBlack,
-              height: 1.5,
-            ),
+            title,
+            style: AppTextStyle.normalSemiBold14.copyWith(color: primaryColor),
+          ),
+          height06,
+          Text(
+            value,
+            style: AppTextStyle.normalRegular14.copyWith(height: 1.4),
           ),
         ],
       ),
     );
   }
 
-  // ───────────────── VERTICAL INFO ─────────────────
-
-  Widget _verticalInfo(String label, String? value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: AppTextStyle.normalRegular12.copyWith(color: hintGreyColor),
-        ),
-        height04,
-        Text(
-          (value == null || value.isEmpty) ? "—" : value,
-          style: AppTextStyle.normalRegular14.copyWith(color: primaryBlack),
-        ),
-      ],
+  Widget _contactedBadge() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
+      decoration: BoxDecoration(
+        color: Colors.teal,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Text(
+        "Contacted",
+        style: TextStyle(color: Colors.white, fontSize: 11),
+      ),
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:more_mitro_app/model/dashboard_model.dart';
 import 'package:more_mitro_app/service/network_repository.dart';
 
+import '../pages/main_dashboard_screen.dart';
+
 class HomeController extends GetxController {
   final NetworkRepository _networkRepository = NetworkRepository();
   Rxn<DashboardModel> dashboardModel = Rxn<DashboardModel>();
@@ -26,6 +28,8 @@ class HomeController extends GetxController {
         final model = dashboardResponseModelFromJson(json.encode(response));
         if (model.status == true) {
           dashboardModel.value = model.data;
+          unreadNotificationCount.value =
+              dashboardModel.value?.unreadNotificationCount ?? 0;
           isLoading.value = false;
         }
       }

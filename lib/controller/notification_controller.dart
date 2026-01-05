@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/colors.dart';
+import 'package:more_mitro_app/utils/common_method.dart';
 
 import '../model/notification_detail_model.dart';
 import '../model/notification_model.dart';
+import '../pages/main_dashboard_screen.dart';
 import '../service/error_logger.dart';
 import '../service/network_repository.dart';
 
@@ -18,6 +21,7 @@ class NotificationController extends GetxController {
   RxBool isPaginationLoading = false.obs;
   RxBool hasMoreData = true.obs;
   RxBool isDetailLoading = false.obs;
+  RxBool isMarkingRead = false.obs;
 
   /// filter
   RxInt selectedFilter = 0.obs; // 0=all 1=system 2=marketing 3=announcement
@@ -141,6 +145,32 @@ class NotificationController extends GetxController {
       );
     } finally {
       isDetailLoading.value = false;
+    }
+  }
+
+  Future<void> markAllAsRead(BuildContext? context) async {
+    try {
+      isMarkingRead.value = true;
+      unreadNotificationCount.value = 0;
+      final response =
+          await _networkRepository.markAllNotificationsRead(context: context);
+
+      if (response != null && response['status'] == true) {
+        // Option 1: Refresh from API
+        await refreshNotifications(context);
+
+        CommonMethod.getXSnackBar(
+            "Success", "All notifications marked as read", greenColor);
+      }
+    } catch (e, stack) {
+      await ErrorLogger.logErrorToServer(
+        pageType: "Notification",
+        actionType: "MarkAllRead",
+        errorMessage1: e.toString(),
+        errorMessage3: stack.toString(),
+      );
+    } finally {
+      isMarkingRead.value = false;
     }
   }
 }

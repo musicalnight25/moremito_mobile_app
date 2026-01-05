@@ -140,6 +140,10 @@ class NetworkRepository {
       getRequest(null, AppConstants.getFlyerInteractions,
           queryParameters: queryParameters);
 
+  Future<dynamic> getLinkActivityDetails(var queryParameters) =>
+      getRequest(null, AppConstants.getLinkActivityDetails,
+          queryParameters: queryParameters);
+
   Future<dynamic> getFlyerTrackingStats() => getRequest(
         null,
         AppConstants.getFlyerTrackingStats,
@@ -176,6 +180,9 @@ class NetworkRepository {
 
   Future<dynamic> generateLink(BuildContext context, var data) =>
       postRequest(context, AppConstants.generateLink, data: data);
+
+  Future<dynamic> generateFlyerShareLink(BuildContext context, var data) =>
+      postRequest(context, AppConstants.generateFlyerShareLink, data: data);
 
   Future<dynamic> getMyLeads({BuildContext? context, var queryParameters}) =>
       getRequest(context, AppConstants.getMyLeads,
@@ -252,6 +259,25 @@ class NetworkRepository {
   Future<dynamic> saveFlyerDetails({BuildContext? context, var body}) =>
       postRequest(context, AppConstants.saveFlyerDetails, data: body);
 
+  Future<dynamic> markAllNotificationsRead({BuildContext? context, var body}) =>
+      postRequest(context, AppConstants.markAllNotificationsRead, data: body);
+
+  Future<dynamic> saveLeadNotes({required var data}) async {
+    return postRequest(
+      null,
+      AppConstants.saveLeadNotes,
+      data: data,
+    );
+  }
+
+  Future<dynamic> markLeadAsContacted({required var data}) async {
+    return postRequest(
+      null,
+      AppConstants.markLeadAsContacted,
+      data: data,
+    );
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {
@@ -295,7 +321,7 @@ class NetworkRepository {
 
     _isSessionExpiredShown = true;
     CommonMethod.getXSnackBar(
-      "🔐 Access Denied!",
+      "Access Denied!",
       "Session expired. Please log in again.",
       redColor,
     );

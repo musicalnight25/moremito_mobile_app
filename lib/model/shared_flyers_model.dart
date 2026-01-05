@@ -24,6 +24,7 @@ class SharedFlyersResponse {
 class SharedFlyersData {
   List<SharedFlyerItem>? items;
   int? pageNumber;
+  bool? hasMore;
   int? pageSize;
   int? totalRecords;
   int? totalPages;
@@ -34,6 +35,7 @@ class SharedFlyersData {
         : List<SharedFlyerItem>.from(
             json["Items"].map((x) => SharedFlyerItem.fromJson(x)));
     pageNumber = json["PageNumber"];
+    hasMore = json["hasMore"];
     pageSize = json["PageSize"];
     totalRecords = json["TotalRecords"];
     totalPages = json["TotalPages"];
@@ -45,17 +47,21 @@ class SharedFlyerItem {
   String? title;
   String? subTitle;
   String? sharedTo;
+  String? sharedBy;
   String? sharedFrom;
   String? sharedOn;
   int? totalInteractions;
+  int? fileType;
   String? lastInteractionDate;
 
   SharedFlyerItem.fromJson(Map<String, dynamic> json) {
     fileShareId = json["FileShareId"];
     title = json["Title"];
+    sharedBy = json["SharedBy"];
     subTitle = json["SubTitle"];
     sharedTo = json["SharedTo"];
     sharedFrom = json["SharedFrom"];
+    fileType = json["FileType"];
     sharedOn = json["SharedOn"];
     totalInteractions = json["TotalInteractions"];
     lastInteractionDate = json["LastInteractionDate"];

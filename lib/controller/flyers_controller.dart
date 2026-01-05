@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/flyer_interaction_model.dart';
 import '../model/flyer_tracking_stats_model.dart';
+import '../model/link_activity_details_model.dart';
 import '../model/shared_flyers_model.dart';
 import '../service/network_repository.dart';
 
@@ -26,7 +27,10 @@ class FlyersController extends GetxController {
 
   // ---------------- ACTIVITY ----------------
   RxBool activityLoading = false.obs;
-  RxList<FlyerInteractionModel> interactions = <FlyerInteractionModel>[].obs;
+
+  // RxList<FlyerInteractionModel> interactions = <FlyerInteractionModel>[].obs;
+  RxList<LinkActivityDetailsModel> linkActivityDetailsModel =
+      <LinkActivityDetailsModel>[].obs;
 
   // ============================================================
   // FETCH STATS
@@ -48,15 +52,14 @@ class FlyersController extends GetxController {
     }
   }
 
-  // ============================================================
-  // FETCH SHARED FLYERS (WITH PAGINATION)
-  // ============================================================
   Future<void> getSharedFlyers({
     required String filterKey,
     String? search,
     String? fileType,
   }) async {
+    // 1. Check if we should actually fetch
     if (!hasMore && page != 1) return;
+    if (listLoading.value || loadMoreLoading.value) return;
 
     page == 1 ? listLoading.value = true : loadMoreLoading.value = true;
 
@@ -67,8 +70,8 @@ class FlyersController extends GetxController {
         "pageNumber": page,
         "pageSize": 10,
         "filterDays": filterKey,
-        "sharedTo": search?.isEmpty == true ? null : search,
-        "filterType": _mapFileTypeToApi(fileType),
+        "sharedTo": (search == null || search.isEmpty) ? null : search,
+        "filterType": mapFileTypeToApi(fileType),
       });
 
       if (response != null) {
@@ -79,8 +82,12 @@ class FlyersController extends GetxController {
 
           sharedFlyers.addAll(model.data?.items ?? []);
 
-          hasMore = page < (model.data?.totalPages ?? 1);
-          page++; // 🚀 next page
+          // 2. Use the HasMore property from your API JSON
+          hasMore = model.data?.hasMore ?? false;
+
+          if (hasMore) {
+            page++;
+          }
         }
       }
     } catch (e) {
@@ -103,19 +110,47 @@ class FlyersController extends GetxController {
   // ============================================================
   // FETCH ACTIVITY
   // ============================================================
-  Future<void> getFlyerInteractions({required int sharedFlyerId}) async {
+  // Future<void> getFlyerInteractions({required int sharedFlyerId}) async {
+  //   activityLoading.value = true;
+  //   interactions.clear();
+  //
+  //   try {
+  //     final response =
+  //         await _repo.getFlyerInteractions({'sharedLinkId': sharedFlyerId});
+  //
+  //     if (response != null) {
+  //       final model =
+  //           flyerInteractionResponseModelFromJson(json.encode(response));
+  //       if (model.status == true) {
+  //         interactions.value = model.data ?? [];
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Flyer activity error: $e");
+  //   } finally {
+  //     activityLoading.value = false;
+  //   }
+  // }
+  Future<void> getLinkActivityDetails({
+    required int fileShareId,
+    required int fileType,
+    required String sharedTo,
+  }) async {
     activityLoading.value = true;
-    interactions.clear();
+    linkActivityDetailsModel.clear();
 
     try {
-      final response =
-          await _repo.getFlyerInteractions({'sharedLinkId': sharedFlyerId});
+      final response = await _repo.getLinkActivityDetails({
+        'fileShareId': fileShareId,
+        'fileType': fileType,
+        'sharedTo': sharedTo
+      });
 
       if (response != null) {
         final model =
-            flyerInteractionResponseModelFromJson(json.encode(response));
+            linkActivityDetailsResponseModelFromJson(json.encode(response));
         if (model.status == true) {
-          interactions.value = model.data ?? [];
+          linkActivityDetailsModel.value = model.data?.items ?? [];
         }
       }
     } catch (e) {
@@ -128,7 +163,7 @@ class FlyersController extends GetxController {
   // ============================================================
   // HELPERS
   // ============================================================
-  int? _mapFileTypeToApi(String? value) {
+  int? mapFileTypeToApi(String? value) {
     switch (value) {
       case "Files":
         return 1;
