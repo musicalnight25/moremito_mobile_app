@@ -141,6 +141,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
               maxLines: 10,
               overflow: TextOverflow.ellipsis,
             ),
+            height14,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -188,11 +189,17 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       ),
                     );
                   },
-                  icon: SvgPicture.asset(
-                    AppAsset.share,
-                    height: 18.sp,
-                    width: 18.sp,
-                    fit: BoxFit.scaleDown,
+                  icon: Row(
+                    children: [
+                      SvgPicture.asset(
+                        AppAsset.share,
+                        height: 18.sp,
+                        width: 18.sp,
+                        fit: BoxFit.scaleDown,
+                      ),
+                      width06,
+                      Text("Share")
+                    ],
                   ),
                 ),
               ],

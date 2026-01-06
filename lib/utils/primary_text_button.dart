@@ -85,7 +85,7 @@ class PrimaryTextButton extends StatelessWidget {
                         title.toString(),
                         softWrap: true,
                         textAlign: TextAlign.center,
-                        style: AppTextStyle.normalBold18
+                        style: AppTextStyle.normalBold14
                             .copyWith(color: textColor ?? primaryWhite),
                       ),
                     ),

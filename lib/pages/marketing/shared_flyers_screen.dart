@@ -203,37 +203,39 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Title Section
-          Text(
-            item.title ?? "Untitled Flyer",
-            style: AppTextStyle.normalBold16.copyWith(color: Colors.black87),
-          ),
-
-          SizedBox(height: 16.sp),
+          if (item.title != null && item.title != '')
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.sp),
+              child: Text(
+                item.title ?? "Untitled Flyer",
+                style:
+                    AppTextStyle.normalBold16.copyWith(color: Colors.black87),
+              ),
+            ),
 
           // 2. Info List Section (Vertical as per image)
           _infoRow(
             icon: Icons.person_search_outlined,
             // Closer to the "Shared To" icon
-            label: "Shared To:",
+            label: "Who :",
             value: item.sharedTo ?? "N/A",
             valueColor: Colors.grey.shade600,
           ),
           _infoRow(
             icon: Icons.share_outlined,
-            label: "Shared By:",
-            value: item.sharedBy ?? "whatsapp", // Added Shared By
+            label: "What :",
+            value: item.sharedBy ?? "", // Added Shared By
             valueColor: Colors.grey.shade600,
           ),
           _infoRow(
             icon: Icons.calendar_month_outlined,
-            label: "Shared On:",
+            label: "When :",
             value: _formatDate(item.sharedOn),
             valueColor: Colors.grey.shade600,
           ),
           _infoRow(
             icon: Icons.access_time,
-            label: "Last Activity:",
+            label: "Last Activity :",
             value: _formatDate(item.lastInteractionDate) ?? "N/A",
             valueColor: Colors.grey.shade600,
           ),
@@ -281,8 +283,9 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
         children: [
           Icon(icon, size: 20.sp, color: Colors.black87),
           SizedBox(width: 12.sp),
-          SizedBox(
-            width: 90.sp, // Keeps labels aligned
+          Expanded(
+            flex: 2,
+            // width: 90.sp, // Keeps labels aligned
             child: Text(
               label,
               style: AppTextStyle.normalBold14.copyWith(
@@ -293,6 +296,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
             ),
           ),
           Expanded(
+            flex: 2,
             child: Text(
               value,
               style: AppTextStyle.normalRegular14.copyWith(

@@ -6,7 +6,7 @@ import 'colors.dart';
 
 class TextPrimaryButton extends StatelessWidget {
   final String title;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? color;
 
   const TextPrimaryButton({

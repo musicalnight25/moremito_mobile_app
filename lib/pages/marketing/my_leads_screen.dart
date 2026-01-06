@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/marketing/tmris_info_screen.dart';
+import 'package:more_mitro_app/pages/marketing/widget/lead_card_shimmer.dart';
 
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/text_primary_button.dart';
@@ -15,7 +16,6 @@ import '../../utils/common_app_bar.dart';
 import '../../utils/common_method.dart';
 import '../../utils/no_data_found.dart';
 import '../../utils/static_decoration.dart';
-import '../notification/widget/notification_shimmer_card.dart';
 import 'lead_details_screen.dart';
 
 class MyLeadsScreen extends StatefulWidget {
@@ -34,12 +34,12 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
     refreshPage();
   }
 
-
-  refreshPage(){
+  refreshPage() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-     await controller.initialLoad();
+      await controller.initialLoad();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,12 +66,12 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
                 _archiveTabs(),
                 height20,
                 if (controller.isLoading.value)
-                  ...List.generate(6, (_) => const NotificationShimmerCard()),
+                  ...List.generate(6, (_) => const LeadCardShimmer()),
                 if (!controller.isLoading.value && controller.leadList.isEmpty)
                   const NoDataFound(),
                 ...controller.leadList.map(_leadCard),
                 if (controller.isPaginationLoading.value)
-                  ...List.generate(2, (_) => const NotificationShimmerCard()),
+                  ...List.generate(2, (_) => const LeadCardShimmer()),
               ],
             ),
           ),
@@ -238,7 +238,7 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
           TextPrimaryButton(
             title: "View Details",
             onPressed: () {
-              Get.to(() => LeadDetailsScreen(lead: lead))!.then((value){
+              Get.to(() => LeadDetailsScreen(lead: lead))!.then((value) {
                 refreshPage();
               });
             },
@@ -302,7 +302,7 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
       decoration: BoxDecoration(
-        color:primaryColor,
+        color: primaryColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(

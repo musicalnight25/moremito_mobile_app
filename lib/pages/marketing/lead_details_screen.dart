@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 
+// Ensure these paths are correct for your project
+import 'package:more_mitro_app/utils/input_text_field_widget.dart';
+import 'package:more_mitro_app/utils/text_primary_button.dart';
 import '../../controller/my_lead_controller.dart';
 import '../../model/lead_model.dart';
 import '../../utils/app_text_style.dart';
@@ -33,8 +35,6 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
   @override
   void initState() {
     super.initState();
-
-    /// ✅ Initialize ONCE
     rxLead = widget.lead.obs;
     notesController = TextEditingController(text: widget.lead.adminNotes ?? "");
   }
@@ -66,14 +66,21 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                 _row("Phone", lead.phone),
                 _row("Email", lead.email),
                 height20,
+
                 _section("Submission"),
                 _row(
                   "Submitted",
-                  CommonMethod.formatFullDateFromDateTime(
-                    lead.createdDate,
-                  ),
+                  CommonMethod.formatFullDateFromDateTime(lead.createdDate),
                 ),
                 _row("Call Me", lead.contactMe == true ? "Yes" : "No"),
+
+                // --- ADDED: Message from Lead Highlight Box ---
+                if ((lead.notes ?? "").isNotEmpty) ...[
+                  height16,
+                  _highlightBox("Message from Lead", lead.notes!),
+                ],
+                // ----------------------------------------------
+
                 height20,
                 _section("Contact Status"),
                 _row("Contacted", lead.isContacted == true ? "Yes" : "No"),
@@ -86,6 +93,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                       : "-",
                 ),
                 height20,
+
                 _section("My Notes about this lead"),
                 _notesField(),
                 height14,
@@ -116,6 +124,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.sp),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // Aligns text to top if multiline
         children: [
           SizedBox(
             width: 130.sp,
@@ -123,6 +133,45 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
           ),
           Expanded(
             child: Text(value ?? "-", style: AppTextStyle.normalRegular14),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ✅ New Highlight Box Widget
+  Widget _highlightBox(String label, String content) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(14.sp),
+      decoration: BoxDecoration(
+        color: bgPrimaryShadowColor, // Using your app's light blue/shadow color
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(color: primaryColor.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.message_rounded, size: 14.sp, color: primaryColor),
+              SizedBox(width: 6.w),
+              Text(
+                label,
+                style: AppTextStyle.normalSemiBold12.copyWith(
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            content,
+            style: AppTextStyle.normalRegular14.copyWith(
+              color: lightBlackColor,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -138,33 +187,34 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
   }
 
   Widget _saveNoteButton() {
-    return PrimaryTextButton(
-      title: isSaving.value ? "Saving..." : "Save Note",
-      onPressed: isSaving.value
-          ? null
-          : () async {
-              isSaving.value = true;
+    return Center(
+      child: TextPrimaryButton(
+        title: isSaving.value ? "Saving..." : "Save Note",
+        onPressed: isSaving.value
+            ? null
+            : () async {
+                isSaving.value = true;
 
-              final success = await controller.saveInternalNotes(
-                leadId: rxLead.value.id!,
-                notes: notesController.text.trim(),
-              );
-
-              isSaving.value = false;
-
-              if (success) {
-                CommonMethod.getXSnackBar(
-                  "Success",
-                  "Notes saved successfully",
-                  greenColor,
+                final success = await controller.saveInternalNotes(
+                  leadId: rxLead.value.id!,
+                  notes: notesController.text.trim(),
                 );
 
-                /// ✅ realtime update
-                rxLead.value = rxLead.value.copyWith(
-                  adminNotes: notesController.text.trim(),
-                );
-              }
-            },
+                isSaving.value = false;
+
+                if (success) {
+                  CommonMethod.getXSnackBar(
+                    "Success",
+                    "Notes saved successfully",
+                    greenColor,
+                  );
+
+                  rxLead.value = rxLead.value.copyWith(
+                    adminNotes: notesController.text.trim(),
+                  );
+                }
+              },
+      ),
     );
   }
 
@@ -180,8 +230,9 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                 : isMarking.value
                     ? "Marking..."
                     : "Mark as Contacted",
-            buttonColor: isDisabled ? Colors.grey.shade400 : primaryColor,
-            textColor: isDisabled ? Colors.grey.shade800 : Colors.white,
+            buttonColor: isDisabled ? disableButtonColor : primaryColor,
+            // Use app disable color
+            textColor: isDisabled ? Colors.white : Colors.white,
             onPressed: isDisabled
                 ? null
                 : () async {
@@ -193,7 +244,6 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                     isMarking.value = false;
 
                     if (date != null) {
-                      /// ✅ realtime update
                       rxLead.value = rxLead.value.copyWith(
                         isContacted: true,
                         contactedDate: date,
@@ -206,6 +256,10 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
         Expanded(
           child: PrimaryTextButton(
             title: controller.isArchivedTab.value ? "Unarchive" : "Archive",
+            // Assuming redColor for Archive action is appropriate, or keep primary
+            buttonColor: Colors.white,
+            textColor: redColor,
+            // Using red for destructive/archive action
             onPressed: () {
               controller.toggleArchive(
                 rxLead.value.id!,

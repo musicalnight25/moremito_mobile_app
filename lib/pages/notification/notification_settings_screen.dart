@@ -28,6 +28,7 @@ class NotificationSettingsScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             physics: const BouncingScrollPhysics(),
             children: [
+              height20,
               Text(
                 "Push Notifications",
                 style: AppTextStyle.normalExtraBold.copyWith(
@@ -45,14 +46,14 @@ class NotificationSettingsScreen extends StatelessWidget {
 
               // MASTER SWITCH SECTION
               _masterToggleSection(
-                title: "Enable All Notifications",
+                title: "All Notifications",
                 toggle: c.isAllEnabled,
                 onToggle: c.toggleAll,
               ),
 
-              height10,
+              // height10,
               const Divider(color: borderGreyColor),
-              height10,
+              // height10,
 
               // CATEGORIES
               // _buildCategoryCard(
@@ -66,8 +67,9 @@ class NotificationSettingsScreen extends StatelessWidget {
               // ),
 
               _buildCategoryCard(
-                title: "Marketing & Offers",
-                subtitle: "Promotions, discounts, and new features",
+                title: "Shared Link Notifications",
+                subtitle:
+                    "Messages about promotions and information sent by us",
                 toggle: c.isMarketingEnabled,
                 list: c.marketingList,
                 onCategoryToggle: (v) =>
@@ -76,8 +78,8 @@ class NotificationSettingsScreen extends StatelessWidget {
               ),
 
               _buildCategoryCard(
-                title: "Announcements",
-                subtitle: "Community news and general updates",
+                title: "Announcement Notifications",
+                subtitle: "Important updates and reminder",
                 toggle: c.isAnnouncementEnabled,
                 list: c.announcementList,
                 onCategoryToggle: (v) => c.toggleCategory(
@@ -102,6 +104,7 @@ class NotificationSettingsScreen extends StatelessWidget {
     required Function(bool) onToggle,
   }) {
     return Container(
+      width: Get.width,
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: paleYellowColor, // Using your custom light blue/pale color
@@ -110,20 +113,30 @@ class NotificationSettingsScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: primaryColor,
-            radius: 20.sp,
-            child: Icon(Icons.notifications_active_outlined,
-                color: primaryWhite, size: 20.sp),
-          ),
-          width12,
+          // CircleAvatar(
+          //   backgroundColor: primaryColor,
+          //   radius: 20.sp,
+          //   child: Icon(Icons.notifications_active_outlined,
+          //       color: primaryWhite, size: 20.sp),
+          // ),
+          // width12,
           Expanded(
-            child: Text(
-              title,
-              style:
-                  AppTextStyle.normalSemiBold16.copyWith(color: primaryColor),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyle.normalSemiBold14
+                      .copyWith(color: primaryColor),
+                ),
+                height04,
+                Text("Enable/Disable app push notifications",
+                    style: AppTextStyle.normalRegular12
+                        .copyWith(color: hintGreyColor)),
+              ],
             ),
           ),
+
           Obx(() => _customSwitch(toggle.value, onToggle)),
         ],
       ),
@@ -166,7 +179,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(title,
-                          style: AppTextStyle.normalBold16
+                          style: AppTextStyle.normalBold14
                               .copyWith(color: primaryBlack)),
                       Text(subtitle,
                           style: AppTextStyle.normalRegular12
@@ -174,6 +187,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                width10,
                 Obx(() => _customSwitch(toggle.value, onCategoryToggle)),
               ],
             ),
