@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'app_text_style.dart';
 
@@ -17,66 +17,86 @@ class AudioPlayerWidget extends StatefulWidget {
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
     with SingleTickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
-  late AnimationController _animationController;
+  late AnimationController _playPauseController;
 
+  // Stream subscriptions
+  StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<Duration?>? _durationSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
+
+  // State variables for UI
   Duration _duration = Duration.zero;
-  bool _isSourceSet = false;
+  Duration _position = Duration.zero;
+  bool _isBuffering = false;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+    _playPauseController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 200));
     _audioPlayer = AudioPlayer();
-
-    // Set global context only once
-    _setupGlobalAudio();
-    _initSource();
+    _initAudio();
   }
 
-  void _setupGlobalAudio() {
-    AudioPlayer.global.setAudioContext(AudioContext(
-      iOS: AudioContextIOS(category: AVAudioSessionCategory.playback),
-      android: AudioContextAndroid(usageType: AndroidUsageType.media),
-    ));
-  }
-
-  Future<void> _initSource() async {
+  Future<void> _initAudio() async {
     try {
-      // Use 'Source' instead of 'setSource' directly to let it buffer in the background
-      await _audioPlayer.setSourceUrl(widget.audioUrl);
-
-      _audioPlayer.onDurationChanged.listen((d) {
-        if (mounted) setState(() => _duration = d);
-      });
-
-      _audioPlayer.onPlayerStateChanged.listen((state) {
+      // 1. Listen to Player State (Playing/Paused/Buffering)
+      _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
         if (mounted) {
-          state == PlayerState.playing
-              ? _animationController.forward()
-              : _animationController.reverse();
+          // Sync Play/Pause Icon
+          if (state.playing) {
+            _playPauseController.forward();
+          } else {
+            _playPauseController.reverse();
+          }
+
+          // Handle Buffering Logic for the Spinner
+          final processingState = state.processingState;
+          if (processingState == ProcessingState.loading ||
+              processingState == ProcessingState.buffering) {
+            setState(() => _isBuffering = true);
+          } else {
+            setState(() => _isBuffering = false);
+          }
         }
       });
 
-      _isSourceSet = true;
+      // 2. Listen to Duration (Total Length)
+      _durationSubscription = _audioPlayer.durationStream.listen((duration) {
+        setState(() => _duration = duration ?? Duration.zero);
+      });
+
+      // 3. Listen to Position (Current Time)
+      _positionSubscription = _audioPlayer.positionStream.listen((position) {
+        setState(() => _position = position);
+      });
+
+      // 4. Load Audio Source
+      await _audioPlayer.setUrl(widget.audioUrl);
     } catch (e) {
-      debugPrint("Instant load error: $e");
+      debugPrint("Audio Initialization Error: $e");
     }
   }
 
   void _togglePlayPause() async {
-    if (_audioPlayer.state == PlayerState.playing) {
+    if (_audioPlayer.playing) {
       await _audioPlayer.pause();
     } else {
-      // Calling resume on a pre-set source is the fastest way to start
-      await _audioPlayer.resume();
+      await _audioPlayer.play();
     }
+  }
+
+  void _seek(double value) {
+    _audioPlayer.seek(Duration(seconds: value.toInt()));
   }
 
   @override
   void dispose() {
+    _playerStateSubscription?.cancel();
+    _durationSubscription?.cancel();
+    _positionSubscription?.cancel();
     _audioPlayer.dispose();
-    _animationController.dispose();
+    _playPauseController.dispose();
     super.dispose();
   }
 
@@ -87,98 +107,124 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate slider values
+    double maxDuration = _duration.inSeconds.toDouble();
+    double currentPosition = _position.inSeconds.toDouble();
+    if (maxDuration <= 0) maxDuration = 1.0;
+    if (currentPosition > maxDuration) currentPosition = maxDuration;
+
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: primaryColor.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
             offset: const Offset(0, 4),
           )
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // THE PLAY BUTTON
+          // --- PLAY / PAUSE / LOADING BUTTON ---
           GestureDetector(
             onTap: _togglePlayPause,
             child: Container(
-              height: 40.sp,
-              width: 40.sp,
+              height: 48.sp,
+              width: 48.sp,
               decoration: BoxDecoration(
                 color: primaryColor,
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ],
               ),
               child: Center(
-                child: AnimatedIcon(
-                  icon: AnimatedIcons.play_pause,
-                  progress: _animationController,
-                  size: 22.sp,
-                  color: Colors.white,
-                ),
+                child: _isBuffering
+                    ? SizedBox(
+                        height: 20.sp,
+                        width: 20.sp,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : AnimatedIcon(
+                        icon: AnimatedIcons.play_pause,
+                        progress: _playPauseController,
+                        size: 28.sp,
+                        color: Colors.white,
+                      ),
               ),
             ),
           ),
-          SizedBox(width: 12.w),
 
-          // THE SLIDER & POSITION
+          SizedBox(width: 14.w),
+
+          // --- SLIDER & TIMESTAMPS ---
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StreamBuilder<Duration>(
-                  stream: _audioPlayer.onPositionChanged,
-                  builder: (context, snapshot) {
-                    final position = snapshot.data ?? Duration.zero;
-                    double max = _duration.inSeconds.toDouble();
-                    double value = position.inSeconds.toDouble();
-
-                    if (value > max) value = max;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            trackHeight: 3.h,
-                            thumbShape:
-                                RoundSliderThumbShape(enabledThumbRadius: 5.r),
-                            overlayShape:
-                                RoundSliderOverlayShape(overlayRadius: 12.r),
-                            activeTrackColor: primaryColor,
-                            inactiveTrackColor: primaryColor.withOpacity(0.1),
-                            thumbColor: primaryColor,
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Slider(
-                            min: 0,
-                            max: max > 0 ? max : 1.0,
-                            value: value,
-                            onChanged: (v) {
-                              _audioPlayer.seek(Duration(seconds: v.toInt()));
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 4.w),
-                          child: Text(
-                            _formatDuration(position),
-                            style: AppTextStyle.normalRegular10.copyWith(
-                              color: hintGreyColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                // The Slider
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 4.h,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                    overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
+                    activeTrackColor: primaryColor,
+                    inactiveTrackColor: primaryColor.withOpacity(0.15),
+                    thumbColor: primaryColor,
+                    overlayColor: primaryColor.withOpacity(0.1),
+                  ),
+                  child: Slider(
+                    min: 0,
+                    max: maxDuration,
+                    value: currentPosition,
+                    onChanged: (val) {
+                      // Optional: optimistically update UI while dragging
+                      setState(() {
+                        _position = Duration(seconds: val.toInt());
+                      });
+                    },
+                    onChangeEnd: (val) {
+                      _seek(val);
+                    },
+                  ),
                 ),
+
+                // The Time Labels (Left & Right)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _formatDuration(_position),
+                        style: AppTextStyle.normalRegular10.copyWith(
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11.sp),
+                      ),
+                      Text(
+                        _formatDuration(_duration),
+                        style: AppTextStyle.normalRegular10.copyWith(
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11.sp),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),

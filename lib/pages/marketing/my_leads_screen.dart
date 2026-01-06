@@ -302,7 +302,7 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
       decoration: BoxDecoration(
-        color: Colors.teal,
+        color:primaryColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(

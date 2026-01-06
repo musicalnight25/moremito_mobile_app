@@ -104,9 +104,7 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                     /// PRIORITY
                     Obx(() {
                       if (tc.priorityLoading.value) {
-                        return const Center(
-                          child: CircularProgressIndicator(color: primaryColor),
-                        );
+                        return SizedBox();
                       }
 
                       return CustomDropdown(

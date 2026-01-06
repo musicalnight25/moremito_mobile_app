@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../pages/main_dashboard_screen.dart';
+import '../pages/profile/my_profile_screen.dart';
 import '../pages/setting/menu_screen.dart';
 import 'app_asset.dart';
 import 'app_text_style.dart';
@@ -78,7 +79,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: GestureDetector(
                 onTap: () {
                   // Optional: Navigate to profile
-                  // Get.to(() => MyAccountInfoScreen());
+                  Get.to(() => MyProfileScreen());
                 },
                 child: Container(
                   width: 32.sp,

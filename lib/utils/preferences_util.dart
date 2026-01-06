@@ -4,6 +4,7 @@ import 'package:more_mitro_app/model/login_model.dart';
 import 'package:more_mitro_app/utils/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../controller/home_controller.dart';
 import '../pages/main_dashboard_screen.dart';
 import '../pages/auth/start_survey_screen.dart';
 import '../service/network_dio.dart';
@@ -128,6 +129,9 @@ class PreferencesUtil {
             loginUserModel.data!.isSurveyCompleted ?? false);
         await NetworkDioHttp.setDynamicHeader(
             endPoint: AppConstants.apiEndPoint);
+        var homeController = Get.put(HomeController());
+        homeController.dashboardModel.value = null;
+        homeController.dashboardModel.refresh();
         if (loginUserModel.data!.isSurveyCompleted == true) {
           Get.offAll(() => MainHomeScreen());
         } else {
