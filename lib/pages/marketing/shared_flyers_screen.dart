@@ -203,15 +203,15 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (item.title != null && item.title != '')
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.sp),
-              child: Text(
-                item.title ?? "Untitled Flyer",
-                style:
-                    AppTextStyle.normalBold16.copyWith(color: Colors.black87),
-              ),
-            ),
+          // if (item.title != null && item.title != '')
+          //   Padding(
+          //     padding: EdgeInsets.only(bottom: 16.sp),
+          //     child: Text(
+          //       item.title ?? "Untitled Flyer",
+          //       style:
+          //           AppTextStyle.normalBold16.copyWith(color: Colors.black87),
+          //     ),
+          //   ),
 
           // 2. Info List Section (Vertical as per image)
           _infoRow(
@@ -221,12 +221,14 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
             value: item.sharedTo ?? "N/A",
             valueColor: Colors.grey.shade600,
           ),
-          _infoRow(
-            icon: Icons.share_outlined,
-            label: "What :",
-            value: item.sharedBy ?? "", // Added Shared By
-            valueColor: Colors.grey.shade600,
-          ),
+          if (item.title != null && item.title!.isNotEmpty)
+            _infoRow(
+              icon: Icons.share_outlined,
+              label: "What :",
+              // value: item.sharedBy ?? "", // Added Shared By
+              value: item.title ?? "", // Added Shared By
+              valueColor: Colors.grey.shade600,
+            ),
           _infoRow(
             icon: Icons.calendar_month_outlined,
             label: "When :",
@@ -254,7 +256,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   SizedBox(width: 8.sp),
                   Text(
                     "Total: ${item.totalInteractions ?? 0}",
-                    style: AppTextStyle.normalBold14
+                    style: AppTextStyle.normalBold12
                         .copyWith(color: Colors.green.shade900),
                   ),
                 ],
@@ -277,33 +279,48 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     required Color valueColor,
     bool isHighlighted = false,
   }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.sp),
+    return Container(
+      // Added a slight background if highlighted for the whole row
+      decoration: BoxDecoration(
+        color:
+            isHighlighted ? Colors.blue.withOpacity(0.05) : Colors.transparent,
+        borderRadius: BorderRadius.circular(8.sp),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 6.sp, horizontal: 4.sp),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Better for long text
         children: [
-          Icon(icon, size: 20.sp, color: Colors.black87),
-          SizedBox(width: 12.sp),
+          // 1. Icon with a more subtle, modern color
+          Icon(
+            icon,
+            size: 18.sp,
+            color:
+                isHighlighted ? Colors.blue.shade700 : Colors.blueGrey.shade400,
+          ),
+          SizedBox(width: 8.sp),
+
+          // 2. Label - Fixed width is better than Flex for vertical alignment across different rows
           Expanded(
-            flex: 2,
-            // width: 90.sp, // Keeps labels aligned
+            flex: 1,
             child: Text(
               label,
-              style: AppTextStyle.normalBold14.copyWith(
-                color: Colors.black87,
-                backgroundColor:
-                    isHighlighted ? Colors.blue.withOpacity(0.1) : null,
+              style: AppTextStyle.normalRegular14.copyWith(
+                color: Colors.black54, // Softened label for hierarchy
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
+
+          // 4. Value - Bolded to stand out
           Expanded(
             flex: 2,
             child: Text(
               value,
-              style: AppTextStyle.normalRegular14.copyWith(
-                color: isHighlighted ? Colors.blue.shade800 : valueColor,
-                backgroundColor:
-                    isHighlighted ? Colors.blue.withOpacity(0.1) : null,
+              style: AppTextStyle.normalBold14.copyWith(
+                color: isHighlighted ? Colors.blue.shade900 : valueColor,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
         ],

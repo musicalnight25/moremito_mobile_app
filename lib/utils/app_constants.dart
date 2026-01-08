@@ -63,4 +63,5 @@ class AppConstants {
       'mark-all-notifications-as-read';
   static const String saveLeadNotes = 'save-lead-notes';
   static const String markLeadAsContacted = 'mark-lead-as-contacted';
+  static const String getWebviewToken = 'webview-token';
 }

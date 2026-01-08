@@ -11,6 +11,7 @@ import 'package:more_mitro_app/pages/category/categories_screen.dart';
 import '../marketing/flyer_templates_screen.dart';
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
+import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
 import '../notification/notification_settings_screen.dart';
 import '../order/my_orders_screen.dart';
@@ -136,6 +137,11 @@ class _MenuScreenState extends State<MenuScreen> {
             title: "See & Track Activity From My Shared Links",
             icon: Icons.track_changes_outlined, // tracking activity
             onTap: () => Get.to(() => MySharedFlyersScreen()),
+          ),
+          MenuItem(
+            title: "Shop MoreMito Products", // Added Shop Option
+            icon: Icons.shopping_cart_outlined,
+            onTap: () => Get.to(() => const ShopMoremitoScreen()),
           ),
         ],
       ),

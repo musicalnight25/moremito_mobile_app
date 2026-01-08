@@ -165,22 +165,40 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
           SizedBox(height: 4.h),
           Row(
             children: [
-              Icon(Icons.person_outline_rounded,
-                  size: 14.sp, color: subTitleColor),
-              // App Subtitle Color
-              SizedBox(width: 4.w),
+              // Subtle Icon
+              Icon(
+                Icons.person_outline_rounded,
+                size: 16.sp,
+                color: subTitleColor.withOpacity(0.7),
+              ),
+              SizedBox(width: 6.w),
+
+              // Label and Value combined with hierarchy
               Expanded(
-                child: Text(
-                  widget.sharedTo,
-                  style: AppTextStyle.normalRegular14.copyWith(
-                    color: subTitleColor, // App Subtitle Color
-                    fontSize: 14.sp,
-                  ),
+                child: RichText(
                   overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                    style:
+                        AppTextStyle.normalRegular14.copyWith(fontSize: 13.sp),
+                    children: [
+                      TextSpan(
+                        text: "Activity by: ",
+                        style: TextStyle(color: subTitleColor.withOpacity(0.6)),
+                      ),
+                      TextSpan(
+                        text: widget.sharedTo,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight:
+                              FontWeight.w600, // Make the name stand out
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
-          ),
+          )
         ],
       ),
     );

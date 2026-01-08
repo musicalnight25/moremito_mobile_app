@@ -373,7 +373,7 @@ TextFormField textFormField({
       filled: true,
       hintStyle: hintStyle ??
           AppTextStyle.normalRegular14.copyWith(color: hintGreyColor),
-      hintText: hintText ?? "Enter text hear...",
+      hintText: hintText ?? "Enter text here...",
       enabled: enabled ?? true,
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular((borderRadius ?? 12).sp),

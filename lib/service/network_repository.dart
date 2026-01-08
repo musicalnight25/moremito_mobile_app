@@ -278,6 +278,14 @@ class NetworkRepository {
     );
   }
 
+  Future<dynamic> getWebviewToken() async {
+    return postRequest(
+      null,
+      AppConstants.getWebviewToken,
+      data: null,
+    );
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {
