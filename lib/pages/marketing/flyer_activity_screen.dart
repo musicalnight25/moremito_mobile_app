@@ -42,100 +42,48 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
     );
   }
 
-  // ------------------------------------------------------------
-  // UI HELPERS (Strictly using App Colors)
-  // ------------------------------------------------------------
-
-  /// Returns a record containing (Display Title, Base Color, Icon Data)
-  ({String title, Color color, IconData icon}) _getActivityStyle(String? type) {
+  /// Only icon + color mapping
+  ({Color color, IconData icon}) _getIconStyle(String? type) {
     switch (type) {
-      // --- Primary Interactions (Blue) ---
+      case "VideoPlay":
+      case "Video Played":
+      case "VideoPlayed":
+      case "video_src":
+        return (color: redColor, icon: Icons.play_circle_fill_rounded);
+
+      case "AudioPlayed":
+      case "Audio Played":
+        return (color: orangeColor, icon: Icons.audiotrack_rounded);
+
       case "LinkOpen":
-        return (title: "Link Opened", color: primaryColor, icon: Icons.link);
+        return (color: primaryColor, icon: Icons.link);
+
+      case "FileViewed":
+      case "File Viewed":
+        return (color: greenColor, icon: Icons.visibility_rounded);
+
+      case "FileDownloaded":
+      case "File Downloaded":
+        return (color: greenColor, icon: Icons.download_rounded);
 
       case "FormFilled":
       case "ReferralProgramCheckbox":
       case "WeeklyCallsCheckbox":
       case "HealthSurvey":
-        return (
-          title: "Form / Survey",
-          color: primaryColor,
-          icon: Icons.assignment_turned_in_rounded
-        );
+        return (color: primaryColor, icon: Icons.assignment_turned_in_rounded);
 
-      case "product_name":
-        return (
-          title: "Product Interest",
-          color: primaryColor,
-          icon: Icons.shopping_bag_rounded
-        );
-
-      // --- Media (Red & Orange) ---
-      case "VideoPlayed":
-      case "Video Played":
-      case "VideoPlay":
-      case "video_src":
-        return (
-          title: "Video Watched",
-          color: redColor, // Using app red
-          icon: Icons.play_circle_fill_rounded
-        );
-
-      case "AudioPlayed":
-      case "Audio Played":
-        return (
-          title: "Audio Played",
-          color: orangeColor, // Using app orange for distinction
-          icon: Icons.audiotrack_rounded
-        );
-
-      // --- Success / Files (Green) ---
-      case "FileViewed":
-      case "File Viewed":
-        return (
-          title: "File Viewed",
-          color: greenColor, // Using app green
-          icon: Icons.visibility_rounded
-        );
-
-      case "FileDownloaded":
-      case "File Downloaded":
-        return (
-          title: "File Downloaded",
-          color: greenColor,
-          icon: Icons.download_rounded
-        );
-
-      // --- Communication (Orange) ---
       case "MessageSent":
       case "Message Sent":
-        return (
-          title: "Message Sent",
-          color: orangeColor,
-          icon: Icons.send_rounded
-        );
+        return (color: orangeColor, icon: Icons.send_rounded);
 
-      // --- Passive Clicks (Grey) ---
       case "button_click":
-        return (
-          title: "Button Clicked",
-          color: lightBlackColor,
-          icon: Icons.touch_app_rounded
-        );
+        return (color: lightBlackColor, icon: Icons.touch_app_rounded);
 
       case "image_click":
-        return (
-          title: "Image Clicked",
-          color: hintGreyColor,
-          icon: Icons.image_rounded
-        );
+        return (color: hintGreyColor, icon: Icons.image_rounded);
 
       default:
-        return (
-          title: type ?? "Interaction",
-          color: primaryColor,
-          icon: Icons.notifications_active_rounded
-        );
+        return (color: primaryColor, icon: Icons.notifications_active_rounded);
     }
   }
 
@@ -143,10 +91,6 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
     if (date == null) return "";
     return DateFormat('MMM dd, hh:mm a').format(date.toLocal());
   }
-
-  // ------------------------------------------------------------
-  // WIDGETS
-  // ------------------------------------------------------------
 
   Widget _buildHeader() {
     return Padding(
@@ -158,43 +102,22 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
             widget.title,
             style: AppTextStyle.normalBold16.copyWith(
               fontSize: 16.sp,
-              color: primaryBlack, // Using App Black
+              color: primaryBlack,
             ),
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 4.h),
           Row(
             children: [
-              // Subtle Icon
-              Icon(
-                Icons.person_outline_rounded,
-                size: 16.sp,
-                color: subTitleColor.withOpacity(0.7),
-              ),
+              Icon(Icons.person_outline_rounded,
+                  size: 16.sp, color: subTitleColor.withOpacity(0.7)),
               SizedBox(width: 6.w),
-
-              // Label and Value combined with hierarchy
               Expanded(
-                child: RichText(
+                child: Text(
+                  widget.sharedTo.isEmpty ? "Unknown User" : widget.sharedTo,
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(fontSize: 13.sp, color: Colors.black87),
                   overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    style:
-                        AppTextStyle.normalRegular14.copyWith(fontSize: 13.sp),
-                    children: [
-                      TextSpan(
-                        text: "Activity by: ",
-                        style: TextStyle(color: subTitleColor.withOpacity(0.6)),
-                      ),
-                      TextSpan(
-                        text: widget.sharedTo,
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight:
-                              FontWeight.w600, // Make the name stand out
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -205,96 +128,90 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
   }
 
   Widget _activityCard(LinkActivityDetailsModel item) {
-    final style = _getActivityStyle(item.activityType);
-    final description = item.interactionValue ?? item.activityDescription ?? "";
-    final hasDescription = description.isNotEmpty;
+    final style = _getIconStyle(item.activityType);
+    final title = item.activityDescription ?? item.activityType ?? "";
+    final subtitle = item.interactionValue ?? "";
+    final hasSubtitle = subtitle.trim().isNotEmpty;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: primaryWhite,
-        borderRadius: BorderRadius.circular(12.r),
-        // Using your specific borderGreyColor
-        border: Border.all(color: borderGreyColor),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: borderGreyColor.withOpacity(0.35)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. ICON CONTAINER
-          Container(
-            height: 40.w,
-            width: 40.w,
-            decoration: BoxDecoration(
-              // Using opacity for a soft background matching the icon color
-              color: style.color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(style.icon, color: style.color, size: 20.sp),
-          ),
-
-          SizedBox(width: 14.w),
-
-          // 2. CONTENT
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and Date Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        style.title,
-                        style: AppTextStyle.normalSemiBold14.copyWith(
-                          color: lightBlackColor, // App Black
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      _formatDate(item.activityDate),
-                      style: AppTextStyle.normalRegular12.copyWith(
-                        color: hintGreyColor, // App Hint Grey
-                        fontSize: 11.sp,
-                      ),
-                    ),
-                  ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: style.color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
-
-                // Description (if valid)
-                if (hasDescription) ...[
-                  SizedBox(height: 6.h),
-                  Text(
-                    description,
-                    style: AppTextStyle.normalRegular14.copyWith(
-                      color: subTitleColor, // App Subtitle Color
-                      fontSize: 13.sp,
-                      height: 1.4,
-                    ),
+                child: Icon(style.icon, color: style.color, size: 22.sp),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTextStyle.normalSemiBold14.copyWith(
+                    fontSize: 15.sp,
+                    color: primaryBlack,
                   ),
-                ],
-              ],
+                  softWrap: true,
+                ),
+              ),
+            ],
+          ),
+          if (hasSubtitle) ...[
+            SizedBox(height: 10.h),
+            Text(
+              subtitle,
+              style: AppTextStyle.normalRegular14.copyWith(
+                fontSize: 13.sp,
+                color: lightBlackColor.withOpacity(0.9),
+                height: 1.45,
+              ),
+              softWrap: true,
             ),
+          ],
+          SizedBox(height: 10.h),
+          Row(
+            children: [
+              Icon(Icons.access_time_rounded,
+                  size: 12.sp, color: hintGreyColor),
+              SizedBox(width: 4.w),
+              Text(
+                _formatDate(item.activityDate),
+                style: AppTextStyle.normalRegular12.copyWith(
+                  fontSize: 11.sp,
+                  color: hintGreyColor,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  // ------------------------------------------------------------
-  // BUILD
-  // ------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        visibleBackButton: true,
-      ),
+      appBar: const CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(() {
           if (controller.activityLoading.value) {
@@ -302,8 +219,7 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
                 child: CircularProgressIndicator(color: primaryColor));
           }
 
-          final List<LinkActivityDetailsModel> items =
-              controller.linkActivityDetailsModel;
+          final items = controller.linkActivityDetailsModel;
 
           if (items.isEmpty) {
             return const NoDataFound(title: "No interactions yet");
@@ -318,9 +234,7 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
                   padding: EdgeInsets.only(bottom: 20.h),
                   itemCount: items.length,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (_, index) {
-                    return _activityCard(items[index]);
-                  },
+                  itemBuilder: (_, i) => _activityCard(items[i]),
                 ),
               ],
             ),

@@ -34,7 +34,7 @@ class ShopMoremitoScreen extends StatelessWidget {
                   // People Health Products Banner
                   _buildHealthBanner(
                     title: "People Health\nProducts",
-                    subText: "Shop Now",
+                    subText: "Buy Now",
                     imageUrl:
                         "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80",
                     onTap: () {

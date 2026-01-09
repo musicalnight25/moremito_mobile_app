@@ -9,13 +9,11 @@ class NotificationSettingsController extends GetxController {
   final NetworkRepository _repo = NetworkRepository();
 
   RxBool isLoading = false.obs;
-
   RxBool isAllEnabled = false.obs;
   RxBool isSystemEnabled = false.obs;
   RxBool isMarketingEnabled = false.obs;
   RxBool isAnnouncementEnabled = false.obs;
 
-  RxList<NotificationItem> systemList = <NotificationItem>[].obs;
   RxList<NotificationItem> marketingList = <NotificationItem>[].obs;
   RxList<NotificationItem> announcementList = <NotificationItem>[].obs;
 
@@ -25,7 +23,7 @@ class NotificationSettingsController extends GetxController {
     fetchSettings();
   }
 
-  /// ───── FETCH ─────
+  /// FETCH USER SETTINGS
   Future<void> fetchSettings() async {
     try {
       isLoading.value = true;
@@ -43,12 +41,13 @@ class NotificationSettingsController extends GetxController {
           isMarketingEnabled.value = data.isMarketingEnabled;
           isAnnouncementEnabled.value = data.isAnnouncementEnabled;
 
-          systemList.assignAll(
-              data.notifications.where((e) => e.category == "System"));
           marketingList.assignAll(
-              data.notifications.where((e) => e.category == "Marketing"));
+            data.notifications.where((e) => e.category == "Marketing"),
+          );
+
           announcementList.assignAll(
-              data.notifications.where((e) => e.category == "Announcement"));
+            data.notifications.where((e) => e.category == "Announcement"),
+          );
         }
       }
     } catch (e, s) {
@@ -63,20 +62,16 @@ class NotificationSettingsController extends GetxController {
     }
   }
 
-  /// ───── SINGLE TOGGLE ─────
+  /// SINGLE TOGGLE
   Future<void> toggleSingle(NotificationItem item, bool value) async {
-    item.isEnabled = value;
-    systemList.refresh();
-    marketingList.refresh();
-    announcementList.refresh();
+    item.isEnabled.value = value;
 
-    await _repo.savePushNotificationSetting(body: {
-      "NotificationTypeId": item.id,
-      "IsEnabled": value,
-    });
+    await _repo.savePushNotificationSetting(
+      body: item.toApiJson(),
+    );
   }
 
-  /// ───── CATEGORY TOGGLE ─────
+  /// CATEGORY TOGGLE
   Future<void> toggleCategory(
     RxBool categoryToggle,
     List<NotificationItem> list,
@@ -85,44 +80,26 @@ class NotificationSettingsController extends GetxController {
     categoryToggle.value = value;
 
     final payload = list.map((e) {
-      e.isEnabled = value;
-      return {
-        "NotificationTypeId": e.id,
-        "IsEnabled": value,
-      };
+      e.isEnabled.value = value;
+      return e.toApiJson();
     }).toList();
-
-    systemList.refresh();
-    marketingList.refresh();
-    announcementList.refresh();
 
     await _repo.savePushNotificationSettingsBulk(body: payload);
   }
 
-  /// ───── ALL TOGGLE ─────
+  /// MASTER TOGGLE
   Future<void> toggleAll(bool value) async {
     isAllEnabled.value = value;
     isSystemEnabled.value = value;
     isMarketingEnabled.value = value;
     isAnnouncementEnabled.value = value;
 
-    final all = [
-      ...systemList,
-      ...marketingList,
-      ...announcementList,
-    ];
+    final all = [...marketingList, ...announcementList];
 
     final payload = all.map((e) {
-      e.isEnabled = value;
-      return {
-        "NotificationTypeId": e.id,
-        "IsEnabled": value,
-      };
+      e.isEnabled.value = value;
+      return e.toApiJson();
     }).toList();
-
-    systemList.refresh();
-    marketingList.refresh();
-    announcementList.refresh();
 
     await _repo.savePushNotificationSettingsBulk(body: payload);
   }

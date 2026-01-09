@@ -54,11 +54,11 @@ class MyProfileScreen extends StatelessWidget {
                   _info("Membership Type", profile.membershipType),
                   _info("Join Date", profile.joinDate),
                   height20,
-                  _title("Government ID"),
-                  _info(
-                    "Has Government ID",
-                    profile.hasGovernmentId == true ? "Yes" : "No",
-                  ),
+                  // _title("Government ID"),
+                  // _info(
+                  //   "Has Government ID",
+                  //   profile.hasGovernmentId == true ? "Yes" : "No",
+                  // ),
                   // if (profile.hasGovernmentId == true)
                   //   _info("Government ID", profile.governmentId),
                   height20,

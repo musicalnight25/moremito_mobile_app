@@ -44,12 +44,6 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.account_circle_outlined,
             onTap: () => Get.to(() => MyProfileScreen()),
           ),
-
-          // MenuItem(
-          //   title: "My Addresses",
-          //   icon: Icons.location_on_outlined,
-          //   onTap: () => Get.to(() => MyAddressesScreen()),
-          // ),
           MenuItem(
             title: "Notification Settings",
             icon: Icons.notifications_outlined,
@@ -60,16 +54,6 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.badge_outlined,
             onTap: () => Get.to(() => WelcomeTagScreen()),
           ),
-          // MenuItem(
-          //   title: "Change Password",
-          //   icon: Icons.lock_outline,
-          //   onTap: () => Get.to(() => ChangePasswordScreen()),
-          // ),
-          // MenuItem(
-          //   title: "User Role",
-          //   icon: Icons.switch_account_outlined,
-          //   onTap: () => Get.to(() => UserRoleScreen()),
-          // ),
         ],
       ),
       MenuSection(
@@ -81,16 +65,6 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.receipt_long_outlined,
             onTap: () => Get.to(() => MyOrdersScreen()),
           ),
-          // MenuItem(
-          //   title: "My Recurring Order",
-          //   icon: Icons.repeat_outlined,
-          //   onTap: () => Get.to(() => MyRecurringOrderScreen()),
-          // ),
-          // MenuItem(
-          //   title: "My Referral Orders",
-          //   icon: Icons.group_outlined,
-          //   onTap: () => Get.to(() => MyReferralOrdersScreen()),
-          // ),
         ],
       ),
       MenuSection(
@@ -115,37 +89,58 @@ class _MenuScreenState extends State<MenuScreen> {
         items: [
           MenuItem(
             title: "Customize & Share My Flyers",
-            icon: Icons.brush_outlined, // design / customize
+            icon: Icons.brush_outlined,
             onTap: () => Get.to(() => FlyerTemplatesScreen()),
           ),
           MenuItem(
             title: "Share Audios, Videos & Docs",
-            icon: Icons.perm_media_outlined, // media sharing
+            icon: Icons.perm_media_outlined,
             onTap: () => Get.to(() => CategoriesScreen(isFromMenu: true)),
           ),
           MenuItem(
             title: "Allow Others to Request MoreMito Info",
-            icon: Icons.group_add_outlined, // people requesting access
+            icon: Icons.group_add_outlined,
             onTap: () => Get.to(() => TmrisInfoScreen()),
           ),
           MenuItem(
             title: "See My Generated Leads",
-            icon: Icons.trending_up_outlined, // leads / analytics
+            icon: Icons.trending_up_outlined,
             onTap: () => Get.to(() => MyLeadsScreen()),
           ),
           MenuItem(
             title: "See & Track Activity From My Shared Links",
-            icon: Icons.track_changes_outlined, // tracking activity
+            icon: Icons.track_changes_outlined,
             onTap: () => Get.to(() => MySharedFlyersScreen()),
-          ),
-          MenuItem(
-            title: "Shop MoreMito Products", // Added Shop Option
-            icon: Icons.shopping_cart_outlined,
-            onTap: () => Get.to(() => const ShopMoremitoScreen()),
           ),
         ],
       ),
     ];
+  }
+
+  Widget _shopTile() {
+    return InkWell(
+      onTap: () => Get.to(() => const ShopMoremitoScreen()),
+      child: Container(
+        padding: EdgeInsets.all(15.sp),
+        decoration: BoxDecoration(
+          color: primaryWhite,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: borderGreyColor.withOpacity(0.6)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.shopping_cart_outlined,
+                size: 16.sp, color: primaryColor),
+            width12,
+            Expanded(
+              child: Text("Shop MoreMito Products",
+                  style: AppTextStyle.normalSemiBold15),
+            ),
+            Icon(Icons.keyboard_arrow_right, size: 16.sp, color: primaryBlack),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -155,19 +150,18 @@ class _MenuScreenState extends State<MenuScreen> {
       appBar: CommonAppBar(title: "Menu", visibleBackButton: true),
       backgroundColor: Colors.transparent,
       body: BaseBackgroundWidget(
-        child: ListView.builder(
+        child: ListView(
           padding: EdgeInsets.all(10.sp),
-          itemCount: sections.length,
-          itemBuilder: (_, i) => MenuSectionWidget(section: sections[i]),
+          children: [
+            ...sections.map((e) => MenuSectionWidget(section: e)),
+            // SizedBox(height: 10.h),
+            _shopTile(),
+          ],
         ),
       ),
     );
   }
 }
-
-//////////////////////////////////////////////////////////////////////
-//                         SECTION WIDGET
-//////////////////////////////////////////////////////////////////////
 
 class MenuSectionWidget extends StatefulWidget {
   final MenuSection section;
@@ -193,82 +187,75 @@ class _MenuSectionWidgetState extends State<MenuSectionWidget> {
       ),
       child: Column(
         children: [
-          _header(),
-          _expandedWidget(),
+          InkWell(
+            onTap: () => setState(() => expanded = !expanded),
+            child: Padding(
+              padding: EdgeInsets.all(15.sp),
+              child: Row(
+                children: [
+                  Icon(widget.section.icon, size: 20.sp, color: primaryColor),
+                  width12,
+                  Expanded(
+                      child: Text(widget.section.title,
+                          style: AppTextStyle.normalSemiBold15)),
+                  Icon(
+                    expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    size: 20.sp,
+                    color: primaryBlack,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: 250.milliseconds,
+            child: expanded
+                ? Column(
+                    children: List.generate(
+                      widget.section.items.length,
+                      (index) => Column(
+                        children: [
+                          InkWell(
+                            onTap: widget.section.items[index].onTap,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.sp, vertical: 10.sp),
+                              child: Row(
+                                children: [
+                                  Icon(widget.section.items[index].icon,
+                                      size: 18.sp, color: Colors.black54),
+                                  width12,
+                                  Expanded(
+                                    child: Text(
+                                      widget.section.items[index].title,
+                                      style: AppTextStyle.normalSemiBold15
+                                          .copyWith(color: Colors.black87),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (index != widget.section.items.length - 1)
+                            Container(
+                              width: double.infinity,
+                              height: 1,
+                              margin: EdgeInsets.only(left: 15.sp),
+                              color: borderGreyColor.withOpacity(0.3),
+                            ),
+                        ],
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
         ],
       ),
     );
   }
-
-  Widget _header() => InkWell(
-        onTap: () => setState(() => expanded = !expanded),
-        child: Padding(
-          padding: EdgeInsets.all(15.sp),
-          child: Row(
-            children: [
-              Icon(widget.section.icon, size: 20.sp, color: primaryColor),
-              width12,
-              Expanded(
-                  child: Text(widget.section.title,
-                      style: AppTextStyle.normalSemiBold15)),
-              Icon(
-                expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                size: 20.sp,
-                color: primaryBlack,
-              ),
-            ],
-          ),
-        ),
-      );
-
-  Widget _expandedWidget() => AnimatedSize(
-        duration: 250.milliseconds,
-        child: expanded
-            ? Column(
-                children: List.generate(
-                  widget.section.items.length,
-                  (index) => Column(
-                    children: [
-                      _item(widget.section.items[index]),
-                      if (index != widget.section.items.length - 1)
-                        Container(
-                          width: double.infinity,
-                          height: 1,
-                          margin: EdgeInsets.only(left: 15.sp),
-                          color: borderGreyColor.withOpacity(0.3),
-                        ),
-                    ],
-                  ),
-                ),
-              )
-            : SizedBox.shrink(),
-      );
-
-  Widget _item(MenuItem item) => InkWell(
-        onTap: item.onTap,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 10.sp),
-          child: Row(
-            children: [
-              Icon(item.icon, size: 18.sp, color: Colors.black54),
-              width12,
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: AppTextStyle.normalSemiBold15.copyWith(
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
 }
-
-//////////////////////////////////////////////////////////////////////
-//                           MODELS
-//////////////////////////////////////////////////////////////////////
 
 class MenuSection {
   final String title;

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../../controller/notification_settings_controller.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/base_background_widget.dart';
-import '../../utils/colors.dart'; // Ensure your colors are imported here
+import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
 import '../../utils/static_decoration.dart';
 
@@ -14,14 +14,11 @@ class NotificationSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initializing Controller
     final c = Get.put(NotificationSettingsController());
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        visibleBackButton: true,
-      ),
+      appBar: const CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(
           () => ListView(
@@ -31,41 +28,21 @@ class NotificationSettingsScreen extends StatelessWidget {
               height20,
               Text(
                 "Push Notifications",
-                style: AppTextStyle.normalExtraBold.copyWith(
-                  fontSize: 24.sp,
-                  color: primaryBlack,
-                ),
+                style: AppTextStyle.normalExtraBold
+                    .copyWith(fontSize: 24.sp, color: primaryBlack),
               ),
               Text(
                 "Manage how you receive alerts and updates",
                 style:
                     AppTextStyle.normalRegular14.copyWith(color: hintGreyColor),
               ),
-
               height24,
-
-              // MASTER SWITCH SECTION
               _masterToggleSection(
                 title: "All Notifications",
                 toggle: c.isAllEnabled,
                 onToggle: c.toggleAll,
               ),
-
-              // height10,
-              const Divider(color: borderGreyColor),
-              // height10,
-
-              // CATEGORIES
-              // _buildCategoryCard(
-              //   title: "System Updates",
-              //   subtitle: "Security, account, and technical alerts",
-              //   toggle: c.isSystemEnabled,
-              //   list: c.systemList,
-              //   onCategoryToggle: (v) =>
-              //       c.toggleCategory(c.isSystemEnabled, c.systemList, v),
-              //   onItemToggle: c.toggleSingle,
-              // ),
-
+              height20,
               _buildCategoryCard(
                 title: "Shared Link Notifications",
                 subtitle:
@@ -76,17 +53,15 @@ class NotificationSettingsScreen extends StatelessWidget {
                     c.toggleCategory(c.isMarketingEnabled, c.marketingList, v),
                 onItemToggle: c.toggleSingle,
               ),
-
               _buildCategoryCard(
                 title: "Announcement Notifications",
-                subtitle: "Important updates and reminder",
+                subtitle: "Important updates and reminders",
                 toggle: c.isAnnouncementEnabled,
                 list: c.announcementList,
                 onCategoryToggle: (v) => c.toggleCategory(
                     c.isAnnouncementEnabled, c.announcementList, v),
                 onItemToggle: c.toggleSingle,
               ),
-
               height30,
             ],
           ),
@@ -95,55 +70,44 @@ class NotificationSettingsScreen extends StatelessWidget {
     );
   }
 
-  // ───────────────── UI COMPONENTS ─────────────────
+  // UI widgets
 
-  /// The Top "Enable All" Highlighted Box
   Widget _masterToggleSection({
     required String title,
     required RxBool toggle,
     required Function(bool) onToggle,
   }) {
     return Container(
-      width: Get.width,
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
-        color: paleYellowColor, // Using your custom light blue/pale color
+        color: paleYellowColor,
         borderRadius: BorderRadius.circular(16.sp),
-        border: Border.all(color: primaryColor.withOpacity(0.1)),
+        border: Border.all(color: primaryColor.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          // CircleAvatar(
-          //   backgroundColor: primaryColor,
-          //   radius: 20.sp,
-          //   child: Icon(Icons.notifications_active_outlined,
-          //       color: primaryWhite, size: 20.sp),
-          // ),
-          // width12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: AppTextStyle.normalSemiBold14
-                      .copyWith(color: primaryColor),
-                ),
+                Text(title,
+                    style: AppTextStyle.normalSemiBold14
+                        .copyWith(color: primaryColor)),
                 height04,
-                Text("Enable/Disable app push notifications",
-                    style: AppTextStyle.normalRegular12
-                        .copyWith(color: hintGreyColor)),
+                Text(
+                  "Enable/Disable app push notifications",
+                  style: AppTextStyle.normalRegular12
+                      .copyWith(color: hintGreyColor),
+                )
               ],
             ),
           ),
-
           Obx(() => _customSwitch(toggle.value, onToggle)),
         ],
       ),
     );
   }
 
-  /// Modern Category Card
   Widget _buildCategoryCard({
     required String title,
     required String subtitle,
@@ -160,18 +124,16 @@ class NotificationSettingsScreen extends StatelessWidget {
         border: Border.all(color: borderGreyColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Section
           Padding(
-            padding: EdgeInsets.all(16.sp),
+            padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 14.sp),
             child: Row(
               children: [
                 Expanded(
@@ -187,40 +149,36 @@ class NotificationSettingsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                width10,
                 Obx(() => _customSwitch(toggle.value, onCategoryToggle)),
               ],
             ),
           ),
           const Divider(height: 1, color: borderGreyColor),
-          // Sub-items list
-          ...list.map((e) {
-            return _subItemRow(
-                e.description, RxBool(e.isEnabled), (v) => onItemToggle(e, v));
-          }),
+          ...list.map(
+            (e) => Obx(
+              () => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.sp),
+                title: Text(
+                  e.description,
+                  style: AppTextStyle.normalRegular14
+                      .copyWith(color: lightBlackColor),
+                ),
+                trailing: _customSwitch(
+                  e.isEnabled.value,
+                  (v) => onItemToggle(e, v),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  /// Individual Toggle Rows inside cards
-  Widget _subItemRow(String text, RxBool toggle, Function(bool) onChanged) {
-    return Obx(
-      () => Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w),
-        child: ListTile(
-          title: Text(text,
-              style: AppTextStyle.normalRegular14
-                  .copyWith(color: lightBlackColor)),
-          trailing: _customSwitch(toggle.value, onChanged),
-        ),
-      ),
-    );
-  }
-
-  /// Centralized Switch Style to match your theme
   Widget _customSwitch(bool value, Function(bool) onChanged) {
     return Switch(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       activeColor: primaryWhite,
       activeTrackColor: primaryColor,
       inactiveThumbColor: primaryWhite,

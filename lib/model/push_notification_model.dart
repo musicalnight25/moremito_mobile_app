@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 class PushNotificationResponse {
   final bool? status;
   final PushNotificationData? data;
@@ -46,14 +48,14 @@ class NotificationItem {
   final int id;
   final String description;
   final String category;
-  bool isEnabled;
+  RxBool isEnabled;
 
   NotificationItem({
     required this.id,
     required this.description,
     required this.category,
-    required this.isEnabled,
-  });
+    required bool isEnabled,
+  }) : isEnabled = isEnabled.obs;
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) {
     return NotificationItem(
@@ -63,4 +65,9 @@ class NotificationItem {
       isEnabled: json['IsEnabled'] ?? false,
     );
   }
+
+  Map<String, dynamic> toApiJson() => {
+        "NotificationTypeId": id,
+        "IsEnabled": isEnabled.value,
+      };
 }

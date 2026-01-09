@@ -44,6 +44,7 @@ dependencies:
   flutter_widget_from_html_core:
   dropdown_button2: ^2.3.9
   just_audio: ^0.10.5
+  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:

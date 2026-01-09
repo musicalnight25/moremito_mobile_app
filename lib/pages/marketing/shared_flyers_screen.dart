@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/marketing/widget/compact_info_row.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/text_primary_button.dart';
@@ -15,7 +16,6 @@ import '../../utils/common_app_bar.dart';
 import '../../utils/no_data_found.dart';
 import '../../utils/base_background_widget.dart';
 import '../../utils/shadow_container_widget.dart';
-import '../../utils/static_decoration.dart';
 import 'flyer_activity_screen.dart';
 
 class SharedFlyersScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   @override
   void initState() {
     super.initState();
-// Initial reset and fetch
+    // Initial reset and fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.resetPagination();
       controller.getSharedFlyers(filterKey: widget.filterKey);
@@ -193,135 +193,87 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
 
     return Container(
       margin: EdgeInsets.only(bottom: 14.sp),
-      padding: EdgeInsets.all(16.sp),
+      padding: EdgeInsets.all(12.sp), // Reduced padding for compact look
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.sp),
-        // Smoother edges like the image
+        borderRadius: BorderRadius.circular(12.sp),
         border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // if (item.title != null && item.title != '')
-          //   Padding(
-          //     padding: EdgeInsets.only(bottom: 16.sp),
-          //     child: Text(
-          //       item.title ?? "Untitled Flyer",
-          //       style:
-          //           AppTextStyle.normalBold16.copyWith(color: Colors.black87),
-          //     ),
-          //   ),
-
-          // 2. Info List Section (Vertical as per image)
-          _infoRow(
+          // 1. Who (Recipient)
+          CompactInfoRow(
             icon: Icons.person_search_outlined,
-            // Closer to the "Shared To" icon
             label: "Who :",
             value: item.sharedTo ?? "N/A",
-            valueColor: Colors.grey.shade600,
+            valueColor: primaryBlack,
           ),
+
+          // 2. What (Title - Highlighted)
           if (item.title != null && item.title!.isNotEmpty)
-            _infoRow(
-              icon: Icons.share_outlined,
+            CompactInfoRow(
+              icon: Icons.description_outlined,
               label: "What :",
-              // value: item.sharedBy ?? "", // Added Shared By
-              value: item.title ?? "", // Added Shared By
-              valueColor: Colors.grey.shade600,
+              value: item.title ?? "",
+              valueColor: primaryBlack,
+              // isHighlighted: true, // Highlights the main content
             ),
-          _infoRow(
-            icon: Icons.calendar_month_outlined,
+
+          // 3. When
+          CompactInfoRow(
+            icon: Icons.calendar_today_outlined,
             label: "When :",
             value: _formatDate(item.sharedOn),
-            valueColor: Colors.grey.shade600,
+            valueColor: primaryBlack,
           ),
-          _infoRow(
-            icon: Icons.access_time,
+
+          // 4. Last Activity
+          CompactInfoRow(
+            icon: Icons.history_outlined,
             label: "Last Activity :",
-            value: _formatDate(item.lastInteractionDate) ?? "N/A",
-            valueColor: Colors.grey.shade600,
+            value: _formatDate(item.lastInteractionDate),
+            valueColor: primaryBlack,
           ),
 
-          const Divider(height: 25, color: borderGreyColor),
+          const Divider(height: 20, color: borderGreyColor),
 
-          // 3. Footer Section
+          // 5. Footer Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Total Interactions
-              Row(
-                children: [
-                  Icon(Icons.ads_click,
-                      size: 20.sp, color: Colors.green.shade700),
-                  SizedBox(width: 8.sp),
-                  Text(
-                    "Total: ${item.totalInteractions ?? 0}",
-                    style: AppTextStyle.normalBold12
-                        .copyWith(color: Colors.green.shade900),
-                  ),
-                ],
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.ads_click,
+                        size: 16.sp, color: Colors.green.shade700),
+                    SizedBox(width: 6.sp),
+                    Text(
+                      "Total Activitys : ${item.totalInteractions ?? 0}",
+                      style: AppTextStyle.normalSemiBold12
+                          .copyWith(color: Colors.green.shade900),
+                    ),
+                  ],
+                ),
               ),
+
               if (item.totalInteractions != 0)
                 TextPrimaryButton(
                     title: "View Details", onPressed: navigateToDetails)
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-// Helper Widget for the rows
-  Widget _infoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color valueColor,
-    bool isHighlighted = false,
-  }) {
-    return Container(
-      // Added a slight background if highlighted for the whole row
-      decoration: BoxDecoration(
-        color:
-            isHighlighted ? Colors.blue.withOpacity(0.05) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8.sp),
-      ),
-      padding: EdgeInsets.symmetric(vertical: 6.sp, horizontal: 4.sp),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // Better for long text
-        children: [
-          // 1. Icon with a more subtle, modern color
-          Icon(
-            icon,
-            size: 18.sp,
-            color:
-                isHighlighted ? Colors.blue.shade700 : Colors.blueGrey.shade400,
-          ),
-          SizedBox(width: 8.sp),
-
-          // 2. Label - Fixed width is better than Flex for vertical alignment across different rows
-          Expanded(
-            flex: 1,
-            child: Text(
-              label,
-              style: AppTextStyle.normalRegular14.copyWith(
-                color: Colors.black54, // Softened label for hierarchy
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-
-          // 4. Value - Bolded to stand out
-          Expanded(
-            flex: 2,
-            child: Text(
-              value,
-              style: AppTextStyle.normalBold14.copyWith(
-                color: isHighlighted ? Colors.blue.shade900 : valueColor,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
           ),
         ],
       ),
@@ -347,7 +299,6 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Shimmer.fromColors(
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.grey.shade100,
@@ -360,10 +311,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
-          // Subtitle
           Shimmer.fromColors(
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.grey.shade100,
@@ -376,10 +324,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 12),
-
-          // Date row
           Shimmer.fromColors(
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.grey.shade100,
@@ -392,52 +337,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // Bottom row (icon + count)
-          Row(
-            children: [
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  height: 14,
-                  width: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  height: 12,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  height: 14,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -473,18 +373,15 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
             // ---------------- CONTENT ----------------
             Expanded(
               child: Obx(() {
-                // 1️⃣ SHOW SHIMMER WHEN LOADING FIRST TIME
                 if (controller.listLoading.value &&
                     controller.sharedFlyers.isEmpty) {
                   return _shimmerList();
                 }
 
-                // 2️⃣ EMPTY STATE
                 if (controller.sharedFlyers.isEmpty) {
                   return const NoDataFound(title: "Shared Flyers");
                 }
 
-                // 3️⃣ LIST VIEW
                 return RefreshIndicator(
                   onRefresh: () async {
                     controller.resetPagination();
@@ -501,7 +398,6 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                       if (index < controller.sharedFlyers.length) {
                         return _buildCard(controller.sharedFlyers[index]);
                       } else {
-                        // This shows the loader only if there is actually more data to fetch
                         return controller.hasMore
                             ? const Padding(
                                 padding: EdgeInsets.all(16),
@@ -522,9 +418,9 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
   }
 
   String _formatDate(String? iso) {
-    if (iso == null || iso.isEmpty) return "-";
+    if (iso == null || iso.isEmpty) return "N/A";
     final d = DateTime.tryParse(iso);
-    if (d == null) return "-";
+    if (d == null) return "N/A";
     return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}";
   }
 }
