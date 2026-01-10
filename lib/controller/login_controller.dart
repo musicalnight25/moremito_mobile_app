@@ -20,11 +20,6 @@ class LoginController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool rememberMe = false.obs;
 
-  RxList<Map<String, int>> selectedAnswersList = <Map<String, int>>[].obs;
-  RxList<SurveyQuestionsModel> surveyQuestionsList =
-      <SurveyQuestionsModel>[].obs;
-  RxInt currentQuestionIndex = 0.obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -45,32 +40,6 @@ class LoginController extends GetxController {
 
       if (savedUser != null) usernameController.text = savedUser;
       if (savedPass != null) passwordController.text = savedPass;
-    }
-  }
-
-  Future<void> getSurveyQuestions(BuildContext? context) async {
-    isLoading.value = true;
-    try {
-      var response = await _networkRepository.getSurveyQuestions(context);
-      if (response != null) {
-        final surveyQuestionsResponseModel =
-            surveyQuestionsResponseModelFromJson(json.encode(response));
-
-        if (surveyQuestionsResponseModel.status == true) {
-          surveyQuestionsList
-              .assignAll(surveyQuestionsResponseModel.data ?? []);
-        }
-      }
-    } catch (e, stack) {
-      debugPrint("Error in getSurveyQuestions: $e");
-      await ErrorLogger.logErrorToServer(
-        pageType: "Survey",
-        actionType: "GetSurveyQuestions",
-        errorMessage1: e.toString(),
-        errorMessage3: stack.toString(),
-      );
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -144,56 +113,6 @@ class LoginController extends GetxController {
         errorMessage1: e.toString(),
         errorMessage3: stack.toString(),
       );
-    }
-  }
-
-  Future<void> saveSurvey(BuildContext context) async {
-    if (selectedAnswersList.length < surveyQuestionsList.length) {
-      CommonMethod.getXSnackBar("Incomplete Survey",
-          "Please answer all questions before submitting.", redColor);
-      return;
-    }
-
-    try {
-      var response =
-          await _networkRepository.saveSurvey(context, selectedAnswersList);
-
-      if (response != null && response['Status'] == true) {
-        await PreferencesUtil.setSurveyCompleted();
-        Get.offAll(() => MainHomeScreen());
-
-        CommonMethod.getXSnackBar("Success",
-            "Your survey has been successfully submitted.", greenColor);
-      } else {
-        CommonMethod.getXSnackBar(
-          "Error",
-          "There was an issue submitting your survey. Please try again.",
-          redColor,
-        );
-      }
-    } catch (e, stack) {
-      debugPrint("Error in saveSurvey: $e");
-      await ErrorLogger.logErrorToServer(
-        pageType: "Survey",
-        actionType: "SaveSurvey",
-        errorMessage1: e.toString(),
-        errorMessage2: "Survey save failed",
-        errorMessage3: stack.toString(),
-      );
-    }
-  }
-
-  void selectAnswer(int questionId, int answerId) {
-    final existingIndex = selectedAnswersList
-        .indexWhere((item) => item['QuestionId'] == questionId);
-
-    if (existingIndex >= 0) {
-      selectedAnswersList[existingIndex] = {
-        'QuestionId': questionId,
-        'AnswerId': answerId
-      };
-    } else {
-      selectedAnswersList.add({'QuestionId': questionId, 'AnswerId': answerId});
     }
   }
 }

@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:more_mitro_app/utils/app_asset.dart';
+import 'package:more_mitro_app/utils/app_asset.dart'; // Ensure this path is correct
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 
 class PrimaryTextButton extends StatelessWidget {
-  String? title;
-  String? prefixIcon;
-  String? trailIcon;
-  VoidCallback? onPressed;
-  Color? buttonColor;
-  Color? textColor;
-  Color? iconColor;
-  double? width;
-  double? height;
-  bool isLoading;
-  Widget? prefixIconWidget;
-  BorderSide? border;
-  bool autofocus;
-  BorderRadiusGeometry? borderRadius;
+  final String title;
+  final String? prefixIcon;
+  final String? trailIcon;
+  final VoidCallback? onPressed;
+  final Color? buttonColor;
+  final Color? textColor;
+  final Color? iconColor;
+  final double? width;
+  final double? height;
+  final bool isLoading;
+  final Widget? prefixIconWidget;
+  final BorderSide? border;
+  final bool autofocus;
+  final BorderRadiusGeometry? borderRadius;
+  final double? fontSize;
 
-  PrimaryTextButton({
+  const PrimaryTextButton({
     Key? key,
     required this.title,
     required this.onPressed,
@@ -37,65 +38,96 @@ class PrimaryTextButton extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.autofocus = true,
+    this.fontSize,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final double padding = 20.sp; // Define horizontal padding
-    final double buttonWidth =
-        width ?? MediaQuery.of(context).size.width - (2 * padding);
+    // Default colors based on your sleek theme
+    final Color effectiveTextColor = textColor ?? primaryWhite;
+    final Color effectiveButtonColor = buttonColor ?? primaryColor;
 
-    return Center(
+    return SizedBox(
+      // Fills parent width by default, or uses custom width
+      width: width ?? double.infinity,
+      height: height ?? 48.h, // Standard "Professional" touch target height
       child: TextButton(
         autofocus: autofocus,
+        onPressed: isLoading ? null : onPressed,
         style: TextButton.styleFrom(
-            foregroundColor: textColor ?? primaryWhite,
-            shape: RoundedRectangleBorder(
-              side: border ?? BorderSide.none,
-              borderRadius: borderRadius ?? BorderRadius.circular(12.sp),
-            ),
-            disabledForegroundColor: primaryWhite.withOpacity(0.38),
-            backgroundColor: buttonColor ?? primaryColor,
-            fixedSize: Size(
-              buttonWidth,
-              height ?? 42.sp,
-            ),
-            alignment: Alignment.center,
-            textStyle: AppTextStyle.normalBold18),
+          backgroundColor: effectiveButtonColor,
+          foregroundColor: effectiveTextColor,
+          disabledBackgroundColor: effectiveButtonColor.withOpacity(0.5),
+          disabledForegroundColor: effectiveTextColor.withOpacity(0.5),
+          elevation: 0,
+          // Flat sleek look
+          shape: RoundedRectangleBorder(
+            side: border ?? BorderSide.none,
+            borderRadius: borderRadius ?? BorderRadius.circular(12.r),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          // Removes default tap ripple splash overflow
+          splashFactory: InkRipple.splashFactory,
+        ),
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
+            ? SizedBox(
+                height: 20.h,
+                width: 20.h,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
+                  strokeWidth: 2.5,
+                  // Loader color matches text color (e.g., white on blue, blue on white)
+                  valueColor: AlwaysStoppedAnimation<Color>(effectiveTextColor),
                 ),
               )
-            : FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  children: [
-                    if (prefixIconWidget != null || prefixIcon != null)
-                      prefixIconWidget ??
-                          SvgPicture.asset(prefixIcon!,
-                              color: iconColor, height: 20.sp, width: 20.sp),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6.sp),
-                      child: Text(
-                        title.toString(),
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyle.normalBold14
-                            .copyWith(color: textColor ?? primaryWhite),
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min, // Shrinks row to fit content
+                children: [
+                  // --- Prefix Icon ---
+                  if (prefixIconWidget != null) ...[
+                    prefixIconWidget!,
+                    SizedBox(width: 8.w),
+                  ] else if (prefixIcon != null) ...[
+                    SvgPicture.asset(
+                      prefixIcon!,
+                      // ignore: deprecated_member_use
+                      color: iconColor ?? effectiveTextColor,
+                      height: 20.sp,
+                      width: 20.sp,
+                    ),
+                    SizedBox(width: 8.w),
+                  ],
+
+                  // --- Title ---
+                  Flexible(
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.normalBold14.copyWith(
+                        fontSize: fontSize ?? 16.sp,
+                        // Slightly larger for readability
+                        color: effectiveTextColor,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
                       ),
                     ),
-                    // if (trailIcon != null)
-                    // SvgPicture.asset(AppAsset.arrow_forward,
-                    //     color: iconColor, height: 20.sp, width: 20.sp)
+                  ),
+
+                  // --- Trailing Icon (Optional) ---
+                  if (trailIcon != null) ...[
+                    SizedBox(width: 8.w),
+                    SvgPicture.asset(
+                      trailIcon!,
+                      // ignore: deprecated_member_use
+                      color: iconColor ?? effectiveTextColor,
+                      height: 18.sp,
+                      width: 18.sp,
+                    ),
                   ],
-                ),
+                ],
               ),
-        onPressed: onPressed,
       ),
     );
   }

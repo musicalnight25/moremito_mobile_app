@@ -2,8 +2,9 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services" // ✅ must be here
+    id "com.google.gms.google-services"
 }
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -11,14 +12,28 @@ if (localPropertiesFile.exists()) {
         localProperties.load(reader)
     }
 }
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
+// ========== KEYSTORE AUTO HANDLING ==========
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file("key.properties")
+def hasSigning = false
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+    if (keystoreProperties['storeFile'] && file(keystoreProperties['storeFile']).exists()) {
+        hasSigning = true
+        println "➡️ Using release keystore"
+    } else {
+        println "❌ key.properties exists but .jks missing. Falling back!"
+    }
+} else {
+    println "❌ key.properties missing. Falling back!"
 }
+// ============================================
 
 android {
     namespace = "com.moremito.app"
@@ -44,11 +59,15 @@ android {
     }
 
     signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+        debug {}
+
+        if (hasSigning) {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
 
@@ -57,7 +76,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            // use release keystore if exists, otherwise use debug signature
+            signingConfig hasSigning ? signingConfigs.release : signingConfigs.debug
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -71,7 +91,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
     implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
     implementation platform('com.google.firebase:firebase-bom:32.2.3')
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"

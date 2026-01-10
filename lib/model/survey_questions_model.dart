@@ -1,95 +1,78 @@
-// To parse this JSON data, do
-//
-//     final surveyQuestionsResponseModel = surveyQuestionsResponseModelFromJson(jsonString);
-
 import 'dart:convert';
 
-SurveyQuestionsResponseModel surveyQuestionsResponseModelFromJson(String str) =>
-    SurveyQuestionsResponseModel.fromJson(json.decode(str));
+SurveyResponseWrapper surveyWrapperFromJson(String str) =>
+    SurveyResponseWrapper.fromJson(json.decode(str));
 
-String surveyQuestionsResponseModelToJson(SurveyQuestionsResponseModel data) =>
-    json.encode(data.toJson());
-
-class SurveyQuestionsResponseModel {
+/// Wrapper for both API responses
+class SurveyResponseWrapper {
   bool? status;
-  dynamic message;
-  List<SurveyQuestionsModel>? data;
+  String? message;
+  List<SurveyQuestion>? data;
 
-  SurveyQuestionsResponseModel({
-    this.status,
-    this.message,
-    this.data,
-  });
+  SurveyResponseWrapper({this.status, this.message, this.data});
 
-  factory SurveyQuestionsResponseModel.fromJson(Map<String, dynamic> json) =>
-      SurveyQuestionsResponseModel(
+  factory SurveyResponseWrapper.fromJson(Map<String, dynamic> json) =>
+      SurveyResponseWrapper(
         status: json["Status"],
         message: json["Message"],
         data: json["Data"] == null
             ? []
-            : List<SurveyQuestionsModel>.from(
-                json["Data"]!.map((x) => SurveyQuestionsModel.fromJson(x))),
+            : List<SurveyQuestion>.from(
+                json["Data"].map((x) => SurveyQuestion.fromJson(x))),
       );
-
-  Map<String, dynamic> toJson() => {
-        "Status": status,
-        "Message": message,
-        "Data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-      };
 }
 
-class SurveyQuestionsModel {
+/// Main Question Model
+class SurveyQuestion {
+  int? id;
+  int? userId;
   int? questionId;
   String? questionText;
-  List<AnswerModel>? answers;
+  int? answerId; // selected answer if exists
+  String? answerText; // selected answer text
+  List<AnswerOption>? answers; // onboarding
+  List<AnswerOption>? allAnswerOptions; // after login
 
-  SurveyQuestionsModel({
+  SurveyQuestion({
+    this.id,
+    this.userId,
     this.questionId,
     this.questionText,
+    this.answerId,
+    this.answerText,
     this.answers,
+    this.allAnswerOptions,
   });
 
-  factory SurveyQuestionsModel.fromJson(Map<String, dynamic> json) =>
-      SurveyQuestionsModel(
+  factory SurveyQuestion.fromJson(Map<String, dynamic> json) => SurveyQuestion(
+        id: json["Id"],
+        userId: json["UserId"],
         questionId: json["QuestionId"],
         questionText: json["QuestionText"],
+        answerId: json["AnswerId"],
+        answerText: json["AnswerText"],
         answers: json["Answers"] == null
             ? []
-            : List<AnswerModel>.from(
-                json["Answers"]!.map((x) => AnswerModel.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "QuestionId": questionId,
-        "QuestionText": questionText,
-        "Answers": answers == null
+            : List<AnswerOption>.from(
+                json["Answers"].map((x) => AnswerOption.fromJson(x))),
+        allAnswerOptions: json["AllAnswerOptions"] == null
             ? []
-            : List<dynamic>.from(answers!.map((x) => x.toJson())),
-      };
+            : List<AnswerOption>.from(
+                json["AllAnswerOptions"].map((x) => AnswerOption.fromJson(x))),
+      );
 }
 
-class AnswerModel {
+/// Answer option model
+class AnswerOption {
   int? questionId;
   int? answerId;
   String? answerText;
 
-  AnswerModel({
-    this.questionId,
-    this.answerId,
-    this.answerText,
-  });
+  AnswerOption({this.questionId, this.answerId, this.answerText});
 
-  factory AnswerModel.fromJson(Map<String, dynamic> json) => AnswerModel(
+  factory AnswerOption.fromJson(Map<String, dynamic> json) => AnswerOption(
         questionId: json["QuestionId"],
         answerId: json["AnswerId"],
         answerText: json["AnswerText"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "QuestionId": questionId,
-        "AnswerId": answerId,
-        "AnswerText": answerText,
-      };
 }

@@ -5,16 +5,17 @@ import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
-
-import '../../controller/login_controller.dart';
 import '../../utils/app_asset.dart';
 import 'survey_screen.dart';
 
-class StartSurveyScreen extends StatelessWidget {
+class StartSurveyScreen extends StatefulWidget {
   StartSurveyScreen({Key? key}) : super(key: key);
 
-  var controller = Get.put(LoginController());
+  @override
+  State<StartSurveyScreen> createState() => _StartSurveyScreenState();
+}
 
+class _StartSurveyScreenState extends State<StartSurveyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,10 +46,9 @@ class StartSurveyScreen extends StatelessWidget {
             child: PrimaryTextButton(
                 title: "Start Survey",
                 onPressed: () {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    controller.getSurveyQuestions(null);
-                  });
-                  Get.to(() => SurveyScreen());
+                  Get.to(() => SurveyScreen(
+                        isFromOnboarding: true,
+                      ));
                 }),
           ),
           customHeight(86),

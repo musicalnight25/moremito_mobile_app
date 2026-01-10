@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/setting/widget/settings_tile.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
@@ -8,7 +9,11 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 import 'package:more_mitro_app/pages/category/categories_screen.dart';
 
-import '../marketing/flyer_templates_screen.dart';
+import '../../service/webview_helper.dart';
+import '../../utils/common_method.dart';
+import '../../utils/common_web_view.dart';
+import '../account/my_deep_link_screen.dart';
+import '../auth/survey_screen.dart';
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/shop_moremito_screen.dart';
@@ -88,10 +93,20 @@ class _MenuScreenState extends State<MenuScreen> {
         icon: Icons.campaign_outlined,
         items: [
           MenuItem(
-            title: "Customize & Share My Flyers",
-            icon: Icons.brush_outlined,
-            onTap: () => Get.to(() => FlyerTemplatesScreen()),
-          ),
+              title: "Customize & Share My Flyers",
+              icon: Icons.brush_outlined,
+              onTap: () async {
+                await WebviewHelper.getDynamicWebviewURL(
+                  actionName: "Template",
+                  page: "FlyerPage",
+                  onSuccess: (url) {
+                    Get.to(() => CommonWebView(url: url, title: "My Flyers"));
+                  },
+                  onError: (msg) {
+                    CommonMethod.getXSnackBar("Error", msg, redColor);
+                  },
+                );
+              }),
           MenuItem(
             title: "Share Audios, Videos & Docs",
             icon: Icons.perm_media_outlined,
@@ -114,33 +129,51 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
-    ];
-  }
-
-  Widget _shopTile() {
-    return InkWell(
-      onTap: () => Get.to(() => const ShopMoremitoScreen()),
-      child: Container(
-        padding: EdgeInsets.all(15.sp),
-        decoration: BoxDecoration(
-          color: primaryWhite,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: borderGreyColor.withOpacity(0.6)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.shopping_cart_outlined,
-                size: 16.sp, color: primaryColor),
-            width12,
-            Expanded(
-              child: Text("Shop MoreMito Products",
-                  style: AppTextStyle.normalSemiBold15),
-            ),
-            Icon(Icons.keyboard_arrow_right, size: 16.sp, color: primaryBlack),
-          ],
-        ),
+      MenuSection(
+        title: "Compensation",
+        icon: Icons.payments_outlined,
+        items: [
+          MenuItem(
+            title: "My Rank Management",
+            icon: Icons.leaderboard_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "MyRankManagementReport",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "My Rank Management Report",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "My Currently Available Balance",
+            icon: Icons.account_balance_wallet_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "MyMoreMitoCash",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "My Currently Available Balance",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+        ],
       ),
-    );
+    ];
   }
 
   @override
@@ -148,14 +181,29 @@ class _MenuScreenState extends State<MenuScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(title: "Menu", visibleBackButton: true),
-      backgroundColor: Colors.transparent,
       body: BaseBackgroundWidget(
         child: ListView(
           padding: EdgeInsets.all(10.sp),
           children: [
             ...sections.map((e) => MenuSectionWidget(section: e)),
             // SizedBox(height: 10.h),
-            _shopTile(),
+            SettingsTile(
+              title: "Shop MoreMito Products",
+              icon: Icons.shopping_cart_outlined,
+              onTap: () => Get.to(() => const ShopMoremitoScreen()),
+            ),
+            SettingsTile(
+              title: "Direct Links",
+              icon: Icons.link_outlined,
+              onTap: () => Get.to(() => const MyDeepLinksScreen()),
+            ),
+            SettingsTile(
+              title: "User Survey",
+              icon: Icons.poll_outlined,
+              onTap: () => Get.to(() => SurveyScreen(
+                    isFromOnboarding: false,
+                  )),
+            ),
           ],
         ),
       ),

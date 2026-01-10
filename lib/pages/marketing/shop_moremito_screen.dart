@@ -22,60 +22,41 @@ class ShopMoremitoScreen extends StatelessWidget {
       appBar: const CommonAppBar(
         visibleBackButton: true,
       ),
-      body: Stack(
-        children: [
-          // 1. Main Content
-          BaseBackgroundWidget(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  // People Health Products Banner
-                  _buildHealthBanner(
-                    title: "People Health\nProducts",
-                    subText: "Buy Now",
-                    imageUrl:
-                        "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80",
-                    onTap: () {
-                      controller.getWebViewToken("PeopleHealthProducts");
-                    },
-                  ),
-
-                  SizedBox(height: 24.h),
-
-                  // Pet Health Products Banner
-                  _buildHealthBanner(
-                    title: "Pet Health\nProducts",
-                    subText: "Shop Now",
-                    imageUrl:
-                        "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?auto=format&fit=crop&w=800&q=80",
-                    onTap: () {
-                      controller.getWebViewToken("PetHealthProducts");
-                    },
-                    isPetBanner: true,
-                  ),
-                ],
+      body: BaseBackgroundWidget(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              // People Health Products Banner
+              _buildHealthBanner(
+                title: "People Health\nProducts",
+                subText: "Buy Now",
+                imageUrl:
+                    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80",
+                onTap: () {
+                  controller.getShopMoremitoWebview(
+                      "PeopleHealthProducts"); // ← FIXED
+                },
               ),
-            ),
-          ),
 
-          // 2. Loading Overlay (Shows only when isLoading is true)
-          Obx(() {
-            return controller.isLoading.value
-                ? Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    color: Colors.black.withOpacity(0.5), // Dim background
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white, // White loader
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink();
-          }),
-        ],
+              SizedBox(height: 24.h),
+
+              // Pet Health Products Banner
+              _buildHealthBanner(
+                title: "Pet Health\nProducts",
+                subText: "Shop Now",
+                imageUrl:
+                    "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?auto=format&fit=crop&w=800&q=80",
+                onTap: () {
+                  controller
+                      .getShopMoremitoWebview("PetHealthProducts"); // ← FIXED
+                },
+                isPetBanner: true,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

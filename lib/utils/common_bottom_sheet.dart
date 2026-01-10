@@ -21,8 +21,10 @@ class CommonBottomSheet extends StatelessWidget {
   final VoidCallback onConfirm;
   final VoidCallback? onCancel;
   final bool? showCancelButton;
+  final bool isDestructive; // Added for red icon styling
 
-  CommonBottomSheet({
+  const CommonBottomSheet({
+    Key? key,
     required this.title,
     required this.message,
     required this.confirmButtonTitle,
@@ -36,77 +38,139 @@ class CommonBottomSheet extends StatelessWidget {
     required this.onConfirm,
     this.onCancel,
     this.showCancelButton,
-  });
+    this.isDestructive = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Widget contentWidget;
-
-    if (messageWidget != null) {
-      contentWidget = messageWidget!;
-    } else if (message != null) {
-      contentWidget = Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.sp),
-        child: Text(
-          message!,
-          style: AppTextStyle.normalRegular16.copyWith(color: lightBlackColor),
-          textAlign: TextAlign.center,
-        ),
-      );
-    } else {
-      contentWidget = SizedBox.shrink();
-    }
-
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: Get.height - 50, // Prevents full-screen overflow
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 30.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+        color: primaryWhite,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon(
-              //   icon ?? Icons.error_outline,
-              //   size: 40.sp,
-              // ),
-              // height15,
-              Text(
-                title,
-                style: AppTextStyle.normalBold24,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // --- 1. Drag Handle (The "Pill") ---
+            Container(
+              width: 36.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: borderGreyColor,
+                borderRadius: BorderRadius.circular(2.r),
               ),
-              height10,
-              contentWidget,
-              height15,
-              customWidget ??
-                  PrimaryTextButton(
-                    title: confirmButtonTitle,
-                    onPressed: onConfirm,
-                    buttonColor: confirmButtonColor ?? primaryColor,
-                    textColor: confirmButtonTextColor ?? primaryWhite,
-                  ),
-              if (showCancelButton ?? false) ...[
-                height10,
-                TextButton(
-                  onPressed: onCancel ?? () => Get.back(),
-                  child: Text(
-                    cancelButtonTitle ?? "Cancel",
-                    style: AppTextStyle.normalBold16.copyWith(
-                      color: cancelButtonTextColor ?? redColor,
-                      decoration: TextDecoration.underline,
-                    ),
+            ),
+            SizedBox(height: 24.h),
+
+            // --- 2. Optional Icon (Sleek Circle) ---
+            if (icon != null) ...[
+              Container(
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: isDestructive ? softRedColor : paleYellowColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 28.sp,
+                  color: isDestructive ? redColor : primaryColor,
+                ),
+              ),
+              SizedBox(height: 16.h),
+            ],
+
+            // --- 3. Title ---
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppTextStyle.normalBold16.copyWith(
+                fontSize: 18.sp,
+                color: lightBlackColor,
+                letterSpacing: -0.5, // Tighter tracking for modern look
+              ),
+            ),
+            SizedBox(height: 8.h),
+
+            // --- 4. Message Content ---
+            if (messageWidget != null)
+              messageWidget!
+            else if (message != null)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Text(
+                  message!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: lightBlackColor,
+                    height: 1.5, // Better readability
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-              ],
-              height10,
-            ],
-          ),
+              ),
+
+            SizedBox(height: 24.h),
+
+            // --- 5. Action Buttons ---
+            if (customWidget != null)
+              customWidget!
+            else
+              Column(
+                children: [
+                  // Confirm Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: PrimaryTextButton(
+                      title: confirmButtonTitle,
+                      onPressed: onConfirm,
+                      // Sleek logic: If no color provided, use Primary or Red based on context
+                      buttonColor: confirmButtonColor ??
+                          (isDestructive ? redColor : primaryColor),
+                      textColor: confirmButtonTextColor ?? primaryWhite,
+                    ),
+                  ),
+
+                  // Cancel Button (Styled as ghost button, not just text)
+                  if (showCancelButton ?? false) ...[
+                    SizedBox(height: 12.h),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48.h, // Match height of primary button usually
+                      child: TextButton(
+                        onPressed: onCancel ?? () => Get.back(),
+                        style: TextButton.styleFrom(
+                          foregroundColor:
+                              cancelButtonTextColor ?? lightBlackColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          splashFactory: NoSplash.splashFactory, // cleaner tap
+                        ),
+                        child: Text(
+                          cancelButtonTitle ?? "Cancel",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: cancelButtonTextColor ?? lightBlackColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+          ],
         ),
       ),
     );

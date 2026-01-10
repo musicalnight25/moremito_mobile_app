@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/pages/auth/widget/survey_shimmer_tile.dart';
 import 'package:more_mitro_app/utils/app_asset.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
@@ -12,217 +13,220 @@ import 'package:more_mitro_app/utils/primary_text_button.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 
-import '../../controller/login_controller.dart';
+import '../../controller/survey_controller.dart';
 import '../../utils/common_app_bar.dart';
-import 'close_survey_screen.dart';
 
-class SurveyScreen extends StatelessWidget {
-  SurveyScreen({Key? key}) : super(key: key);
+class SurveyScreen extends StatefulWidget {
+  final bool isFromOnboarding;
 
-  var controller = Get.put(LoginController());
+  const SurveyScreen({Key? key, required this.isFromOnboarding})
+      : super(key: key);
+
+  @override
+  State<SurveyScreen> createState() => _SurveyScreenState();
+}
+
+class _SurveyScreenState extends State<SurveyScreen> {
+  final controller = Get.put(SurveyController());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.getSurveyQuestions(widget.isFromOnboarding),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        /// prevent exiting while answering
         if (controller.currentQuestionIndex.value > 0) {
-          var currentQuestion = controller
+          var q = controller
               .surveyQuestionsList[controller.currentQuestionIndex.value];
 
-          // Prevent back navigation if the current question is unanswered
-          bool isAnswered = controller.selectedAnswersList
-              .any((item) => item['QuestionId'] == currentQuestion.questionId);
+          bool answered = controller.selectedAnswersList
+              .any((item) => item['QuestionId'] == q.questionId);
 
-          if (!isAnswered) {
-            CommonMethod.getXSnackBar("Answer Required",
-                "Please answer the question before going back.", redColor);
+          if (!answered) {
+            CommonMethod.getXSnackBar(
+                "Answer Required", "Please answer first.", redColor);
             return false;
           }
 
           controller.currentQuestionIndex.value--;
           return false;
-        } else {
-          return true;
         }
+        return true;
       },
       child: Scaffold(
-        extendBody: true,
         extendBodyBehindAppBar: true,
-        appBar: CommonAppBar(),
+        appBar: CommonAppBar(
+          visibleBackButton: true,
+        ),
         body: BaseBackgroundWidget(
-          child: Obx(
-            () => controller.surveyQuestionsList.isEmpty &&
-                    controller.isLoading.value == false
-                ? NoDataFound(
-                    title: "Survey",
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      height20,
-                      // Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 16.sp),
-                      //   child: Obx(
-                      //     () => Text(
-                      //       "Question ${controller.currentQuestionIndex.value + 1} of the Survey",
-                      //       style: AppTextStyle.normalExtraBold,
-                      //     ),
-                      //   ),
-                      // ),
-                      // height05,
-                      Expanded(
-                        child: Obx(() {
-                          // Ensure there's data in surveyQuestionsList before accessing it
-                          if (controller.surveyQuestionsList.isEmpty) {
-                            return Center(child: CircularProgressIndicator());
-                          }
+          child: Obx(() {
+            /// SHIMMER
+            if (controller.isLoading.value) {
+              return ListView.builder(
+                padding: EdgeInsets.fromLTRB(16.sp, 100.sp, 16.sp, 16.sp),
+                itemCount: 6,
+                itemBuilder: (_, __) => const SurveyShimmerTile(),
+              );
+            }
 
-                          var currentQuestion = controller.surveyQuestionsList[
-                              controller.currentQuestionIndex.value];
+            /// NO DATA
+            if (controller.surveyQuestionsList.isEmpty) {
+              return RefreshIndicator(
+                onRefresh: () =>
+                    controller.getSurveyQuestions(widget.isFromOnboarding),
+                color: primaryColor,
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
+                  children: const [
+                    SizedBox(height: 200),
+                    NoDataFound(title: "Survey"),
+                  ],
+                ),
+              );
+            }
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 16.sp),
-                                child: Text(
-                                  currentQuestion.questionText ?? "-",
-                                  style: AppTextStyle.normalRegular16
-                                      .copyWith(color: lightBlackColor),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              height20,
-                              Expanded(
-                                child: ListView.builder(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.sp),
-                                  itemCount: controller
-                                      .surveyQuestionsList
-                                      .value[
-                                          controller.currentQuestionIndex.value]
-                                      .answers!
-                                      .length,
-                                  itemBuilder: (context, index) {
-                                    var currentQuestion = controller
-                                            .surveyQuestionsList.value[
-                                        controller.currentQuestionIndex.value];
-                                    var element =
-                                        currentQuestion.answers![index];
+            /// MAIN SURVEY
+            return RefreshIndicator(
+              onRefresh: () =>
+                  controller.getSurveyQuestions(widget.isFromOnboarding),
+              color: primaryColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  height20,
+                  Expanded(
+                    child: Obx(() {
+                      var q = controller.surveyQuestionsList[
+                          controller.currentQuestionIndex.value];
 
-                                    // Use Obx to track the changes in the selected answers list
-                                    return Obx(() {
-                                      var isSelect = controller
-                                          .selectedAnswersList
-                                          .any((item) =>
-                                              item['QuestionId'] ==
-                                                  currentQuestion.questionId &&
-                                              item['AnswerId'] ==
-                                                  element.answerId);
+                      /// pick correct list
+                      final options = widget.isFromOnboarding
+                          ? q.answers
+                          : q.allAnswerOptions;
 
-                                      return GestureDetector(
-                                        onTap: () {
-                                          controller.selectAnswer(
-                                              currentQuestion.questionId!,
-                                              element.answerId!);
-                                        },
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.only(bottom: 12.sp),
-                                          child: ShadowContainerWidget(
-                                            padding: 0,
-                                            blurRadius: 0,
-                                            borderColor:
-                                                isSelect ? primaryColor : null,
-                                            widget: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12.sp,
-                                                  vertical: 18.sp),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      element.answerText!,
-                                                      style: AppTextStyle
-                                                          .normalBold14,
-                                                    ),
-                                                  ),
-                                                  isSelect
-                                                      ? SvgPicture.asset(
-                                                          AppAsset
-                                                              .selectedCheck)
-                                                      : Icon(
-                                                          Icons.circle_outlined,
-                                                          color: Colors.grey,
-                                                        ),
-                                                ],
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// Question
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                            child: Text(
+                              q.questionText ?? "-",
+                              style: AppTextStyle.normalRegular16
+                                  .copyWith(color: lightBlackColor),
+                            ),
+                          ),
+                          height20,
+
+                          /// Answers
+                          Expanded(
+                            child: ListView.builder(
+                              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                              itemCount: options?.length ?? 0,
+                              itemBuilder: (_, index) {
+                                var element = options![index];
+
+                                return Obx(() {
+                                  bool isSelect =
+                                      controller.selectedAnswersList.any(
+                                    (x) =>
+                                        x['QuestionId'] == q.questionId &&
+                                        x['AnswerId'] == element.answerId,
+                                  );
+
+                                  return GestureDetector(
+                                    onTap: () => controller.selectAnswer(
+                                      q.questionId!,
+                                      element.answerId!,
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 12.sp),
+                                      child: ShadowContainerWidget(
+                                        padding: 0,
+                                        blurRadius: 0,
+                                        borderColor:
+                                            isSelect ? primaryColor : null,
+                                        widget: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12.sp,
+                                              vertical: 18.sp),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  element.answerText!,
+                                                  style:
+                                                      AppTextStyle.normalBold14,
+                                                ),
                                               ),
-                                            ),
+                                              isSelect
+                                                  ? SvgPicture.asset(
+                                                      AppAsset.selectedCheck)
+                                                  : Icon(Icons.circle_outlined,
+                                                      color: lightBlackColor),
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    });
-                                  },
-                                ),
-                              ),
-                              height20,
-                              Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 16.sp),
-                                child: Obx(
-                                  () {
-                                    var currentQuestion = controller
-                                            .surveyQuestionsList[
-                                        controller.currentQuestionIndex.value];
+                                      ),
+                                    ),
+                                  );
+                                });
+                              },
+                            ),
+                          ),
+                          height20,
 
-                                    // Check if the current question is answered
-                                    bool isCurrentQuestionAnswered =
-                                        controller.selectedAnswersList.any(
-                                      (item) =>
-                                          item['QuestionId'] ==
-                                          currentQuestion.questionId,
-                                    );
+                          /// BUTTON
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                            child: Obx(() {
+                              bool answered =
+                                  controller.selectedAnswersList.any(
+                                (x) => x['QuestionId'] == q.questionId,
+                              );
 
-                                    return PrimaryTextButton(
-                                        buttonColor: isCurrentQuestionAnswered
-                                            ? null
-                                            : disableButtonColor,
-                                        title: "Next",
-                                        onPressed: () async {
-                                          if (isCurrentQuestionAnswered) {
-                                            if (controller.currentQuestionIndex
-                                                    .value <
-                                                controller.surveyQuestionsList
-                                                        .length -
-                                                    1) {
-                                              controller
-                                                  .currentQuestionIndex.value++;
-                                            } else {
-                                              await controller
-                                                  .saveSurvey(context);
+                              return PrimaryTextButton(
+                                buttonColor:
+                                    answered ? null : disableButtonColor,
+                                title: controller.currentQuestionIndex.value ==
+                                        controller.surveyQuestionsList.length -
+                                            1
+                                    ? "Submit"
+                                    : "Next",
+                                onPressed: () async {
+                                  if (!answered) {
+                                    CommonMethod.getXSnackBar("Required",
+                                        "Select an answer first.", redColor);
+                                    return;
+                                  }
 
-                                              // Get.to(() =>
-                                              //     CloseSurveyScreen()); // End of survey
-                                            }
-                                          } else {
-                                            CommonMethod.getXSnackBar(
-                                                "Selection Required",
-                                                "Please select an answer before proceeding.",
-                                                redColor);
-                                          }
-                                        });
-                                  },
-                                ),
-                              ),
-                              customHeight(56)
-                            ],
-                          );
-                        }),
-                      ),
-                    ],
+                                  if (controller.currentQuestionIndex.value <
+                                      controller.surveyQuestionsList.length -
+                                          1) {
+                                    controller.currentQuestionIndex.value++;
+                                  } else {
+                                    await controller.saveSurvey(context);
+                                  }
+                                },
+                              );
+                            }),
+                          ),
+                          customHeight(56),
+                        ],
+                      );
+                    }),
                   ),
-          ),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );

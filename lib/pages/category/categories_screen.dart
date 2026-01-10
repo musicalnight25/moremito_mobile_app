@@ -119,7 +119,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 Text('MoreMito Library', style: AppTextStyle.normalBold20),
                 const SizedBox(height: 6),
                 Text(
-                  "Browse categories or search by sub categories, filenames, or tags.",
+                  "Browse audio, video, and document files.",
                   style: AppTextStyle.normalRegular14
                       .copyWith(color: Colors.black54),
                 ),

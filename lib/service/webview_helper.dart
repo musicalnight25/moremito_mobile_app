@@ -1,0 +1,41 @@
+import 'package:get/get.dart';
+import '../service/network_repository.dart';
+import '../utils/process_indicator.dart';
+
+class WebviewHelper {
+  static final NetworkRepository _networkRepository = NetworkRepository();
+  static final Circle processIndicator = Circle();
+
+  static Future<void> getDynamicWebviewURL({
+    required String actionName,
+    required String page,
+    required Function(String url) onSuccess,
+    required Function(String message) onError,
+  }) async {
+    processIndicator.show(Get.context);
+    try {
+      final response = await _networkRepository.getWebviewToken();
+
+      if (response != null &&
+          response['Status'] == true &&
+          response['Data'] != null) {
+        final exchangeToken = response['Data']['exchangeToken'];
+
+        final finalUrl =
+            "https://moremito.com/MobileWebView/$page?actionName=$actionName&token=$exchangeToken";
+        processIndicator.hide(Get.context);
+        onSuccess(finalUrl);
+      } else {
+        processIndicator.hide(Get.context);
+
+        onError(response?['Message'] ?? "Failed to generate token");
+      }
+    } catch (e) {
+      processIndicator.hide(Get.context);
+
+      onError("Connection Error: $e");
+    } finally {
+      processIndicator.hide(Get.context);
+    }
+  }
+}

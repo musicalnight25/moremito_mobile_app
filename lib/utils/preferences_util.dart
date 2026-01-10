@@ -119,8 +119,6 @@ class PreferencesUtil {
   }
 
   static Future<void> saveUserToken(LoginResponseModel loginUserModel) async {
-    LoginController loginController = Get.put(LoginController());
-
     try {
       if (loginUserModel.data != null && loginUserModel.data?.token != null) {
         await _prefs?.setString(
@@ -135,7 +133,6 @@ class PreferencesUtil {
         if (loginUserModel.data!.isSurveyCompleted == true) {
           Get.offAll(() => MainHomeScreen());
         } else {
-          await loginController.getSurveyQuestions(Get.context!);
           Get.off(() => StartSurveyScreen());
         }
       }

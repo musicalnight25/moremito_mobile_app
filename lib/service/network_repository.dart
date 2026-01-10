@@ -75,6 +75,9 @@ class NetworkRepository {
   Future<dynamic> getSurveyQuestions(BuildContext? context) =>
       getRequest(context, AppConstants.getSurveyQuestions);
 
+  Future<dynamic> getSurveyResponses(BuildContext? context) =>
+      getRequest(context, AppConstants.getSurveyResponses);
+
   Future<dynamic> getCategoriesList() =>
       getRequest(null, AppConstants.getCategories);
 
@@ -285,6 +288,9 @@ class NetworkRepository {
       data: null,
     );
   }
+
+  Future<dynamic> getDeepLinks(BuildContext? context) =>
+      getRequest(context, AppConstants.deepLinks);
 
   // ---------- INTERNAL HANDLERS ----------
 

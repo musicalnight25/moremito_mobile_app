@@ -8,6 +8,7 @@ class AppConstants {
   static const String loginWithPassword = 'login';
   static const String registerDeviceToken = 'register-device-token';
   static const String getSurveyQuestions = 'get-survey-questions';
+  static const String getSurveyResponses = 'get-survey-responses';
   static const String saveSurvey = 'save-survey';
   static const String getCategories = 'get-categories';
   static const String getSubCategories = 'get-sub-categories?Categoryid=';
@@ -64,4 +65,5 @@ class AppConstants {
   static const String saveLeadNotes = 'save-lead-notes';
   static const String markLeadAsContacted = 'mark-lead-as-contacted';
   static const String getWebviewToken = 'webview-token';
+  static const String deepLinks = 'deep-links';
 }
