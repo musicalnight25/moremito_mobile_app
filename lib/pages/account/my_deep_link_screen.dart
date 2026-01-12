@@ -31,7 +31,7 @@ class MyDeepLinksScreen extends StatelessWidget {
           /// ===================== SHIMMER WHILE LOADING =====================
           if (dc.loading.value) {
             return ListView.builder(
-              padding: EdgeInsets.fromLTRB(16.sp, 100.sp, 16.sp, 16.sp),
+              padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
               itemCount: 10,
               itemBuilder: (_, __) => const DeepLinkShimmerTile(),
             );
@@ -43,7 +43,7 @@ class MyDeepLinksScreen extends StatelessWidget {
               onRefresh: dc.fetchDeepLinks,
               color: primaryColor,
               child: ListView(
-                padding: EdgeInsets.fromLTRB(16.sp, 100.sp, 16.sp, 16.sp),
+                padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
                 children: const [
                   SizedBox(height: 200),
                   NoDataFound(title: "Deep Links"),
@@ -57,7 +57,7 @@ class MyDeepLinksScreen extends StatelessWidget {
             onRefresh: dc.fetchDeepLinks,
             color: primaryColor,
             child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(16.sp, 60.sp, 16.sp, 16.sp),
+              padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
               itemCount: dc.deepLinks.length,
               itemBuilder: (_, i) {
                 final item = dc.deepLinks[i];

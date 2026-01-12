@@ -66,4 +66,5 @@ class AppConstants {
   static const String markLeadAsContacted = 'mark-lead-as-contacted';
   static const String getWebviewToken = 'webview-token';
   static const String deepLinks = 'deep-links';
+  static const String getRankInfo = 'rank-info';
 }

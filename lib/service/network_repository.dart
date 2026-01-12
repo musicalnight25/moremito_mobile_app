@@ -292,6 +292,10 @@ class NetworkRepository {
   Future<dynamic> getDeepLinks(BuildContext? context) =>
       getRequest(context, AppConstants.deepLinks);
 
+  Future<dynamic> getRankInfo({BuildContext? context, var queryParameters}) =>
+      getRequest(context, AppConstants.getRankInfo,
+          queryParameters: queryParameters);
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

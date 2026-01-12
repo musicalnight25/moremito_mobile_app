@@ -13,6 +13,7 @@ import '../../service/webview_helper.dart';
 import '../../utils/common_method.dart';
 import '../../utils/common_web_view.dart';
 import '../account/my_deep_link_screen.dart';
+import '../account/rank_info_screen.dart';
 import '../auth/survey_screen.dart';
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
@@ -59,6 +60,11 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.badge_outlined,
             onTap: () => Get.to(() => WelcomeTagScreen()),
           ),
+          MenuItem(
+            title: "My Rank History",
+            icon: Icons.military_tech_outlined,
+            onTap: () => Get.to(() => RankInfoScreen()),
+          ),
         ],
       ),
       MenuSection(
@@ -99,6 +105,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 await WebviewHelper.getDynamicWebviewURL(
                   actionName: "Template",
                   page: "FlyerPage",
+                  id: "1",
                   onSuccess: (url) {
                     Get.to(() => CommonWebView(url: url, title: "My Flyers"));
                   },

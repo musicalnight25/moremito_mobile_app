@@ -70,7 +70,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
             /// SHIMMER
             if (controller.isLoading.value) {
               return ListView.builder(
-                padding: EdgeInsets.fromLTRB(16.sp, 100.sp, 16.sp, 16.sp),
+                padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
                 itemCount: 6,
                 itemBuilder: (_, __) => const SurveyShimmerTile(),
               );

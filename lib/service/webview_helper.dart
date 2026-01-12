@@ -9,6 +9,7 @@ class WebviewHelper {
   static Future<void> getDynamicWebviewURL({
     required String actionName,
     required String page,
+    String? id,
     required Function(String url) onSuccess,
     required Function(String message) onError,
   }) async {
@@ -20,9 +21,16 @@ class WebviewHelper {
           response['Status'] == true &&
           response['Data'] != null) {
         final exchangeToken = response['Data']['exchangeToken'];
+        final finalUrl = Uri.https(
+          'moremito.com',
+          '/MobileWebView/$page',
+          {
+            'actionName': actionName,
+            'token': exchangeToken,
+            if (id != null) 'id': id,
+          },
+        ).toString();
 
-        final finalUrl =
-            "https://moremito.com/MobileWebView/$page?actionName=$actionName&token=$exchangeToken";
         processIndicator.hide(Get.context);
         onSuccess(finalUrl);
       } else {
