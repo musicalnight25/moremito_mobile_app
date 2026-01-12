@@ -164,8 +164,12 @@ class CategoriesController extends GetxController {
     return null;
   }
 
-  Future<void> shareFile(
-      CategoryFileModel data, String message, String sharedUrl) async {
+  Future<void> shareFile({
+    required CategoryFileModel data,
+    required String message,
+    required String sharedUrl,
+    required String recipientName,
+  }) async {
     ShareResult result =
         await Share.share(message, subject: "File Shared with You");
     String platform = ""; // Default message

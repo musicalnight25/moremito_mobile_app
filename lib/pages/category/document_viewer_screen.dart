@@ -315,10 +315,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                   onPressed: () {
                     Get.back();
                     controller.shareFile(
-                      data,
-                      messageTextController.text.trim(),
-                      generatedLink.value,
-                    );
+                        data: data,
+                        message: messageTextController.text.trim(),
+                        sharedUrl: generatedLink.value,
+                        recipientName: nameTextController.text.trim());
                   },
                 ),
               ],

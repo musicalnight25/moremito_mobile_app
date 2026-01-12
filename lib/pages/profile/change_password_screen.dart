@@ -99,6 +99,7 @@ class ChangePasswordScreen extends StatelessWidget {
           PasswordWidget(
             controller: controller,
             labelText: label,
+            hintText: "Please Enter $label",
             // Add hint text or styles if your widget supports it for better UX
           ),
         ],

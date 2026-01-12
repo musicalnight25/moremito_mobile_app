@@ -61,6 +61,13 @@ class _MenuScreenState extends State<MenuScreen> {
             onTap: () => Get.to(() => WelcomeTagScreen()),
           ),
           MenuItem(
+            title: "User Survey",
+            icon: Icons.poll_outlined,
+            onTap: () => Get.to(() => SurveyScreen(
+                  isFromOnboarding: false,
+                )),
+          ),
+          MenuItem(
             title: "My Rank History",
             icon: Icons.military_tech_outlined,
             onTap: () => Get.to(() => RankInfoScreen()),
@@ -203,13 +210,6 @@ class _MenuScreenState extends State<MenuScreen> {
               title: "Direct Links",
               icon: Icons.link_outlined,
               onTap: () => Get.to(() => const MyDeepLinksScreen()),
-            ),
-            SettingsTile(
-              title: "User Survey",
-              icon: Icons.poll_outlined,
-              onTap: () => Get.to(() => SurveyScreen(
-                    isFromOnboarding: false,
-                  )),
             ),
           ],
         ),
