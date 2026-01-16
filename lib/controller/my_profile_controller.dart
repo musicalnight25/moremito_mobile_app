@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/utils/colors.dart';
 
 import '../model/my_profile_model.dart';
 import '../service/network_repository.dart';
 import '../service/error_logger.dart';
+import '../utils/common_method.dart';
 
 class MyProfileController extends GetxController {
   final NetworkRepository _repo = NetworkRepository();
@@ -59,6 +61,7 @@ class MyProfileController extends GetxController {
   }
 
   Future<void> updateProfile() async {
+    isLoading.value = true;
     try {
       final response = await _repo.updateMyProfile(
         body: {
@@ -77,7 +80,8 @@ class MyProfileController extends GetxController {
       );
 
       if (response != null && response["Status"] == true) {
-        Get.snackbar("Success", "Profile updated successfully");
+        CommonMethod.getXSnackBar(
+            "Success", "Profile updated successfully", greenColor);
       }
     } catch (e, stack) {
       await ErrorLogger.logErrorToServer(
@@ -86,6 +90,8 @@ class MyProfileController extends GetxController {
         errorMessage1: e.toString(),
         errorMessage3: stack.toString(),
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 

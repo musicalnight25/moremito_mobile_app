@@ -34,11 +34,14 @@ class SharedFlyersData {
         ? []
         : List<SharedFlyerItem>.from(
             json["Items"].map((x) => SharedFlyerItem.fromJson(x)));
+
     pageNumber = json["PageNumber"];
-    hasMore = json["hasMore"];
     pageSize = json["PageSize"];
     totalRecords = json["TotalRecords"];
     totalPages = json["TotalPages"];
+
+    // ✅ FIX HERE
+    hasMore = json["HasMore"] ?? false;
   }
 }
 

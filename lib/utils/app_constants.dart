@@ -67,4 +67,10 @@ class AppConstants {
   static const String getWebviewToken = 'webview-token';
   static const String deepLinks = 'deep-links';
   static const String getRankInfo = 'rank-info';
+  static const String myCompensationHistory = 'my-compensation-history';
+  static const String myCompensationHistoryYear =
+      'my-compensation-history/year';
+  static const String myCompensationsGrouped = 'my-compensations-grouped';
+  static const String myCompensationsByOrder = 'my-compensations/order';
+  static const String myCompensations = 'my-compensations';
 }

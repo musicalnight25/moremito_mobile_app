@@ -57,11 +57,11 @@ class FlyersController extends GetxController {
     String? search,
     String? fileType,
   }) async {
-    // 1. Check if we should actually fetch
     if (!hasMore && page != 1) return;
     if (listLoading.value || loadMoreLoading.value) return;
 
-    page == 1 ? listLoading.value = true : loadMoreLoading.value = true;
+    final isFirstPage = page == 1;
+    isFirstPage ? listLoading.value = true : loadMoreLoading.value = true;
 
     currentFileType.value = fileType;
 
@@ -74,20 +74,27 @@ class FlyersController extends GetxController {
         "filterType": mapFileTypeToApi(fileType),
       });
 
-      if (response != null) {
-        final model = sharedFlyersResponseFromJson(json.encode(response));
+      if (response == null) return;
 
-        if (model.status == true) {
-          if (page == 1) sharedFlyers.clear();
+      final model = sharedFlyersResponseFromJson(json.encode(response));
 
-          sharedFlyers.addAll(model.data?.items ?? []);
+      if (model.status == true) {
+        final items = model.data?.items ?? [];
 
-          // 2. Use the HasMore property from your API JSON
-          hasMore = model.data?.hasMore ?? false;
+        if (isFirstPage) {
+          sharedFlyers.clear();
+        }
 
-          if (hasMore) {
-            page++;
-          }
+        if (items.isNotEmpty) {
+          sharedFlyers.addAll(items);
+        }
+
+        // ✅ RELY ON API HasMore
+        hasMore = model.data?.hasMore ?? false;
+
+        // ✅ increment page ONLY when more data exists
+        if (hasMore) {
+          page++;
         }
       }
     } catch (e) {

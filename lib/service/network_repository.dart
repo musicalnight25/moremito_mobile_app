@@ -296,6 +296,43 @@ class NetworkRepository {
       getRequest(context, AppConstants.getRankInfo,
           queryParameters: queryParameters);
 
+  Future<dynamic> getMyCompensationHistory({BuildContext? context}) =>
+      getRequest(context, AppConstants.myCompensationHistory);
+
+  Future<dynamic> getMyCompensationHistoryByYear(
+          {BuildContext? context, required int year}) =>
+      getRequest(context, '${AppConstants.myCompensationHistoryYear}/$year');
+
+  Future<dynamic> getMyCompensationHistoryByMonth(
+          {BuildContext? context, required int year, required int month}) =>
+      getRequest(context,
+          '${AppConstants.myCompensationHistoryYear}/$year/month/$month');
+
+  Future<dynamic> getMyDailyCompensations(
+      {required Map<String, dynamic> data}) {
+    return postRequest(
+      null,
+      AppConstants.myCompensationsGrouped,
+      data: data,
+    );
+  }
+
+  Future<dynamic> getMyCompensationsByOrder(int orderId) {
+    return getRequest(
+      null,
+      '${AppConstants.myCompensationsByOrder}/$orderId',
+    );
+  }
+
+  Future<dynamic> getMyCompensationsByDateRange(
+      {required Map<String, dynamic> data}) {
+    return postRequest(
+      null,
+      AppConstants.myCompensations,
+      data: data,
+    );
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

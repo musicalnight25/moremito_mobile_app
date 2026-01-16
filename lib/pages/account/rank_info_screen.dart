@@ -21,6 +21,9 @@ class RankInfoScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // ADD THIS 👇
+          _buildRankSummary(),
+
           // 1. The Header Section
           _buildTableHeader(),
 
@@ -59,7 +62,78 @@ class RankInfoScreen extends StatelessWidget {
     );
   }
 
-  // --- Widget Builders ---
+  Widget _buildRankSummary() {
+    final controller = Get.find<RankInfoController>();
+
+    return Obx(() {
+      final data = controller.rankInfo.value;
+
+      if (data == null) return const SizedBox.shrink();
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        color: primaryWhite,
+        child: Row(
+          children: [
+            _buildRankCard(
+              title: "Current Rank",
+              value: data.currentRank ?? "-",
+              bgColor: primaryColor.withOpacity(0.08),
+              textColor: primaryColor,
+            ),
+            const SizedBox(width: 12),
+            _buildRankCard(
+              title: "Highest Rank",
+              value: data.highestRankAchieved ?? "-",
+              bgColor: paleYellowColor,
+              textColor: lightBlackColor,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildRankCard({
+    required String title,
+    required String value,
+    required Color bgColor,
+    required Color textColor,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderGreyColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: greySubTitleColor,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildTableHeader() {
     return Container(

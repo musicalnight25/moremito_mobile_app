@@ -15,6 +15,8 @@ import '../../utils/common_web_view.dart';
 import '../account/my_deep_link_screen.dart';
 import '../account/rank_info_screen.dart';
 import '../auth/survey_screen.dart';
+import '../compensation/my_compensation_history_screen.dart';
+import '../compensation/my_daily_compensation_log_screen.dart';
 import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/shop_moremito_screen.dart';
@@ -66,11 +68,6 @@ class _MenuScreenState extends State<MenuScreen> {
             onTap: () => Get.to(() => SurveyScreen(
                   isFromOnboarding: false,
                 )),
-          ),
-          MenuItem(
-            title: "My Rank History",
-            icon: Icons.military_tech_outlined,
-            onTap: () => Get.to(() => RankInfoScreen()),
           ),
         ],
       ),
@@ -148,6 +145,16 @@ class _MenuScreenState extends State<MenuScreen> {
         icon: Icons.payments_outlined,
         items: [
           MenuItem(
+            title: "My Compensation History",
+            icon: Icons.payments_outlined,
+            onTap: () => Get.to(() => const MyCompensationHistoryScreen()),
+          ),
+          MenuItem(
+            title: "My Daily Compensation Log",
+            icon: Icons.event_note_outlined,
+            onTap: () => Get.to(() => const MyDailyCompensationLogScreen()),
+          ),
+          MenuItem(
             title: "My Rank Management",
             icon: Icons.leaderboard_outlined,
             onTap: () async {
@@ -177,6 +184,106 @@ class _MenuScreenState extends State<MenuScreen> {
                   Get.to(() => CommonWebView(
                         url: url,
                         title: "My Currently Available Balance",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "My Rank History",
+            icon: Icons.military_tech_outlined,
+            onTap: () => Get.to(() => RankInfoScreen()),
+          ),
+          MenuItem(
+            title: "My Star Tree View",
+            icon: Icons.schema_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "treeview",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "My Star Tree View",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "My Tree View",
+            icon: Icons.account_tree_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "Genealogy", // 👈 confirm backend action name
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "My Tree View",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "Compensation Plan (PDF)",
+            icon: Icons.picture_as_pdf_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "CompensationPlanPdf",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "Compensation Plan",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "Request A Payout",
+            icon: Icons.request_page_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "payout",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "Request A Payout",
+                      ));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
+          MenuItem(
+            title: "Transfer MoreMito Cash",
+            icon: Icons.swap_horiz_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "TransferMC",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                        url: url,
+                        title: "Transfer MoreMito Cash",
                       ));
                 },
                 onError: (msg) {
