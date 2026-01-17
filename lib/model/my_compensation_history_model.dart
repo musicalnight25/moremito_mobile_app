@@ -149,12 +149,14 @@ class MonthDetailsData {
   int? year;
   int? month;
   String? monthName;
+  List<CommissionTypeSummary>? commissionTypeSummary;
   List<CommissionDetail>? commissionDetails;
 
   MonthDetailsData({
     this.year,
     this.month,
     this.monthName,
+    this.commissionTypeSummary,
     this.commissionDetails,
   });
 
@@ -163,6 +165,10 @@ class MonthDetailsData {
         year: json["Year"],
         month: json["Month"],
         monthName: json["MonthName"],
+        commissionTypeSummary: json["CommissionTypeSummary"] == null
+            ? []
+            : List<CommissionTypeSummary>.from(json["CommissionTypeSummary"]
+                .map((x) => CommissionTypeSummary.fromJson(x))),
         commissionDetails: json["CommissionDetails"] == null
             ? []
             : List<CommissionDetail>.from(json["CommissionDetails"]
@@ -194,4 +200,46 @@ class CommissionDetail {
         type: json["Type"],
         commissionLevel: json["CommissionLevel"],
       );
+}
+
+class CommissionTypeSummary {
+  String? commissionType; // <--- Added this field
+  String? month; // Added 'Month' as seen in your JSON
+  String? moreMitoCash;
+  String? moreMitoCommission;
+  String? totalEarned;
+  double? runningTotal;
+  int? customerCount;
+  int? orderCount;
+  double? avgAmount;
+  double? avgEarnedPerCustomer;
+
+  CommissionTypeSummary({
+    this.commissionType,
+    this.month,
+    this.moreMitoCash,
+    this.moreMitoCommission,
+    this.totalEarned,
+    this.runningTotal,
+    this.customerCount,
+    this.orderCount,
+    this.avgAmount,
+    this.avgEarnedPerCustomer,
+  });
+
+  factory CommissionTypeSummary.fromJson(Map<String, dynamic> json) {
+    return CommissionTypeSummary(
+      // Parsing 'CommissionType' if it exists, otherwise defaulting to 'Month' or null
+      commissionType: json["CommissionType"] ?? json["CommissionName"],
+      month: json["Month"],
+      moreMitoCash: json["MoreMitoCash"],
+      moreMitoCommission: json["MoreMitoCommission"],
+      totalEarned: json["TotalEarned"],
+      runningTotal: (json["RunningTotal"] as num?)?.toDouble(),
+      customerCount: json["CustomerCount"],
+      orderCount: json["OrderCount"],
+      avgAmount: (json["AvgAmount"] as num?)?.toDouble(),
+      avgEarnedPerCustomer: (json["AvgEarnedPerCustomer"] as num?)?.toDouble(),
+    );
+  }
 }

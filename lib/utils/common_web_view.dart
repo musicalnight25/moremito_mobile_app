@@ -25,8 +25,6 @@ class _CommonWebViewState extends State<CommonWebView> {
     super.initState();
   }
 
-  // No manual disposal of _webViewController is necessary.
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,14 +35,54 @@ class _CommonWebViewState extends State<CommonWebView> {
       body: SafeArea(
         child: InAppWebView(
           initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+
+          // 1. Updated Settings to fix crash & new tab issues
           initialSettings: InAppWebViewSettings(
             javaScriptEnabled: true,
+
+            // Fixes "Uncaught TypeError" seen in your logs (localStorage access)
+            domStorageEnabled: true,
+
+            // Fixes "opening in new tab" issue
+            supportMultipleWindows: true,
+
+            // Allows the site to initiate the popup
+            javaScriptCanOpenWindowsAutomatically: true,
           ),
+
           onWebViewCreated: (controller) {
             _webViewController = controller;
           },
+
+          // 2. Intercepts the "New Window" request and forces it to load here
+          // 2. Intercepts the "New Window" request
+          onCreateWindow: (controller, createWindowRequest) async {
+            var url = createWindowRequest.request.url.toString();
+
+            if (url.isNotEmpty) {
+              log("Blocked new window: $url");
+
+              // CHECK: If it is a PDF, use Google Docs Viewer
+              if (url.toLowerCase().endsWith(".pdf")) {
+                var googleDocsUrl =
+                    "https://docs.google.com/gview?embedded=true&url=$url";
+                log("Redirecting PDF to Google Docs Viewer: $googleDocsUrl");
+                await controller.loadUrl(
+                    urlRequest: URLRequest(url: WebUri(googleDocsUrl)));
+              } else {
+                // Otherwise load normally
+                await controller.loadUrl(
+                    urlRequest: createWindowRequest.request);
+              }
+
+              return true; // Return true to tell WebView we handled it
+            }
+            return false;
+          },
+
           onLoadStop: (controller, url) =>
               debugPrint('Page finished loading: $url'),
+
           onConsoleMessage: (controller, message) =>
               debugPrint(message.message),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:more_mitro_app/pages/setting/widget/settings_tile.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
@@ -15,6 +16,10 @@ import '../../utils/common_web_view.dart';
 import '../account/my_deep_link_screen.dart';
 import '../account/rank_info_screen.dart';
 import '../auth/survey_screen.dart';
+import '../compensation/cash_sent_history_screen.dart';
+import '../compensation/cash_transfer_history_screen.dart';
+import '../compensation/commission_payout_history_screen.dart';
+import '../compensation/commission_spent_screen.dart';
 import '../compensation/my_compensation_history_screen.dart';
 import '../compensation/my_daily_compensation_log_screen.dart';
 import '../marketing/my_leads_screen.dart';
@@ -29,20 +34,21 @@ import '../support/create_support_ticket_screen.dart';
 import '../support/support_tickets_list_screen.dart';
 
 class MenuScreen extends StatefulWidget {
-  MenuScreen({super.key});
+  const MenuScreen({super.key});
 
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  List<MenuSection> sections = [];
+  late List<MenuSection> sections;
 
   @override
   void initState() {
     super.initState();
 
     sections = [
+      /// ---------------- MY INFO ----------------
       MenuSection(
         title: "My Info",
         icon: Icons.person_outline,
@@ -65,12 +71,12 @@ class _MenuScreenState extends State<MenuScreen> {
           MenuItem(
             title: "User Survey",
             icon: Icons.poll_outlined,
-            onTap: () => Get.to(() => SurveyScreen(
-                  isFromOnboarding: false,
-                )),
+            onTap: () => Get.to(() => SurveyScreen(isFromOnboarding: false)),
           ),
         ],
       ),
+
+      /// ---------------- ORDERS ----------------
       MenuSection(
         title: "Orders",
         icon: Icons.shopping_bag_outlined,
@@ -82,6 +88,8 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
+
+      /// ---------------- SUPPORT ----------------
       MenuSection(
         title: "Support",
         icon: Icons.support_agent_outlined,
@@ -98,26 +106,29 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
+
+      /// ---------------- SHARE INFO ----------------
       MenuSection(
         title: "Share MoreMito Info",
         icon: Icons.campaign_outlined,
         items: [
           MenuItem(
-              title: "Customize & Share My Flyers",
-              icon: Icons.brush_outlined,
-              onTap: () async {
-                await WebviewHelper.getDynamicWebviewURL(
-                  actionName: "Template",
-                  page: "FlyerPage",
-                  id: "1",
-                  onSuccess: (url) {
-                    Get.to(() => CommonWebView(url: url, title: "My Flyers"));
-                  },
-                  onError: (msg) {
-                    CommonMethod.getXSnackBar("Error", msg, redColor);
-                  },
-                );
-              }),
+            title: "Customize & Share My Flyers",
+            icon: Icons.brush_outlined,
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                actionName: "Template",
+                page: "FlyerPage",
+                id: "1",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(url: url, title: "My Flyers"));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+            },
+          ),
           MenuItem(
             title: "Share Audios, Videos & Docs",
             icon: Icons.perm_media_outlined,
@@ -140,38 +151,27 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
+
+      /// ---------------- COMPENSATION (WEB STYLE) ----------------
       MenuSection(
         title: "Compensation",
         icon: Icons.payments_outlined,
         items: [
           MenuItem(
-            title: "My Compensation History",
+            title: "My Compensations",
             icon: Icons.payments_outlined,
-            onTap: () => Get.to(() => const MyCompensationHistoryScreen()),
-          ),
-          MenuItem(
-            title: "My Daily Compensation Log",
-            icon: Icons.event_note_outlined,
-            onTap: () => Get.to(() => const MyDailyCompensationLogScreen()),
-          ),
-          MenuItem(
-            title: "My Rank Management",
-            icon: Icons.leaderboard_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "MyRankManagementReport",
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "My Rank Management Report",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
-              );
-            },
+            children: [
+              MenuItem(
+                title: "My Daily Compensation Log",
+                icon: Icons.event_note_outlined,
+                onTap: () => Get.to(() => const MyDailyCompensationLogScreen()),
+              ),
+              MenuItem(
+                title: "My Compensation History",
+                icon: Icons.history_outlined,
+                onTap: () => Get.to(() => const MyCompensationHistoryScreen()),
+              ),
+            ],
           ),
           MenuItem(
             title: "My Currently Available Balance",
@@ -193,104 +193,177 @@ class _MenuScreenState extends State<MenuScreen> {
             },
           ),
           MenuItem(
-            title: "My Rank History",
-            icon: Icons.military_tech_outlined,
-            onTap: () => Get.to(() => RankInfoScreen()),
-          ),
-          MenuItem(
-            title: "My Star Tree View",
-            icon: Icons.schema_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "treeview",
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "My Star Tree View",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
-              );
-            },
-          ),
-          MenuItem(
-            title: "My Tree View",
-            icon: Icons.account_tree_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "Genealogy", // 👈 confirm backend action name
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "My Tree View",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
-              );
-            },
-          ),
-          MenuItem(
-            title: "Compensation Plan (PDF)",
-            icon: Icons.picture_as_pdf_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "CompensationPlanPdf",
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "Compensation Plan",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
-              );
-            },
-          ),
-          MenuItem(
-            title: "Request A Payout",
-            icon: Icons.request_page_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "payout",
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "Request A Payout",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
-              );
-            },
-          ),
-          MenuItem(
-            title: "Transfer MoreMito Cash",
+            title: "Request Payouts And Make Transfers",
             icon: Icons.swap_horiz_outlined,
-            onTap: () async {
-              await WebviewHelper.getDynamicWebviewURL(
-                page: "MemberPage",
-                actionName: "TransferMC",
-                onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "Transfer MoreMito Cash",
-                      ));
+            children: [
+              MenuItem(
+                title: "Request A Payout",
+                icon: Icons.request_page_outlined,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "payout",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "Request A Payout",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
                 },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
+              ),
+              MenuItem(
+                title: "Commission Payout History",
+                icon: Icons.history,
+                onTap: () {
+                  Get.to(() => const CommissionPayoutHistoryScreen());
                 },
-              );
-            },
+              ),
+              MenuItem(
+                title: "Transfer MoreMito Cash",
+                icon: Icons.swap_calls_outlined,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "TransferMC",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "Transfer MoreMito Cash",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "Transfer History",
+                icon: Icons.swap_calls_outlined,
+                onTap: () {
+                  Get.to(() => const CashTransferHistoryScreen());
+                },
+              ),
+            ],
+          ),
+          MenuItem(
+            title: "History Of Compensation Spent",
+            icon: Icons.history_outlined,
+            children: [
+              MenuItem(
+                title: "Compensation Spent On Orders",
+                icon: Icons.shopping_cart_outlined,
+                onTap: () {
+                  Get.to(() => const CommissionSpentScreen());
+                },
+              ),
+              MenuItem(
+                title: "MoreMito Cash Sent To Others",
+                icon: Icons.send_outlined,
+                onTap: () {
+                  Get.to(() => const CashSentHistoryScreen());
+                },
+              ),
+              MenuItem(
+                title: "Commission Payout History",
+                icon: Icons.payments_outlined,
+                onTap: () {
+                  Get.to(() => const CommissionPayoutHistoryScreen());
+                },
+              ),
+            ],
+          ),
+          MenuItem(
+            title: "The Compensation Plan",
+            icon: Icons.picture_as_pdf_outlined,
+            children: [
+              MenuItem(
+                title: "Compensation Plan PDF",
+                icon: Icons.picture_as_pdf,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "CompensationPlanPdf",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "Compensation Plan",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          MenuItem(
+            title: "My Rank Management",
+            icon: Icons.leaderboard_outlined,
+            children: [
+              MenuItem(
+                title: "Rank Management Report",
+                icon: Icons.bar_chart_outlined,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "MyRankManagementReport",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "My Rank Management Report",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "My Tree View",
+                icon: Icons.account_tree_outlined,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "Genealogy",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "My Tree View",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "My Star Tree View",
+                icon: Icons.schema_outlined,
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "treeview",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(
+                            url: url,
+                            title: "My Star Tree View",
+                          ));
+                    },
+                    onError: (msg) {
+                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -307,7 +380,6 @@ class _MenuScreenState extends State<MenuScreen> {
           padding: EdgeInsets.all(10.sp),
           children: [
             ...sections.map((e) => MenuSectionWidget(section: e)),
-            // SizedBox(height: 10.h),
             SettingsTile(
               title: "Shop MoreMito Products",
               icon: Icons.shopping_cart_outlined,
@@ -325,6 +397,9 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
+/// =========================
+/// SECTION WIDGET
+/// =========================
 class MenuSectionWidget extends StatefulWidget {
   final MenuSection section;
 
@@ -339,8 +414,7 @@ class _MenuSectionWidgetState extends State<MenuSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+    return Container(
       margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
         color: primaryWhite,
@@ -355,70 +429,103 @@ class _MenuSectionWidgetState extends State<MenuSectionWidget> {
               padding: EdgeInsets.all(15.sp),
               child: Row(
                 children: [
-                  Icon(widget.section.icon, size: 20.sp, color: primaryColor),
+                  Icon(widget.section.icon, color: primaryColor),
                   width12,
                   Expanded(
-                      child: Text(widget.section.title,
-                          style: AppTextStyle.normalSemiBold15)),
+                    child: Text(widget.section.title,
+                        style: AppTextStyle.normalSemiBold15),
+                  ),
                   Icon(
                     expanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    size: 20.sp,
-                    color: primaryBlack,
                   ),
                 ],
               ),
             ),
           ),
-          AnimatedSize(
-            duration: 250.milliseconds,
-            child: expanded
-                ? Column(
-                    children: List.generate(
-                      widget.section.items.length,
-                      (index) => Column(
-                        children: [
-                          InkWell(
-                            onTap: widget.section.items[index].onTap,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15.sp, vertical: 10.sp),
-                              child: Row(
-                                children: [
-                                  Icon(widget.section.items[index].icon,
-                                      size: 18.sp, color: Colors.black54),
-                                  width12,
-                                  Expanded(
-                                    child: Text(
-                                      widget.section.items[index].title,
-                                      style: AppTextStyle.normalSemiBold15
-                                          .copyWith(color: Colors.black87),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (index != widget.section.items.length - 1)
-                            Container(
-                              width: double.infinity,
-                              height: 1,
-                              margin: EdgeInsets.only(left: 15.sp),
-                              color: borderGreyColor.withOpacity(0.3),
-                            ),
-                        ],
-                      ),
-                    ),
-                  )
-                : SizedBox.shrink(),
-          ),
+          if (expanded)
+            Column(
+              children: widget.section.items
+                  .map((item) => MenuItemWidget(item: item, level: 0))
+                  .toList(),
+            ),
         ],
       ),
     );
   }
 }
 
+/// =========================
+/// MENU ITEM (RECURSIVE)
+/// =========================
+class MenuItemWidget extends StatefulWidget {
+  final MenuItem item;
+  final int level;
+
+  const MenuItemWidget({required this.item, required this.level});
+
+  @override
+  State<MenuItemWidget> createState() => _MenuItemWidgetState();
+}
+
+class _MenuItemWidgetState extends State<MenuItemWidget> {
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasChildren =
+        widget.item.children != null && widget.item.children!.isNotEmpty;
+
+    return Column(
+      children: [
+        InkWell(
+          onTap: hasChildren
+              ? () => setState(() => expanded = !expanded)
+              : widget.item.onTap,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              15.sp + (widget.level * 15.sp),
+              10.sp,
+              15.sp,
+              10.sp,
+            ),
+            child: Row(
+              children: [
+                Icon(widget.item.icon, size: 18.sp, color: Colors.black54),
+                width12,
+                Expanded(
+                  child: Text(
+                    widget.item.title,
+                    style: AppTextStyle.normalSemiBold15
+                        .copyWith(color: Colors.black87),
+                  ),
+                ),
+                if (hasChildren)
+                  Icon(
+                    expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    size: 18.sp,
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (hasChildren && expanded)
+          Column(
+            children: widget.item.children!
+                .map((e) => MenuItemWidget(item: e, level: widget.level + 1))
+                .toList(),
+          ),
+      ],
+    );
+  }
+}
+
+/// =========================
+/// MODELS
+/// =========================
 class MenuSection {
   final String title;
   final IconData icon;
@@ -434,11 +541,13 @@ class MenuSection {
 class MenuItem {
   final String title;
   final IconData icon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final List<MenuItem>? children;
 
   MenuItem({
     required this.title,
     required this.icon,
-    required this.onTap,
+    this.onTap,
+    this.children,
   });
 }

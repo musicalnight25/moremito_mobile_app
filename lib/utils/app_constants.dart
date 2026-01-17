@@ -73,4 +73,11 @@ class AppConstants {
   static const String myCompensationsGrouped = 'my-compensations-grouped';
   static const String myCompensationsByOrder = 'my-compensations/order';
   static const String myCompensations = 'my-compensations';
+  static const String myCommissionRequestHistory =
+      'my-commission-request-history';
+
+  static const String myCashTransferHistory = 'my-cash-transfer-history';
+
+  static const String myCommissionSpent = 'my-commission-spent';
+  static const String myCashSentHistory = 'my-cash-sent-history';
 }

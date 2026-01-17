@@ -12,7 +12,12 @@ class MyCompensationController extends GetxController {
 
   Rxn<MyCompensationHistoryData> history = Rxn();
   RxList<MonthItem> months = <MonthItem>[].obs;
+
   RxList<CommissionDetail> commissions = <CommissionDetail>[].obs;
+  RxList<CommissionTypeSummary> commissionSummary =
+      <CommissionTypeSummary>[].obs;
+
+  RxInt selectedTab = 0.obs; // 0 = Summary, 1 = Details
 
   @override
   void onInit() {
@@ -24,13 +29,11 @@ class MyCompensationController extends GetxController {
     try {
       isLoading.value = true;
       final response = await _repo.getMyCompensationHistory();
+      final model =
+          myCompensationHistoryResponseFromJson(json.encode(response));
 
-      if (response != null) {
-        final model =
-            myCompensationHistoryResponseFromJson(json.encode(response));
-        if (model.status == true) {
-          history.value = model.data;
-        }
+      if (model.status == true) {
+        history.value = model.data;
       }
     } finally {
       isLoading.value = false;
@@ -60,6 +63,8 @@ class MyCompensationController extends GetxController {
       final model = MonthDetailsResponse.fromJson(response);
       if (model.status == true) {
         commissions.value = model.data?.commissionDetails ?? [];
+        commissionSummary.value = model.data?.commissionTypeSummary ?? [];
+        selectedTab.value = 0; // default tab
       }
     } finally {
       isLoading.value = false;

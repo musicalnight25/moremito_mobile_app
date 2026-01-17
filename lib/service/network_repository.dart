@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:more_mitro_app/service/network_dio.dart';
 import 'package:more_mitro_app/utils/app_constants.dart';
 import 'package:more_mitro_app/utils/colors.dart';
@@ -333,6 +334,28 @@ class NetworkRepository {
     );
   }
 
+  Future<dynamic> getMyCommissionRequestHistory({BuildContext? context}) =>
+      getRequest(context, AppConstants.myCommissionRequestHistory);
+
+  Future<dynamic> getMyCashTransferHistory({BuildContext? context}) =>
+      getRequest(context, AppConstants.myCashTransferHistory);
+
+  // Compensation spent on orders
+  Future<dynamic> getMyCommissionSpent({
+    required Map<String, dynamic> data,
+  }) {
+    return postRequest(
+      null,
+      AppConstants.myCommissionSpent,
+      data: data,
+    );
+  }
+
+  // Cash sent to others
+  Future<dynamic> getMyCashSentHistory({BuildContext? context}) {
+    return getRequest(context, AppConstants.myCashSentHistory);
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {
@@ -375,15 +398,26 @@ class NetworkRepository {
     if (_isSessionExpiredShown) return; // ✅ Prevent multiple calls
 
     _isSessionExpiredShown = true;
-    CommonMethod.getXSnackBar(
-      "Access Denied!",
-      "Session expired. Please log in again.",
-      redColor,
-    );
 
+    // Check if already on LoginScreen
+    final isAlreadyOnLogin = Get.currentRoute.toLowerCase().contains('login');
+    if (isAlreadyOnLogin) {
+      CommonMethod.getXSnackBar(
+        "Error",
+        "Invalid email or password.",
+        redColor,
+      );
+    } else {
+      CommonMethod.getXSnackBar(
+        "Access Denied!",
+        "Session expired. Please log in again.",
+        redColor,
+      );
+    }
     // Delay logout slightly so snackbar shows first
     Future.delayed(const Duration(seconds: 1), () {
       CommonMethod.logOutUser();
+
       _isSessionExpiredShown = false; // Reset after logout
     });
   }

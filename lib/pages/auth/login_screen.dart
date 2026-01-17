@@ -12,6 +12,7 @@ import 'package:more_mitro_app/utils/static_decoration.dart';
 import '../../controller/login_controller.dart';
 import '../../service/pop_up_service.dart';
 import '../../utils/app_asset.dart';
+import '../setting/widget/app_version_text.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -108,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             },
           ),
+          AppVersionText(),
         ],
       )),
     );

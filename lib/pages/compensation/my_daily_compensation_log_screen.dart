@@ -171,9 +171,6 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // CARD COMPONENT
-  // ---------------------------------------------------------------------------
   Widget _buildDailyLogCard(
     DailyCompensationItem item,
     MyDailyCompensationController controller,
@@ -186,145 +183,65 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
         }
       },
       child: ShadowContainerWidget(
-        widget: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 8.sp),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Header: Date
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today_outlined,
-                            size: 14.sp, color: Colors.black87),
-                        width08,
-                        Text(
-                          item.orderDateString ?? "Unknown Date",
-                          style: AppTextStyle.normalBold14
-                              .copyWith(color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios_rounded,
-                      size: 16.sp, color: Colors.grey.shade400),
-                ],
-              ),
+        widget: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Header: Date
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  item.orderDateString ?? "Unknown Date",
+                  style: AppTextStyle.normalSemiBold14
+                      .copyWith(color: primaryBlack),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
 
-              Divider(height: 24.sp, color: Colors.grey.shade100),
+            const Divider(height: 16),
 
-              // 2. Primary Stat: Total Commission
-              _dataRow(
-                label: "Total Commission",
-                value:
-                    "\$${item.commissionAmount?.toStringAsFixed(2) ?? '0.00'}",
-                icon: Icons.monetization_on_outlined,
-                isTotal: true,
-              ),
-
-              Divider(height: 20.sp, color: Colors.grey.shade50),
-
-              // 3. Secondary Stats Grid
-              Row(
-                children: [
-                  Expanded(
-                    child: _miniStat(
-                      icon: Icons.shopping_bag_outlined,
-                      label: "Orders",
-                      value: "${item.orderCount ?? 0}",
-                    ),
-                  ),
-                  Expanded(
-                    child: _miniStat(
-                      icon: Icons.people_outline_rounded,
-                      label: "Customers",
-                      value: "${item.customerCount ?? 0}",
-                    ),
-                  ),
-                ],
-              ),
-
-              height12,
-
-              // 4. Avg Stat
-              _dataRow(
-                label: "Avg / Order",
-                value:
-                    "\$${item.avgCommissionAmount?.toStringAsFixed(2) ?? '0.00'}",
-                icon: Icons.pie_chart_outline_rounded,
-              ),
-            ],
-          ),
+            _tableRow(
+              "Order Count",
+              "${item.orderCount ?? 0}",
+            ),
+            _tableRow(
+              "Customer Count",
+              "${item.customerCount ?? 0}",
+            ),
+            _tableRow(
+              "Compensation Amount",
+              "\$${item.avgCommissionAmount?.toStringAsFixed(2) ?? '0.00'}",
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // HELPER WIDGETS
-  // ---------------------------------------------------------------------------
-  Widget _miniStat({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 14.sp, color: Colors.grey.shade500),
-            width06,
-            Text(label,
-                style: AppTextStyle.normalRegular12
-                    .copyWith(color: Colors.grey.shade600)),
-          ],
-        ),
-        SizedBox(height: 4.sp),
-        Padding(
-          padding: EdgeInsets.only(left: 20.sp),
-          child: Text(value, style: AppTextStyle.normalSemiBold14),
-        ),
-      ],
-    );
-  }
-
-  Widget _dataRow({
-    required String label,
-    required String value,
-    required IconData icon,
-    bool isTotal = false,
-  }) {
-    return Row(
-      children: [
-        Icon(icon,
-            size: 18.sp, color: isTotal ? primaryColor : Colors.grey.shade400),
-        width10,
-        Expanded(
-          child: Text(
-            label,
-            style: AppTextStyle.normalRegular14.copyWith(
-              color: isTotal ? Colors.black87 : Colors.grey.shade600,
-              fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
+  Widget _tableRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyle.normalRegular14.copyWith(
+                color: hintGreyColor,
+              ),
             ),
           ),
-        ),
-        Text(
-          value,
-          style: isTotal
-              ? AppTextStyle.normalBold16.copyWith(color: primaryColor)
-              : AppTextStyle.normalSemiBold14.copyWith(color: Colors.black87),
-        ),
-      ],
+          width15,
+          Text(
+            value,
+            style: AppTextStyle.normalRegular14,
+            textAlign: TextAlign.right,
+          ),
+        ],
+      ),
     );
   }
 

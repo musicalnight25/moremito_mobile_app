@@ -97,7 +97,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               },
             ),
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
 
           const SizedBox(height: 10),
@@ -115,7 +115,8 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   ),
                   child: IgnorePointer(
                     ignoring: false,
-                    child: Obx(() => DropdownButtonHideUnderline(
+                    child: Obx(() =>
+                        DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
                             value: controller.currentFileType.value ?? "All",
@@ -134,7 +135,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                             ],
                             onChanged: (value) {
                               controller.currentFileType.value =
-                                  value == "All" ? null : value;
+                              value == "All" ? null : value;
 
                               controller.resetPagination();
                               controller.getSharedFlyers(
@@ -182,7 +183,8 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
 
     void navigateToDetails() {
       if (hasData) {
-        Get.to(() => FlyerActivityScreen(
+        Get.to(() =>
+            FlyerActivityScreen(
               sharedFlyerId: item.fileShareId!,
               title: item.title ?? "",
               fileType: item.fileType ?? 1,
@@ -262,7 +264,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                         size: 16.sp, color: Colors.green.shade700),
                     SizedBox(width: 6.sp),
                     Text(
-                      "Total Activitys : ${item.totalInteractions ?? 0}",
+                      "Total Activities : ${item.totalInteractions ?? 0}",
                       style: AppTextStyle.normalSemiBold12
                           .copyWith(color: Colors.green.shade900),
                     ),
@@ -287,10 +289,11 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 6,
-      itemBuilder: (_, __) => Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: _shimmerCard(),
-      ),
+      itemBuilder: (_, __) =>
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _shimmerCard(),
+          ),
     );
   }
 
@@ -400,10 +403,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                       } else {
                         return controller.hasMore
                             ? const Padding(
-                                padding: EdgeInsets.all(16),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
-                              )
+                          padding: EdgeInsets.all(16),
+                          child:
+                          Center(child: CircularProgressIndicator()),
+                        )
                             : const SizedBox.shrink();
                       }
                     },
@@ -421,6 +424,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     if (iso == null || iso.isEmpty) return "N/A";
     final d = DateTime.tryParse(iso);
     if (d == null) return "N/A";
-    return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}";
+    return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(
+        2, '0')}/${d.year}";
   }
 }

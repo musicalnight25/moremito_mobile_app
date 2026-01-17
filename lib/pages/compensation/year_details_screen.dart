@@ -58,7 +58,7 @@ class YearDetailsScreen extends StatelessWidget {
             separatorBuilder: (context, index) => SizedBox(height: 14.sp),
             itemBuilder: (_, index) {
               final MonthItem item = controller.months[index];
-              return _buildMonthCard(item, controller);
+              return buildMonthRow(item, controller);
             },
           );
         }),
@@ -66,88 +66,69 @@ class YearDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMonthCard(MonthItem item, MyCompensationController controller) {
-    return GestureDetector(
+  Widget buildMonthRow(
+    MonthItem item,
+    MyCompensationController controller,
+  ) {
+    return InkWell(
       onTap: () {
         final monthIndex = _monthToInt(item.month);
         controller.fetchMonth(year, monthIndex);
         Get.to(() => MonthDetailsScreen(title: item.month ?? ""));
       },
       child: ShadowContainerWidget(
-        widget: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 8.sp),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Header Row (Month Name)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Text(
-                      item.month ?? "Unknown",
-                      style: AppTextStyle.normalBold16.copyWith(
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios_rounded,
-                      size: 16.sp, color: Colors.grey.shade400),
-                ],
-              ),
-              Divider(height: 24.sp, color: Colors.grey.shade100),
+        widget: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  item.month ?? "",
+                  style: AppTextStyle.normalSemiBold16
+                      .copyWith(color: primaryBlack),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
 
-              // 2. Primary Stat: Total Earned
-              _dataRow(
-                label: "Total Compensation Earned",
-                value: "\$${item.totalEarned ?? '0.00'}",
-                isTotal: true, // Highlights this row
-              ),
+            const Divider(height: 16),
 
-              Divider(height: 24.sp, color: Colors.grey.shade100),
-
-              // 3. Performance Metrics (Matching your screenshot columns)
-              Text("Metrics",
-                  style: AppTextStyle.normalSemiBold12
-                      .copyWith(color: Colors.grey)),
-              height08,
-              _dataRow(
-                label: "Avg. Order Amount",
-                value: "\$${item.avgAmount?.toStringAsFixed(2) ?? '0.00'}",
-              ),
-              _dataRow(
-                label: "Order Count",
-                value: "${item.orderCount ?? 0}",
-              ),
-              _dataRow(
-                label: "Customer Count",
-                value: "${item.customerCount ?? 0}",
-              ),
-              _dataRow(
-                label: "Avg. Earned / Customer",
-                value:
-                    "\$${item.avgEarnedPerCustomer?.toStringAsFixed(2) ?? '0.00'}",
-              ),
-            ],
-          ),
+            _tableRow("MoreMito Cash", "\$0.00"),
+            _tableRow(
+              "MoreMito Commission",
+              "\$${item.totalEarned ?? "0.00"}",
+            ),
+            _tableRow(
+              "Total Compensation Earned",
+              "\$${item.totalEarned ?? "0.00"}",
+            ),
+            _tableRow(
+              "Average Order Amount",
+              "\$${item.avgAmount?.toStringAsFixed(2) ?? "0.00"}",
+            ),
+            _tableRow(
+              "Customer Count",
+              "${item.customerCount ?? 0}",
+            ),
+            _tableRow(
+              "Order Count",
+              "${item.orderCount ?? 0}",
+            ),
+            _tableRow(
+              "Avg Earned / Customer",
+              "\$${item.avgEarnedPerCustomer?.toStringAsFixed(2) ?? "0.00"}",
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _dataRow({
-    required String label,
-    required String value,
-    bool isTotal = false,
-  }) {
+  Widget _tableRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.sp),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -155,16 +136,14 @@ class YearDetailsScreen extends StatelessWidget {
             child: Text(
               label,
               style: AppTextStyle.normalRegular14.copyWith(
-                color: isTotal ? Colors.black87 : Colors.grey.shade600,
-                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
+                color: hintGreyColor,
               ),
             ),
           ),
+          width15,
           Text(
             value,
-            style: isTotal
-                ? AppTextStyle.normalBold16.copyWith(color: primaryColor)
-                : AppTextStyle.normalSemiBold14.copyWith(color: Colors.black87),
+            style: AppTextStyle.normalRegular14,
           ),
         ],
       ),

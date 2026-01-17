@@ -82,52 +82,64 @@ class MyCompensationHistoryScreen extends StatelessWidget {
   Widget _buildTotalCard(String? total) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.sp),
+      padding: EdgeInsets.all(14.sp),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            primaryColor.withOpacity(0.15),
-            primaryColor.withOpacity(0.05),
+            primaryColor.withOpacity(0.12),
+            primaryColor.withOpacity(0.03),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: primaryColor.withOpacity(0.2), width: 1),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: primaryColor.withOpacity(0.18),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          /// Left Content
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Compensation Earned",
-                  style: AppTextStyle.normalSemiBold14
-                      .copyWith(color: Colors.black54)),
-              Container(
-                padding: EdgeInsets.all(8.sp),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
-                  ],
+              Text(
+                "Total Compensation",
+                style: AppTextStyle.normalRegular12.copyWith(
+                  color: Colors.black54,
                 ),
-                child: Icon(Icons.account_balance_wallet_outlined,
-                    color: primaryColor, size: 20.sp),
-              )
+              ),
+              SizedBox(height: 6.sp),
+              Text(
+                "\$${total ?? '0.00'}",
+                style: AppTextStyle.normalBold16.copyWith(
+                  color: primaryColor,
+                  letterSpacing: 0.3,
+                ),
+              ),
             ],
           ),
-          height10,
-          Text(
-            "\$${total ?? '0.00'}",
-            style: AppTextStyle.normalBold24.copyWith(
+
+          /// Icon (Smaller & Cleaner)
+          Container(
+            height: 36.sp,
+            width: 36.sp,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.r),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 18.sp,
               color: primaryColor,
-              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -147,77 +159,48 @@ class MyCompensationHistoryScreen extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(bottom: 14.sp),
         child: ShadowContainerWidget(
-          widget: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 8.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Header: Year
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 12.sp, vertical: 6.sp),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
-                        item.year ?? "N/A",
-                        style: AppTextStyle.normalBold16
-                            .copyWith(color: Colors.black87),
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios_rounded,
-                        size: 16.sp, color: Colors.grey.shade400),
-                  ],
-                ),
-                Divider(height: 24.sp, color: Colors.grey.shade100),
-
-                // 2. Earnings Breakdown Section
-                Text("Earnings",
-                    style: AppTextStyle.normalSemiBold12
-                        .copyWith(color: Colors.grey)),
-                height08,
-                _dataRow(
-                  label: "MoreMito Cash",
-                  value: "\$${item.moreMitoCash ?? '0.00'}",
-                ),
-                _dataRow(
-                  label: "MoreMito Commission",
-                  value: "\$${item.moreMitoCommission ?? '0.00'}",
-                ),
-                Divider(height: 16.sp, color: Colors.grey.shade50),
-                _dataRow(
-                  label: "Total Earned",
-                  value: "\$${item.totalCompensationEarned ?? '0.00'}",
-                  isTotal: true, // Make this bold/colored
-                ),
-
-                Divider(height: 24.sp, color: Colors.grey.shade100),
-
-                // 3. Performance Metrics Section
-                Text("Performance Metrics",
-                    style: AppTextStyle.normalSemiBold12
-                        .copyWith(color: Colors.grey)),
-                height08,
-                _dataRow(
-                  label: "Avg. Order Amount",
-                  value:
-                      "\$${item.averageOrderAmount?.toStringAsFixed(2) ?? '0.00'}",
-                ),
-                _dataRow(
-                  label: "Customer Count",
-                  value: "${item.customerCount ?? 0}",
-                ),
-                _dataRow(
-                  label: "Avg. Earned / Customer",
-                  value:
-                      "\$${item.avgEarnedPerCustomer?.toStringAsFixed(2) ?? '0.00'}",
-                ),
-              ],
-            ),
+          widget: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    item.year ?? "N/A",
+                    style: AppTextStyle.normalSemiBold16
+                        .copyWith(color: primaryBlack),
+                  ),
+                  const Icon(Icons.chevron_right, color: Colors.grey),
+                ],
+              ),
+              const Divider(height: 16),
+              _dataRow(
+                label: "MoreMito Cash",
+                value: "\$${item.moreMitoCash ?? '0.00'}",
+              ),
+              _dataRow(
+                label: "MoreMito Commission",
+                value: "\$${item.moreMitoCommission ?? '0.00'}",
+              ),
+              _dataRow(
+                label: "Total Compensation Earned",
+                value: "\$${item.totalCompensationEarned ?? '0.00'}",
+              ),
+              _dataRow(
+                label: "Average Order Amount",
+                value:
+                    "\$${item.averageOrderAmount?.toStringAsFixed(2) ?? '0.00'}",
+              ),
+              _dataRow(
+                label: "Customer Count",
+                value: "${item.customerCount ?? 0}",
+              ),
+              _dataRow(
+                label: "Avg. Earned / Customer",
+                value:
+                    "\$${item.avgEarnedPerCustomer?.toStringAsFixed(2) ?? '0.00'}",
+              ),
+            ],
           ),
         ),
       ),
@@ -227,25 +210,25 @@ class MyCompensationHistoryScreen extends StatelessWidget {
   Widget _dataRow({
     required String label,
     required String value,
-    bool isTotal = false,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8.sp),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppTextStyle.normalRegular14.copyWith(
-              color: isTotal ? Colors.black87 : Colors.grey.shade600,
-              fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyle.normalRegular14.copyWith(
+                color: hintGreyColor,
+              ),
             ),
           ),
+          width15,
           Text(
             value,
-            style: isTotal
-                ? AppTextStyle.normalBold16.copyWith(color: primaryColor)
-                : AppTextStyle.normalSemiBold14.copyWith(color: Colors.black87),
+            style: AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
           ),
         ],
       ),

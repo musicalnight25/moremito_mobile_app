@@ -31,6 +31,16 @@ extension ByteListEquality on List<int> {
 }
 
 class CommonMethod {
+  static String formatDate(DateTime? dateTime) {
+    if (dateTime == null) return "-";
+
+    try {
+      return DateFormat("dd-MM-yyyy").format(dateTime);
+    } catch (e) {
+      return "-";
+    }
+  }
+
   static String formatDateFromDateTime(DateTime? dateTime) {
     if (dateTime == null) return "-";
 
@@ -161,7 +171,9 @@ class CommonMethod {
   static Future logOutUser() async {
     await PreferencesUtil.clear();
     PreferencesUtil.clearRememberMe();
+    final isAlreadyOnLogin = Get.currentRoute.toLowerCase().contains('login');
 
+    if (isAlreadyOnLogin) return;
     Get.offAll(() => LoginScreen());
   }
 

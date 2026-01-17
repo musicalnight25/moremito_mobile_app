@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Your App Imports
 import 'package:more_mitro_app/controller/login_controller.dart';
+import 'package:more_mitro_app/pages/setting/widget/app_version_text.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
@@ -73,21 +74,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 24.h),
-
-                    // --- VERSION INFO (Minimalist) ---
-                    Center(
-                      child: Text(
-                        "v1.0.0",
-                        style: TextStyle(
-                          color: textGreyColor.withOpacity(0.6),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
+                    AppVersionText(),
                   ],
                 ),
               ),
