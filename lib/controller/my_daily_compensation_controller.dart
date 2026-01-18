@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../model/daily_compensation_model.dart';
+import '../model/order_compensation_detail_model.dart';
 import '../service/network_repository.dart';
 
 enum CompensationSortBy {
@@ -31,7 +32,9 @@ class MyDailyCompensationController extends GetxController {
   // DATA LISTS
   RxList<DailyCompensationItem> dailyItems = <DailyCompensationItem>[].obs;
   RxList<OrderCompensationItem> orderItems = <OrderCompensationItem>[].obs;
-
+  RxBool isOrderDetailLoading = false.obs;
+  RxList<OrderCompensationDetailItem> orderDetailItems =
+      <OrderCompensationDetailItem>[].obs;
   @override
   void onInit() {
     super.onInit();
@@ -165,6 +168,24 @@ class MyDailyCompensationController extends GetxController {
       debugPrint("Error fetching details: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchOrderDetail(int orderId) async {
+    try {
+      isOrderDetailLoading.value = true;
+      orderDetailItems.clear();
+
+      final response = await _repo.getMyCompensationsByOrder(orderId);
+      final model = OrderCompensationDetailResponse.fromJson(response);
+
+      if (model.status == true) {
+        orderDetailItems.assignAll(model.data?.items ?? []);
+      }
+    } catch (e) {
+      debugPrint("Order detail error: $e");
+    } finally {
+      isOrderDetailLoading.value = false;
     }
   }
 

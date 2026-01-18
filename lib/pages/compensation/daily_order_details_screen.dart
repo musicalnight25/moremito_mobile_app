@@ -2,24 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:more_mitro_app/utils/shadow_container_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../controller/my_daily_compensation_controller.dart';
 import '../../model/daily_compensation_model.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/base_background_widget.dart';
-import '../../utils/common_app_bar.dart';
 import '../../utils/colors.dart';
+import '../../utils/common_app_bar.dart';
 import '../../utils/static_decoration.dart';
+import 'order_compensation_detail_screen.dart';
 
-class DailyOrderDetailsScreen extends StatelessWidget {
+class DailyOrderDetailsScreen extends StatefulWidget {
   const DailyOrderDetailsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<MyDailyCompensationController>();
+  State<DailyOrderDetailsScreen> createState() =>
+      _DailyOrderDetailsScreenState();
+}
 
+class _DailyOrderDetailsScreenState extends State<DailyOrderDetailsScreen> {
+  final controller = Get.find<MyDailyCompensationController>();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const CommonAppBar(
@@ -56,36 +63,53 @@ class DailyOrderDetailsScreen extends StatelessWidget {
         ? DateFormat("yyyy-MM-dd").format(item.orderDate!)
         : "N/A";
 
-    return ShadowContainerWidget(
-      widget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _tableRow(
-            "User Name",
-            item.orderOwner ?? "Unknown Customer",
-          ),
-          _tableRow(
-            "Order No.",
-            "${item.orderId ?? '-'}",
-          ),
-          _tableRow(
-            "Date",
-            date,
-          ),
-          _tableRow(
-            "Order Amount",
-            "\$${item.orderAmount?.toStringAsFixed(2) ?? '0.00'}",
-          ),
-          _tableRow(
-            "Compensation Amount",
-            "\$${item.commissionAmount?.toStringAsFixed(2) ?? '0.00'}",
-          ),
-          if (item.commissionLevel != null)
-            _tableRow(
-              "Level",
-              item.commissionLevel.toString(),
+    return GestureDetector(
+      onTap: () {
+        controller.fetchOrderDetail(item.orderId!);
+        Get.to(() => const OrderCompensationDetailScreen());
+      },
+      child: ShadowContainerWidget(
+        widget: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Header: Date
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  date ?? "Unknown Date",
+                  style: AppTextStyle.normalSemiBold14
+                      .copyWith(color: primaryBlack),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
             ),
-        ],
+
+            const Divider(height: 16),
+            _tableRow(
+              "User Name",
+              item.orderOwner ?? "Unknown Customer",
+            ),
+            _tableRow(
+              "Order No.",
+              "${item.orderId ?? '-'}",
+            ),
+
+            _tableRow(
+              "Order Amount",
+              "\$${item.orderAmount?.toStringAsFixed(2) ?? '0.00'}",
+            ),
+            _tableRow(
+              "Compensation Amount",
+              "\$${item.commissionAmount?.toStringAsFixed(2) ?? '0.00'}",
+            ),
+            if (item.commissionLevel != null)
+              _tableRow(
+                "Level",
+                item.commissionLevel.toString(),
+              ),
+          ],
+        ),
       ),
     );
   }

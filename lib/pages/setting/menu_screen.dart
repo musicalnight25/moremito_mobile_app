@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import 'package:more_mitro_app/pages/category/categories_screen.dart';
+import 'package:more_mitro_app/pages/setting/widget/menu_section_widget.dart';
 import 'package:more_mitro_app/pages/setting/widget/settings_tile.dart';
-import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
-import 'package:more_mitro_app/utils/static_decoration.dart';
-import 'package:more_mitro_app/pages/category/categories_screen.dart';
 
 import '../../service/webview_helper.dart';
 import '../../utils/common_method.dart';
@@ -152,7 +150,7 @@ class _MenuScreenState extends State<MenuScreen> {
         ],
       ),
 
-      /// ---------------- COMPENSATION (WEB STYLE) ----------------
+      /// ---------------- COMPENSATION ----------------
       MenuSection(
         title: "Compensation",
         icon: Icons.payments_outlined,
@@ -204,10 +202,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     page: "MemberPage",
                     actionName: "payout",
                     onSuccess: (url) {
-                      Get.to(() => CommonWebView(
-                            url: url,
-                            title: "Request A Payout",
-                          ));
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "Request A Payout"));
                     },
                     onError: (msg) {
                       CommonMethod.getXSnackBar("Error", msg, redColor);
@@ -217,10 +213,9 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               MenuItem(
                 title: "Commission Payout History",
-                icon: Icons.history,
-                onTap: () {
-                  Get.to(() => const CommissionPayoutHistoryScreen());
-                },
+                icon: Icons.history_outlined,
+                onTap: () =>
+                    Get.to(() => const CommissionPayoutHistoryScreen()),
               ),
               MenuItem(
                 title: "Transfer MoreMito Cash",
@@ -243,10 +238,8 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               MenuItem(
                 title: "Transfer History",
-                icon: Icons.swap_calls_outlined,
-                onTap: () {
-                  Get.to(() => const CashTransferHistoryScreen());
-                },
+                icon: Icons.history_outlined,
+                onTap: () => Get.to(() => const CashTransferHistoryScreen()),
               ),
             ],
           ),
@@ -257,29 +250,24 @@ class _MenuScreenState extends State<MenuScreen> {
               MenuItem(
                 title: "Compensation Spent On Orders",
                 icon: Icons.shopping_cart_outlined,
-                onTap: () {
-                  Get.to(() => const CommissionSpentScreen());
-                },
+                onTap: () => Get.to(() => const CommissionSpentScreen()),
               ),
               MenuItem(
                 title: "MoreMito Cash Sent To Others",
-                icon: Icons.send_outlined,
-                onTap: () {
-                  Get.to(() => const CashSentHistoryScreen());
-                },
+                icon: Icons.history_outlined,
+                onTap: () => Get.to(() => const CashSentHistoryScreen()),
               ),
               MenuItem(
                 title: "Commission Payout History",
-                icon: Icons.payments_outlined,
-                onTap: () {
-                  Get.to(() => const CommissionPayoutHistoryScreen());
-                },
+                icon: Icons.history_outlined,
+                onTap: () =>
+                    Get.to(() => const CommissionPayoutHistoryScreen()),
               ),
             ],
           ),
           MenuItem(
             title: "The Compensation Plan",
-            icon: Icons.picture_as_pdf_outlined,
+            icon: Icons.description_outlined,
             children: [
               MenuItem(
                 title: "Compensation Plan PDF",
@@ -289,10 +277,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     page: "MemberPage",
                     actionName: "CompensationPlanPdf",
                     onSuccess: (url) {
-                      Get.to(() => CommonWebView(
-                            url: url,
-                            title: "Compensation Plan",
-                          ));
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "Compensation Plan"));
                     },
                     onError: (msg) {
                       CommonMethod.getXSnackBar("Error", msg, redColor);
@@ -326,6 +312,11 @@ class _MenuScreenState extends State<MenuScreen> {
                 },
               ),
               MenuItem(
+                title: "View Rank History",
+                icon: Icons.history_outlined,
+                onTap: () => Get.to(() => RankInfoScreen()),
+              ),
+              MenuItem(
                 title: "My Tree View",
                 icon: Icons.account_tree_outlined,
                 onTap: () async {
@@ -333,10 +324,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     page: "MemberPage",
                     actionName: "Genealogy",
                     onSuccess: (url) {
-                      Get.to(() => CommonWebView(
-                            url: url,
-                            title: "My Tree View",
-                          ));
+                      Get.to(
+                          () => CommonWebView(url: url, title: "My Tree View"));
                     },
                     onError: (msg) {
                       CommonMethod.getXSnackBar("Error", msg, redColor);
@@ -352,10 +341,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     page: "MemberPage",
                     actionName: "treeview",
                     onSuccess: (url) {
-                      Get.to(() => CommonWebView(
-                            url: url,
-                            title: "My Star Tree View",
-                          ));
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "My Star Tree View"));
                     },
                     onError: (msg) {
                       CommonMethod.getXSnackBar("Error", msg, redColor);
@@ -393,132 +380,6 @@ class _MenuScreenState extends State<MenuScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// =========================
-/// SECTION WIDGET
-/// =========================
-class MenuSectionWidget extends StatefulWidget {
-  final MenuSection section;
-
-  const MenuSectionWidget({required this.section});
-
-  @override
-  State<MenuSectionWidget> createState() => _MenuSectionWidgetState();
-}
-
-class _MenuSectionWidgetState extends State<MenuSectionWidget> {
-  bool expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      decoration: BoxDecoration(
-        color: primaryWhite,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: borderGreyColor.withOpacity(0.6)),
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () => setState(() => expanded = !expanded),
-            child: Padding(
-              padding: EdgeInsets.all(15.sp),
-              child: Row(
-                children: [
-                  Icon(widget.section.icon, color: primaryColor),
-                  width12,
-                  Expanded(
-                    child: Text(widget.section.title,
-                        style: AppTextStyle.normalSemiBold15),
-                  ),
-                  Icon(
-                    expanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (expanded)
-            Column(
-              children: widget.section.items
-                  .map((item) => MenuItemWidget(item: item, level: 0))
-                  .toList(),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-/// =========================
-/// MENU ITEM (RECURSIVE)
-/// =========================
-class MenuItemWidget extends StatefulWidget {
-  final MenuItem item;
-  final int level;
-
-  const MenuItemWidget({required this.item, required this.level});
-
-  @override
-  State<MenuItemWidget> createState() => _MenuItemWidgetState();
-}
-
-class _MenuItemWidgetState extends State<MenuItemWidget> {
-  bool expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasChildren =
-        widget.item.children != null && widget.item.children!.isNotEmpty;
-
-    return Column(
-      children: [
-        InkWell(
-          onTap: hasChildren
-              ? () => setState(() => expanded = !expanded)
-              : widget.item.onTap,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              15.sp + (widget.level * 15.sp),
-              10.sp,
-              15.sp,
-              10.sp,
-            ),
-            child: Row(
-              children: [
-                Icon(widget.item.icon, size: 18.sp, color: Colors.black54),
-                width12,
-                Expanded(
-                  child: Text(
-                    widget.item.title,
-                    style: AppTextStyle.normalSemiBold15
-                        .copyWith(color: Colors.black87),
-                  ),
-                ),
-                if (hasChildren)
-                  Icon(
-                    expanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    size: 18.sp,
-                  ),
-              ],
-            ),
-          ),
-        ),
-        if (hasChildren && expanded)
-          Column(
-            children: widget.item.children!
-                .map((e) => MenuItemWidget(item: e, level: widget.level + 1))
-                .toList(),
-          ),
-      ],
     );
   }
 }
