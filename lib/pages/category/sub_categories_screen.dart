@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/model/categories_model.dart';
-import 'package:more_mitro_app/utils/base_background_widget.dart';
-import 'package:more_mitro_app/utils/colors.dart';
-import 'package:more_mitro_app/utils/no_data_found.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:more_mitro_app/pages/category/widget/category_card_shimmer.dart';
+import 'package:more_mitro_app/pages/category/widget/category_widget.dart';
 
 import '../../controller/categories_controller.dart';
+import '../../model/categories_model.dart';
 import '../../utils/app_text_style.dart';
+import '../../utils/base_background_widget.dart';
+import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
-import '../../utils/common_category_widget.dart';
-import '../../utils/static_decoration.dart';
+import '../../utils/no_data_found.dart';
 import 'category_details_screen.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
@@ -24,7 +23,7 @@ class SubCategoriesScreen extends StatefulWidget {
 }
 
 class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
-  final controller = Get.put(CategoriesController());
+  final CategoriesController controller = Get.put(CategoriesController());
 
   @override
   void initState() {
@@ -34,7 +33,6 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     });
   }
 
-  /// Function to handle pull-to-refresh
   Future<void> _onRefresh() async {
     await controller.getSubCategories(null, widget.data.categoryId ?? "0");
   }
@@ -42,104 +40,87 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: CommonAppBar(
-        visibleBackButton: true,
-      ),
+      appBar: CommonAppBar(visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: Obx(() {
-          List<CategoryModel> subCategories =
-              controller.subCategoriesList.value;
+          final subCategories = controller.subCategoriesList;
+
           if (controller.isLoading.value) {
-            return buildCategoryShimmer();
+            return CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount:
+                        MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childCount: 6,
+                    itemBuilder: (context, index) {
+                      return const CategoryCardShimmer();
+                    },
+                  ),
+                ),
+              ],
+            );
           }
 
           if (subCategories.isEmpty) {
-            return NoDataFound(title: 'Subcategories');
+            return const NoDataFound(title: 'Subcategories');
           }
 
           return RefreshIndicator(
             onRefresh: _onRefresh,
             color: primaryColor,
-            child: ListView(
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                buildSubCategory(
-                  title: widget.data.categoryName ?? "-",
-                  subCategoriesList: subCategories,
+              slivers: [
+                // 🔹 Title
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      widget.data.categoryName ?? "-",
+                      style: AppTextStyle.normalExtraBold,
+                    ),
+                  ),
+                ),
+
+                // 🔹 Masonry Grid (Dynamic Height)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount:
+                        MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childCount: subCategories.length,
+                    itemBuilder: (context, index) {
+                      final subCategory = subCategories[index];
+                      return GestureDetector(
+                        onTap: () {
+                          controller.categoriesFileList.clear();
+                          Get.to(
+                              () => CategoryDetailsScreen(data: subCategory));
+                        },
+                        child: CategoryWidget(
+                          category: subCategory,
+                          isSelected: subCategory.isPopular ?? false,
+                          isSubCategory: true,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 24),
                 ),
               ],
             ),
           );
         }),
-      ),
-    );
-  }
-
-  Widget buildSubCategory({
-    required String title,
-    required List<CategoryModel> subCategoriesList,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          height20,
-          Text(title, style: AppTextStyle.normalExtraBold),
-          customHeight(12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              mainAxisSpacing: 10.sp,
-              crossAxisSpacing: 10.sp,
-              childAspectRatio: 1.8,
-            ),
-            itemCount: subCategoriesList.length,
-            itemBuilder: (context, subIndex) {
-              final subCategory = subCategoriesList[subIndex];
-              return GestureDetector(
-                onTap: () {
-                  controller.categoriesFileList.clear();
-                  controller.categoriesFileList.refresh();
-                  Get.to(() => CategoryDetailsScreen(data: subCategory));
-                },
-                child: CommonCategoryWidget(
-                  category: subCategory,
-                  isSelected: subCategory.isPopular ?? false,
-                  isSubCategory: true,
-                ),
-              );
-            },
-          ),
-          height20,
-        ],
-      ),
-    );
-  }
-
-  Widget buildCategoryShimmer() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 6,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.8,
-      ),
-      itemBuilder: (_, __) => Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
       ),
     );
   }

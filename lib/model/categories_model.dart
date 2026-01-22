@@ -1,23 +1,10 @@
-// To parse this JSON data, do
-//
-//     final categoryResponseModel = categoryResponseModelFromJson(jsonString);
-
-import 'dart:convert';
-import 'dart:ui';
-
-import '../utils/app_asset.dart';
-import '../utils/colors.dart';
-
-CategoryResponseModel categoryResponseModelFromJson(String str) =>
-    CategoryResponseModel.fromJson(json.decode(str));
-
-String categoryResponseModelToJson(CategoryResponseModel data) =>
-    json.encode(data.toJson());
+import 'package:flutter/cupertino.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class CategoryResponseModel {
-  bool? status;
-  dynamic message;
-  List<CategoryModel>? data;
+  final bool? status;
+  final dynamic message;
+  final List<CategoryModel>? data;
 
   CategoryResponseModel({
     this.status,
@@ -25,23 +12,17 @@ class CategoryResponseModel {
     this.data,
   });
 
-  factory CategoryResponseModel.fromJson(Map<String, dynamic> json) =>
-      CategoryResponseModel(
-        status: json["Status"],
-        message: json["Message"],
-        data: json["Data"] == null
-            ? []
-            : List<CategoryModel>.from(
-                json["Data"]!.map((x) => CategoryModel.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Status": status,
-        "Message": message,
-        "Data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-      };
+  factory CategoryResponseModel.fromJson(Map<String, dynamic> json) {
+    return CategoryResponseModel(
+      status: json['Status'],
+      message: json['Message'],
+      data: json['Data'] == null
+          ? []
+          : List<CategoryModel>.from(
+              json['Data'].map((x) => CategoryModel.fromJson(x)),
+            ),
+    );
+  }
 }
 
 class CategoryModel {
@@ -52,8 +33,10 @@ class CategoryModel {
   String? subCategoryName;
   String? description;
   bool? isPopular;
-  Color? color;
-  String? image;
+
+  /// UI icon
+  IconData? icon;
+
   CategoryModel({
     this.categoryName,
     this.categoryId,
@@ -62,50 +45,67 @@ class CategoryModel {
     this.shortDesc,
     this.description,
     this.isPopular,
-    this.color,
-    this.image,
+    this.icon,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    var catName = json['CategoryName'];
-    var catImage = catName == 'People Health Related'
-        ? AppAsset.people
-        : catName == 'Pet'
-            ? AppAsset.pet
-            : catName == 'Opportunity'
-                ? AppAsset.opportunity
-                : catName == 'Flyer & Documents'
-                    ? AppAsset.documentOutline
-                    : AppAsset.pet;
+    final categoryName = (json['CategoryName'] ?? '').toString().toLowerCase();
+    final subCategoryName =
+        (json['SubCategoryName'] ?? '').toString().toLowerCase();
 
-    Color catColor = catName == 'People Health Related'
-        ? paleYellowColor
-        : catName == 'Pet'
-            ? mintGreenColor
-            : catName == 'Opportunity'
-                ? softRedColor
-                : catName == 'Flyer & Documents'
-                    ? lavenderColor
-                    : mintGreenColor;
+    IconData icon = PhosphorIconsRegular.folder;
+
+    // ---------------- SUB-CATEGORIES ----------------
+    if (json['SubCategoryName'] != null) {
+      if (subCategoryName.contains('heart')) {
+        icon = PhosphorIconsRegular.heart;
+      } else if (subCategoryName.contains('brain') ||
+          subCategoryName.contains('neurological')) {
+        icon = PhosphorIconsRegular.brain;
+      } else if (subCategoryName.contains('eye')) {
+        icon = PhosphorIconsRegular.eye;
+      } else if (subCategoryName.contains('kidney') ||
+          subCategoryName.contains('liver')) {
+        icon = PhosphorIconsRegular.drop;
+      } else if (subCategoryName.contains('diabetes') ||
+          subCategoryName.contains('sugar')) {
+        icon = PhosphorIconsRegular.pulse;
+      } else if (subCategoryName.contains('weight')) {
+        icon = PhosphorIconsRegular.scales;
+      } else if (subCategoryName.contains('emotional')) {
+        icon = PhosphorIconsRegular.smiley;
+      } else if (subCategoryName.contains('parasite')) {
+        icon = PhosphorIconsRegular.bug;
+      } else if (subCategoryName.contains('circulation')) {
+        icon = PhosphorIconsRegular.waveform;
+      }
+    }
+
+    // ---------------- MAIN CATEGORIES ----------------
+    else {
+      if (categoryName.contains('people')) {
+        icon = PhosphorIconsRegular.users;
+      } else if (categoryName.contains('pet')) {
+        icon = PhosphorIconsRegular.pawPrint;
+      } else if (categoryName.contains('mitochondria')) {
+        icon = PhosphorIconsRegular.atom;
+      } else if (categoryName.contains('opportunity')) {
+        icon = PhosphorIconsRegular.briefcase;
+      } else if (categoryName.contains('document') ||
+          categoryName.contains('flyer')) {
+        icon = PhosphorIconsRegular.fileText;
+      }
+    }
+
     return CategoryModel(
-        categoryName: json["CategoryName"],
-        categoryId: json["CategoryId"].toString(),
-        subCategoryId: json["SubCategoryId"].toString(),
-        shortDesc: json["ShortDesc"],
-        subCategoryName: json["SubCategoryName"],
-        description: json["Description"],
-        isPopular: json["IsPopular"],
-        image: catImage,
-        color: catColor);
+      categoryName: json["CategoryName"],
+      categoryId: json["CategoryId"]?.toString(),
+      subCategoryId: json["SubCategoryId"]?.toString(),
+      subCategoryName: json["SubCategoryName"],
+      shortDesc: json["ShortDesc"],
+      description: json["Description"],
+      isPopular: json["IsPopular"],
+      icon: icon,
+    );
   }
-
-  Map<String, dynamic> toJson() => {
-        "SubCategoryName": subCategoryName,
-        "CategoryName": categoryName,
-        "CategoryId": categoryId,
-        "SubCategoryId": subCategoryId,
-        "ShortDesc": shortDesc,
-        "Description": description,
-        "IsPopular": isPopular,
-      };
 }

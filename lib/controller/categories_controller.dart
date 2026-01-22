@@ -26,15 +26,15 @@ class CategoriesController extends GetxController {
   Future<void> getCategoriesList(BuildContext context) async {
     isLoading.value = true;
     try {
-      var response = await _networkRepository.getCategoriesList();
+      final response = await _networkRepository.getCategoriesList();
       if (response != null) {
-        final model = categoryResponseModelFromJson(json.encode(response));
+        final model = CategoryResponseModel.fromJson(response);
         if (model.status == true) {
           categoriesList.value = model.data ?? [];
         }
       }
     } catch (e) {
-      print("Error in getCategoriesList: $e");
+      debugPrint("Error in getCategoriesList: $e");
     } finally {
       isLoading.value = false;
     }
@@ -44,16 +44,16 @@ class CategoriesController extends GetxController {
       BuildContext? context, String categoryID) async {
     isLoading.value = true;
     try {
-      var response =
+      final response =
           await _networkRepository.getSubCategories(context, categoryID);
       if (response != null) {
-        final model = categoryResponseModelFromJson(json.encode(response));
+        final model = CategoryResponseModel.fromJson(response);
         if (model.status == true) {
           subCategoriesList.value = model.data ?? [];
         }
       }
     } catch (e) {
-      print("Error in getSubCategories: $e");
+      debugPrint("Error in getSubCategories: $e");
     } finally {
       isLoading.value = false;
     }
