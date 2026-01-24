@@ -26,6 +26,7 @@ import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
 import '../notification/notification_settings_screen.dart';
 import '../order/my_orders_screen.dart';
+import '../profile/manage_addresses_screen.dart';
 import '../profile/my_profile_screen.dart';
 import '../profile/welcome_tag_screen.dart';
 import '../support/create_support_ticket_screen.dart';
@@ -61,16 +62,27 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: Icons.notifications_outlined,
             onTap: () => Get.to(() => const NotificationSettingsScreen()),
           ),
-          MenuItem(
-            title: "Welcome Tag",
-            icon: Icons.badge_outlined,
-            onTap: () => Get.to(() => WelcomeTagScreen()),
-          ),
+          // MenuItem(
+          //   title: "Welcome Tag",
+          //   icon: Icons.badge_outlined,
+          //   onTap: () => Get.to(() => WelcomeTagScreen()),
+          // ),
           MenuItem(
             title: "User Survey",
             icon: Icons.poll_outlined,
             onTap: () => Get.to(() => SurveyScreen(isFromOnboarding: false)),
           ),
+          // MenuItem(
+          //   title: "Manage Your Addresses",
+          //   icon: Icons.location_on_outlined,
+          //   onTap: () => Get.to(() => const ManageAddressesScreen()),
+          // ),
+          //
+          // MenuItem(
+          //   title: "Your Website Header Display",
+          //   icon: Icons.web_outlined,
+          //   onTap: () => Get.to(() => const WelcomeTagScreen()),
+          // ),
         ],
       ),
 
@@ -82,7 +94,19 @@ class _MenuScreenState extends State<MenuScreen> {
           MenuItem(
             title: "My Orders",
             icon: Icons.receipt_long_outlined,
-            onTap: () => Get.to(() => MyOrdersScreen()),
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "Members",
+                actionName: "MyOrders",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(url: url, title: "My Orders"));
+                },
+                onError: (msg) {
+                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                },
+              );
+              // Get.to(() => MyOrdersScreen());
+            },
           ),
         ],
       ),

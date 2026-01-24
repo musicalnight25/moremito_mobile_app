@@ -21,7 +21,7 @@ class WelcomeTagScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "Welcome Tag",
+        title: "Your Website Header Display",
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -33,15 +33,15 @@ class WelcomeTagScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Welcome Tag Information",
-                        style: AppTextStyle.normalBold16
-                            .copyWith(color: primaryColor),
-                      ),
-                      height16,
-                      _field("Welcome Name", controller.nameCtrl),
-                      _field("Welcome Email", controller.emailCtrl),
-                      _field("Welcome Phone", controller.phoneCtrl),
+                      // Text(
+                      //   "Welcome Tag Information",
+                      //   style: AppTextStyle.normalBold16
+                      //       .copyWith(color: primaryColor),
+                      // ),
+                      // height16,
+                      _field("Name", controller.nameCtrl),
+                      _field("Email", controller.emailCtrl),
+                      _field("Phone", controller.phoneCtrl),
                       height10,
                       Row(
                         children: [
@@ -66,7 +66,7 @@ class WelcomeTagScreen extends StatelessWidget {
                           width10,
                           Expanded(
                             child: Text(
-                              "Use this information for display",
+                              "Use aliases (my Welcome Tag info) for name, email, and phone number",
                               style: AppTextStyle.normalRegular14,
                             ),
                           ),

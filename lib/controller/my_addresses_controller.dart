@@ -1,17 +1,15 @@
-import 'dart:convert';
 import 'package:get/get.dart';
 
 import '../model/my_address_model.dart';
 import '../service/network_repository.dart';
-import '../service/error_logger.dart';
+import '../utils/colors.dart';
+import '../utils/common_method.dart';
 
 class MyAddressesController extends GetxController {
   final NetworkRepository _repo = NetworkRepository();
 
-  RxList<MyAddressModel> addressList = <MyAddressModel>[].obs;
   RxBool isLoading = false.obs;
-
-  Rxn<MyAddressModel> defaultAddress = Rxn<MyAddressModel>();
+  RxList<MyAddressModel> addresses = <MyAddressModel>[].obs;
 
   @override
   void onInit() {
@@ -22,29 +20,32 @@ class MyAddressesController extends GetxController {
   Future<void> fetchAddresses() async {
     try {
       isLoading.value = true;
-
       final response = await _repo.getMyAddresses();
-      if (response != null) {
-        final list = myAddressListFromJson(json.encode(response));
-        addressList.assignAll(list);
 
-        /// bind default address
-        defaultAddress.value =
-            list.firstWhereOrNull((e) => e.isDefaultAddress == true);
+      if (response != null && response['Status'] == true) {
+        // assignAll is better for triggering Obx updates
+        addresses.assignAll(
+          List<MyAddressModel>.from(
+            response['Data'].map((e) => MyAddressModel.fromJson(e)),
+          ),
+        );
       }
-    } catch (e, stack) {
-      await ErrorLogger.logErrorToServer(
-        pageType: "MyAddresses",
-        actionType: "Fetch",
-        errorMessage1: e.toString(),
-        errorMessage3: stack.toString(),
-      );
+    } catch (e) {
+      CommonMethod.getXSnackBar("Error", "Failed to load addresses", redColor);
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> setDefaultAddress(MyAddressModel address) async {
+  Future<void> saveAddress(MyAddressModel address) async {
+    // 1. Instant Local Update (Optimistic UI)
+    if (address.isDefaultAddress == true) {
+      for (var element in addresses) {
+        element.isDefaultAddress = (element.id == address.id);
+      }
+      addresses.refresh(); // Crucial: This tells Obx to redraw the list
+    }
+
     try {
       final response = await _repo.saveAddress(
         body: {
@@ -59,21 +60,21 @@ class MyAddressesController extends GetxController {
           "ZipPostalCode": address.zipPostalCode,
           "CountryId": address.countryId,
           "StateId": address.stateId,
-          "IsDefaultAddress": true,
+          "IsDefaultAddress": address.isDefaultAddress ?? false,
         },
       );
 
-      if (response != null && response["Status"] == true) {
-        await fetchAddresses();
-        Get.snackbar("Success", "Default address updated");
+      if (response != null && response['Status'] == true) {
+        CommonMethod.getXSnackBar(
+            "Success", response['Message'] ?? "Updated", greenColor);
+        // 2. Fetch from server to ensure data integrity
+        fetchAddresses();
+      } else {
+        fetchAddresses(); // Revert on server failure
       }
-    } catch (e, stack) {
-      await ErrorLogger.logErrorToServer(
-        pageType: "MyAddresses",
-        actionType: "SetDefault",
-        errorMessage1: e.toString(),
-        errorMessage3: stack.toString(),
-      );
+    } catch (e) {
+      fetchAddresses(); // Revert on error
+      CommonMethod.getXSnackBar("Error", "Connection failed", redColor);
     }
   }
 }

@@ -1,23 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/category/widget/category_file_shimmer.dart';
 import 'package:more_mitro_app/pages/category/widget/category_file_tile.dart';
-import 'package:more_mitro_app/utils/app_text_style.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
-import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/input_text_field_widget.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
-import 'package:more_mitro_app/utils/shadow_container_widget.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../controller/categories_controller.dart';
 import '../../model/categories_model.dart';
-import '../../model/category_file_model.dart';
-import '../../utils/static_decoration.dart';
-import 'document_viewer_screen.dart';
 
 class CategoryDetailsScreen extends StatefulWidget {
   final CategoryModel data;

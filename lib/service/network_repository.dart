@@ -404,7 +404,7 @@ class NetworkRepository {
     if (isAlreadyOnLogin) {
       CommonMethod.getXSnackBar(
         "Error",
-        "Invalid email or password.",
+        "Invalid username or password.",
         redColor,
       );
     } else {

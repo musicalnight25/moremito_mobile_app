@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart'; // Optional: If you want to enable sharing
 import 'package:more_mitro_app/controller/deep_link_controller.dart';
 import 'package:more_mitro_app/pages/account/widget/deeplink_shimmer_tile.dart';
 import 'package:more_mitro_app/utils/app_text_style.dart';
@@ -11,6 +10,8 @@ import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
 
 class MyDeepLinksScreen extends StatelessWidget {
   const MyDeepLinksScreen({super.key});
@@ -132,6 +133,13 @@ class MyDeepLinksScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     onTap: () {
                       if (url.isNotEmpty) {
+                        // CommonMethod.showCustomBottomSheet(
+                        //     title: title,
+                        //     message: "Share Via",
+                        //     customWidget: ComprehensiveShareSheet(
+                        //       shareContent: "Check this out: $url",
+                        //       sendTo :"user name",
+                        //     ));
                         Share.share("Check this out: $url");
                       }
                     },

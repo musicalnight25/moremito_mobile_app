@@ -88,19 +88,6 @@ class Validators {
     return null;
   }
 
-  // Validate email
-  static String? validateEmail(String? value) {
-    final pattern = r'^[^@]+@[^@]+\.[^@]+$';
-    final regExp = RegExp(pattern);
-
-    if (value == null || value.isEmpty) {
-      return "Email is required.";
-    } else if (!regExp.hasMatch(value)) {
-      return "Invalid email address.";
-    }
-    return null;
-  }
-
   // Validate account deletion reason
   static String? validateDeletionReason(String? value) {
     if (value == null || value.isEmpty) {

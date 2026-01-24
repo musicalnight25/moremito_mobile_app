@@ -1,10 +1,3 @@
-import 'dart:convert';
-
-List<MyAddressModel> myAddressListFromJson(String str) =>
-    List<MyAddressModel>.from(
-      json.decode(str)["Data"].map((x) => MyAddressModel.fromJson(x)),
-    );
-
 class MyAddressModel {
   int? id;
   String? firstName;
@@ -40,20 +33,20 @@ class MyAddressModel {
 
   factory MyAddressModel.fromJson(Map<String, dynamic> json) {
     return MyAddressModel(
-      id: json["Id"],
-      firstName: json["FirstName"],
-      lastName: json["LastName"],
-      email: json["Email"],
-      phoneNumber: json["PhoneNumber"],
-      address1: json["Address1"],
-      address2: json["Address2"],
-      city: json["City"],
-      zipPostalCode: json["ZipPostalCode"],
-      stateName: json["StateName"],
-      countryName: json["CountryName"],
-      countryId: json["CountryId"],
-      stateId: json["StateId"],
-      isDefaultAddress: json["IsDefaultAddress"],
+      id: json['Id'],
+      firstName: json['FirstName'],
+      lastName: json['LastName'],
+      email: json['Email'],
+      phoneNumber: json['PhoneNumber'],
+      address1: json['Address1'],
+      address2: json['Address2'],
+      city: json['City'],
+      zipPostalCode: json['ZipPostalCode'],
+      stateName: json['StateName'],
+      countryName: json['CountryName'],
+      countryId: json['CountryId'],
+      stateId: json['StateId'],
+      isDefaultAddress: json['IsDefaultAddress'],
     );
   }
 }

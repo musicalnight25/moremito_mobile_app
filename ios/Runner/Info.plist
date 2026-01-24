@@ -82,5 +82,13 @@
 		<false/>
 		<key>aps-environment</key>
 		<string>development</string>
+		<key>LSApplicationQueriesSchemes</key>
+        <array>
+            <string>whatsapp</string>
+            <string>tg</string>
+            <string>mailto</string>
+            <string>sms</string>
+            <string>tel</string>
+        </array>
 	</dict>
 </plist>
