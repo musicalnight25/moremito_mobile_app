@@ -7,6 +7,7 @@ import 'package:more_mitro_app/pages/setting/widget/settings_tile.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../service/webview_helper.dart';
 import '../../utils/common_method.dart';
@@ -50,62 +51,70 @@ class _MenuScreenState extends State<MenuScreen> {
       /// ---------------- MY INFO ----------------
       MenuSection(
         title: "My Info",
-        icon: Icons.person_outline,
+        icon: PhosphorIcons.user(PhosphorIconsStyle.regular),
         items: [
           MenuItem(
             title: "My Profile",
-            icon: Icons.account_circle_outlined,
-            onTap: () => Get.to(() => MyProfileScreen()),
+            icon: PhosphorIcons.userCircle(PhosphorIconsStyle.regular),
+            onTap: () => Get.to(() => const MyProfileScreen()),
           ),
           MenuItem(
             title: "Notification Settings",
-            icon: Icons.notifications_outlined,
+            icon: PhosphorIcons.bell(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => const NotificationSettingsScreen()),
           ),
-          // MenuItem(
-          //   title: "Welcome Tag",
-          //   icon: Icons.badge_outlined,
-          //   onTap: () => Get.to(() => WelcomeTagScreen()),
-          // ),
           MenuItem(
             title: "User Survey",
-            icon: Icons.poll_outlined,
+            icon: PhosphorIcons.chartBar(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => SurveyScreen(isFromOnboarding: false)),
           ),
-          // MenuItem(
-          //   title: "Manage Your Addresses",
-          //   icon: Icons.location_on_outlined,
-          //   onTap: () => Get.to(() => const ManageAddressesScreen()),
-          // ),
-          //
-          // MenuItem(
-          //   title: "Your Website Header Display",
-          //   icon: Icons.web_outlined,
-          //   onTap: () => Get.to(() => const WelcomeTagScreen()),
-          // ),
         ],
       ),
 
       /// ---------------- ORDERS ----------------
       MenuSection(
         title: "Orders",
-        icon: Icons.shopping_bag_outlined,
+        icon: PhosphorIcons.shoppingBag(PhosphorIconsStyle.regular),
         items: [
           MenuItem(
             title: "My Orders",
-            icon: Icons.receipt_long_outlined,
+            icon: PhosphorIcons.receipt(PhosphorIconsStyle.regular),
             onTap: () async {
               await WebviewHelper.getDynamicWebviewURL(
-                page: "Members",
+                page: "MemberPage",
                 actionName: "MyOrders",
                 onSuccess: (url) {
                   Get.to(() => CommonWebView(url: url, title: "My Orders"));
                 },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
+              );
+            },
+          ),
+          MenuItem(
+            title: "Create A New Autoship Order",
+            icon: PhosphorIcons.calendarPlus(PhosphorIconsStyle.regular),
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "autoshiporder",
+                onSuccess: (url) {
+                  Get.to(() => CommonWebView(
+                      url: url, title: "Create A New Autoship Order"));
                 },
               );
-              // Get.to(() => MyOrdersScreen());
+            },
+          ),
+          MenuItem(
+            title: "Recurring Orders",
+            icon: PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.regular),
+            onTap: () async {
+              await WebviewHelper.getDynamicWebviewURL(
+                page: "MemberPage",
+                actionName: "AutoShip",
+                onSuccess: (url) {
+                  Get.to(
+                      () => CommonWebView(url: url, title: "Recurring Orders"));
+                },
+              );
             },
           ),
         ],
@@ -114,16 +123,16 @@ class _MenuScreenState extends State<MenuScreen> {
       /// ---------------- SUPPORT ----------------
       MenuSection(
         title: "Support",
-        icon: Icons.support_agent_outlined,
+        icon: PhosphorIcons.headset(PhosphorIconsStyle.regular),
         items: [
           MenuItem(
             title: "Support Ticket List",
-            icon: Icons.list_alt_outlined,
+            icon: PhosphorIcons.listBullets(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => SupportTicketsListScreen()),
           ),
           MenuItem(
             title: "Create Support Ticket",
-            icon: Icons.add_circle_outline,
+            icon: PhosphorIcons.plusCircle(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => CreateSupportTicketScreen()),
           ),
         ],
@@ -132,11 +141,11 @@ class _MenuScreenState extends State<MenuScreen> {
       /// ---------------- SHARE INFO ----------------
       MenuSection(
         title: "Share MoreMito Info",
-        icon: Icons.campaign_outlined,
+        icon: PhosphorIcons.megaphone(PhosphorIconsStyle.regular),
         items: [
           MenuItem(
             title: "Customize & Share My Flyers",
-            icon: Icons.brush_outlined,
+            icon: PhosphorIcons.paintBrushBroad(PhosphorIconsStyle.regular),
             onTap: () async {
               await WebviewHelper.getDynamicWebviewURL(
                 actionName: "Template",
@@ -145,30 +154,27 @@ class _MenuScreenState extends State<MenuScreen> {
                 onSuccess: (url) {
                   Get.to(() => CommonWebView(url: url, title: "My Flyers"));
                 },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
-                },
               );
             },
           ),
           MenuItem(
             title: "Share Audios, Videos & Docs",
-            icon: Icons.perm_media_outlined,
+            icon: PhosphorIcons.files(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => CategoriesScreen(isFromMenu: true)),
           ),
           MenuItem(
             title: "Allow Others to Request MoreMito Info",
-            icon: Icons.group_add_outlined,
+            icon: PhosphorIcons.userPlus(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => TmrisInfoScreen()),
           ),
           MenuItem(
             title: "See My Generated Leads",
-            icon: Icons.trending_up_outlined,
+            icon: PhosphorIcons.trendUp(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => MyLeadsScreen()),
           ),
           MenuItem(
             title: "See & Track Activity From My Shared Links",
-            icon: Icons.track_changes_outlined,
+            icon: PhosphorIcons.target(PhosphorIconsStyle.regular),
             onTap: () => Get.to(() => MySharedFlyersScreen()),
           ),
         ],
@@ -177,50 +183,46 @@ class _MenuScreenState extends State<MenuScreen> {
       /// ---------------- COMPENSATION ----------------
       MenuSection(
         title: "Compensation",
-        icon: Icons.payments_outlined,
+        icon: PhosphorIcons.coins(PhosphorIconsStyle.regular),
         items: [
           MenuItem(
             title: "My Compensations",
-            icon: Icons.payments_outlined,
+            icon: PhosphorIcons.currencyDollar(PhosphorIconsStyle.regular),
             children: [
               MenuItem(
                 title: "My Daily Compensation Log",
-                icon: Icons.event_note_outlined,
+                icon: PhosphorIcons.notebook(PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const MyDailyCompensationLogScreen()),
               ),
               MenuItem(
                 title: "My Compensation History",
-                icon: Icons.history_outlined,
+                icon: PhosphorIcons.clockCounterClockwise(
+                    PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const MyCompensationHistoryScreen()),
               ),
             ],
           ),
           MenuItem(
             title: "My Currently Available Balance",
-            icon: Icons.account_balance_wallet_outlined,
+            icon: PhosphorIcons.wallet(PhosphorIconsStyle.regular),
             onTap: () async {
               await WebviewHelper.getDynamicWebviewURL(
                 page: "MemberPage",
                 actionName: "MyMoreMitoCash",
                 onSuccess: (url) {
-                  Get.to(() => CommonWebView(
-                        url: url,
-                        title: "My Currently Available Balance",
-                      ));
-                },
-                onError: (msg) {
-                  CommonMethod.getXSnackBar("Error", msg, redColor);
+                  Get.to(() =>
+                      CommonWebView(url: url, title: "My Available Balance"));
                 },
               );
             },
           ),
           MenuItem(
             title: "Request Payouts And Make Transfers",
-            icon: Icons.swap_horiz_outlined,
+            icon: PhosphorIcons.swap(PhosphorIconsStyle.regular),
             children: [
               MenuItem(
                 title: "Request A Payout",
-                icon: Icons.request_page_outlined,
+                icon: PhosphorIcons.handCoins(PhosphorIconsStyle.regular),
                 onTap: () async {
                   await WebviewHelper.getDynamicWebviewURL(
                     page: "MemberPage",
@@ -229,73 +231,62 @@ class _MenuScreenState extends State<MenuScreen> {
                       Get.to(() =>
                           CommonWebView(url: url, title: "Request A Payout"));
                     },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
-                    },
                   );
                 },
               ),
               MenuItem(
                 title: "Commission Payout History",
-                icon: Icons.history_outlined,
+                icon: PhosphorIcons.clockCounterClockwise(
+                    PhosphorIconsStyle.regular),
                 onTap: () =>
                     Get.to(() => const CommissionPayoutHistoryScreen()),
               ),
               MenuItem(
                 title: "Transfer MoreMito Cash",
-                icon: Icons.swap_calls_outlined,
+                icon: PhosphorIcons.arrowsLeftRight(PhosphorIconsStyle.regular),
                 onTap: () async {
                   await WebviewHelper.getDynamicWebviewURL(
                     page: "MemberPage",
                     actionName: "TransferMC",
                     onSuccess: (url) {
                       Get.to(() => CommonWebView(
-                            url: url,
-                            title: "Transfer MoreMito Cash",
-                          ));
-                    },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                          url: url, title: "Transfer MoreMito Cash"));
                     },
                   );
                 },
               ),
               MenuItem(
                 title: "Transfer History",
-                icon: Icons.history_outlined,
+                icon: PhosphorIcons.clockCounterClockwise(
+                    PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const CashTransferHistoryScreen()),
               ),
             ],
           ),
           MenuItem(
             title: "History Of Compensation Spent",
-            icon: Icons.history_outlined,
+            icon:
+                PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.regular),
             children: [
               MenuItem(
                 title: "Compensation Spent On Orders",
-                icon: Icons.shopping_cart_outlined,
+                icon: PhosphorIcons.bag(PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const CommissionSpentScreen()),
               ),
               MenuItem(
                 title: "MoreMito Cash Sent To Others",
-                icon: Icons.history_outlined,
+                icon: PhosphorIcons.paperPlaneTilt(PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const CashSentHistoryScreen()),
-              ),
-              MenuItem(
-                title: "Commission Payout History",
-                icon: Icons.history_outlined,
-                onTap: () =>
-                    Get.to(() => const CommissionPayoutHistoryScreen()),
               ),
             ],
           ),
           MenuItem(
             title: "The Compensation Plan",
-            icon: Icons.description_outlined,
+            icon: PhosphorIcons.filePdf(PhosphorIconsStyle.regular),
             children: [
               MenuItem(
                 title: "Compensation Plan PDF",
-                icon: Icons.picture_as_pdf,
+                icon: PhosphorIcons.filePdf(PhosphorIconsStyle.regular),
                 onTap: () async {
                   await WebviewHelper.getDynamicWebviewURL(
                     page: "MemberPage",
@@ -304,9 +295,6 @@ class _MenuScreenState extends State<MenuScreen> {
                       Get.to(() =>
                           CommonWebView(url: url, title: "Compensation Plan"));
                     },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
-                    },
                   );
                 },
               ),
@@ -314,35 +302,31 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           MenuItem(
             title: "My Rank Management",
-            icon: Icons.leaderboard_outlined,
+            icon: PhosphorIcons.medal(PhosphorIconsStyle.regular),
             children: [
               MenuItem(
                 title: "Rank Management Report",
-                icon: Icons.bar_chart_outlined,
+                icon: PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
                 onTap: () async {
                   await WebviewHelper.getDynamicWebviewURL(
                     page: "MemberPage",
                     actionName: "MyRankManagementReport",
                     onSuccess: (url) {
                       Get.to(() => CommonWebView(
-                            url: url,
-                            title: "My Rank Management Report",
-                          ));
-                    },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
+                          url: url, title: "My Rank Management Report"));
                     },
                   );
                 },
               ),
               MenuItem(
                 title: "View Rank History",
-                icon: Icons.history_outlined,
+                icon: PhosphorIcons.clockCounterClockwise(
+                    PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => RankInfoScreen()),
               ),
               MenuItem(
                 title: "My Tree View",
-                icon: Icons.account_tree_outlined,
+                icon: PhosphorIcons.treeStructure(PhosphorIconsStyle.regular),
                 onTap: () async {
                   await WebviewHelper.getDynamicWebviewURL(
                     page: "MemberPage",
@@ -350,26 +334,6 @@ class _MenuScreenState extends State<MenuScreen> {
                     onSuccess: (url) {
                       Get.to(
                           () => CommonWebView(url: url, title: "My Tree View"));
-                    },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
-                    },
-                  );
-                },
-              ),
-              MenuItem(
-                title: "My Star Tree View",
-                icon: Icons.schema_outlined,
-                onTap: () async {
-                  await WebviewHelper.getDynamicWebviewURL(
-                    page: "MemberPage",
-                    actionName: "treeview",
-                    onSuccess: (url) {
-                      Get.to(() =>
-                          CommonWebView(url: url, title: "My Star Tree View"));
-                    },
-                    onError: (msg) {
-                      CommonMethod.getXSnackBar("Error", msg, redColor);
                     },
                   );
                 },

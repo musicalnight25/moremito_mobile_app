@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../service/network_repository.dart';
+import '../utils/colors.dart';
+import '../utils/common_method.dart';
 import '../utils/process_indicator.dart';
 
 class WebviewHelper {
@@ -11,7 +13,6 @@ class WebviewHelper {
     required String page,
     String? id,
     required Function(String url) onSuccess,
-    required Function(String message) onError,
   }) async {
     processIndicator.show(Get.context);
     try {
@@ -36,12 +37,12 @@ class WebviewHelper {
       } else {
         processIndicator.hide(Get.context);
 
-        onError(response?['Message'] ?? "Failed to generate token");
+        CommonMethod.getXSnackBar("Error",
+            response?['Message'] ?? "Failed to generate token", redColor);
       }
     } catch (e) {
       processIndicator.hide(Get.context);
-
-      onError("Connection Error: $e");
+      CommonMethod.getXSnackBar("Error", "Connection Error: $e", redColor);
     } finally {
       processIndicator.hide(Get.context);
     }

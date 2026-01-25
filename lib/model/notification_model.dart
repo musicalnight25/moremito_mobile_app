@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 enum NotificationType {
   autoshipCardDecline,
@@ -189,82 +190,64 @@ IconData getNotificationIcon(NotificationType type) {
   switch (type) {
     // ───── AUTOSHIP / PAYMENT ─────
     case NotificationType.autoshipCardDecline:
-      return CupertinoIcons.exclamationmark_triangle;
-    // Payment failed (warning)
+      return PhosphorIcons.warningCircle();
 
     case NotificationType.autoshipNoCard:
-      return CupertinoIcons.creditcard;
-    // No card on file
+      return PhosphorIcons.creditCard();
 
     case NotificationType.autoshipComing:
-      return CupertinoIcons.clock;
-    // Upcoming autoship
+      return PhosphorIcons.calendarBlank();
 
     // ───── ORDER FLOW ─────
     case NotificationType.orderPlaced:
-      return CupertinoIcons.cube_box;
-    // Order created
+      return PhosphorIcons.package();
 
     case NotificationType.orderInTransit:
-      return CupertinoIcons.car_detailed;
-    // Shipping / transit (truck alternative)
+      return PhosphorIcons.truck();
 
     case NotificationType.orderDelivered:
-      return CupertinoIcons.checkmark_seal;
-    // Delivered successfully
+      return PhosphorIcons.checkCircle();
 
     case NotificationType.badShippingAddress:
-      return CupertinoIcons.location_slash;
-    // Invalid address
-
+      return PhosphorIcons.mapPin();
     // ───── COMMENTS / SUPPORT ─────
     case NotificationType.orderComment:
-      return CupertinoIcons.text_bubble;
-    // Order discussion
+      return PhosphorIcons.chatText();
 
     case NotificationType.supportTicketComment:
-      return CupertinoIcons.chat_bubble_2;
-    // Support reply
+      return PhosphorIcons.chatsTeardrop();
 
     // ───── RANK ─────
     case NotificationType.rankDemotion:
-      return CupertinoIcons.arrow_down_circle;
-    // Rank demotion
+      return PhosphorIcons.trendDown();
 
     // ───── ANNOUNCEMENTS ─────
     case NotificationType.callAnnouncement:
-      return CupertinoIcons.phone;
-    // Call related
+      return PhosphorIcons.phoneCall();
 
     case NotificationType.otherAnnouncements:
-      return CupertinoIcons.speaker_3;
-    // Announcement / broadcast
+      return PhosphorIcons.megaphoneSimple();
 
     case NotificationType.smsBroadcast:
-      return CupertinoIcons.chat_bubble_text;
-    // Mass SMS
+      return PhosphorIcons.broadcast();
 
     // ───── USER ─────
     case NotificationType.newSignUp:
-      return CupertinoIcons.person_add;
-    // New member
+      return PhosphorIcons.userPlus();
 
     // ───── MARKETING ─────
     case NotificationType.filesMarketing:
-      return CupertinoIcons.doc;
-    // File marketing
+      return PhosphorIcons.file();
 
     case NotificationType.flyerMarketing:
-      return CupertinoIcons.doc_text;
-    // Flyer / document
+      return PhosphorIcons.article();
 
     case NotificationType.smsLead:
-      return CupertinoIcons.envelope;
-    // Incoming SMS lead
+      return PhosphorIcons.envelopeSimple();
 
     // ───── FALLBACK ─────
     case NotificationType.unknown:
     default:
-      return CupertinoIcons.bell;
+      return PhosphorIcons.bell();
   }
 }

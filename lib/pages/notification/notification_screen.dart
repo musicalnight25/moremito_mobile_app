@@ -10,6 +10,7 @@ import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../controller/notification_controller.dart';
 import '../../model/notification_model.dart';
@@ -121,36 +122,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Obx(
         () => Row(
           children: [
-            // ALL — neutral notifications
-            _filterChip(
-              0,
-              "All",
-              CupertinoIcons.bell,
-            ),
+            _filterChip(0, "All", PhosphorIcons.bell()),
             width10,
-
-            // SYSTEM — autoship, rank, billing, account events
-            _filterChip(
-              1,
-              "System",
-              CupertinoIcons.shield,
-            ),
+            _filterChip(1, "System", PhosphorIcons.shieldCheck()),
             width10,
-
-            // MARKETING — offers, pricing, promotions
-            _filterChip(
-              2,
-              "Marketing",
-              CupertinoIcons.tag,
-            ),
+            _filterChip(2, "Marketing", PhosphorIcons.tag()),
             width10,
-
-            // ANNOUNCEMENT — broadcasts & updates
-            _filterChip(
-              3,
-              "Announcement",
-              CupertinoIcons.speaker_3,
-            ),
+            _filterChip(3, "Announcement", PhosphorIcons.megaphoneSimple()),
           ],
         ),
       ),
