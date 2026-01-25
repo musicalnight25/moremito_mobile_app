@@ -34,26 +34,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       cityCtrl,
       zipCtrl;
 
-  int? countryId;
-  int? stateId;
-  bool isDefault = false;
-
-  final Map<int, String> countryMap = {
-    237: "United States of America",
-    104: "India",
-    1: "Afghanistan"
-  };
-  final Map<int, String> stateMap = {
-    1678: "California",
-    1720: "South Carolina",
-    1697: "Maryland",
-    842: "Himachal Pradesh",
-    1673: "Alabama"
-  };
+  RxBool isDefault = false.obs;
 
   @override
   void initState() {
     super.initState();
+
     firstNameCtrl = TextEditingController(text: widget.address?.firstName);
     lastNameCtrl = TextEditingController(text: widget.address?.lastName);
     emailCtrl = TextEditingController(text: widget.address?.email);
@@ -61,29 +47,29 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     addressCtrl = TextEditingController(text: widget.address?.address1);
     cityCtrl = TextEditingController(text: widget.address?.city);
     zipCtrl = TextEditingController(text: widget.address?.zipPostalCode);
-    isDefault = widget.address?.isDefaultAddress ?? false;
 
-    countryId = countryMap.containsKey(widget.address?.countryId)
-        ? widget.address?.countryId
-        : null;
-    stateId = stateMap.containsKey(widget.address?.stateId)
-        ? widget.address?.stateId
-        : null;
+    isDefault.value = widget.address?.isDefaultAddress ?? false;
+
+    /// Edit Mode Prefill
+    if (widget.address != null) {
+      controller.selectedCountryId.value = widget.address!.countryId;
+      controller.selectedStateId.value = widget.address!.stateId;
+
+      if (widget.address!.countryId != null) {
+        controller.fetchStates(widget.address!.countryId!);
+      }
+    }
   }
 
   @override
   void dispose() {
-    for (var c in [
-      firstNameCtrl,
-      lastNameCtrl,
-      emailCtrl,
-      phoneCtrl,
-      addressCtrl,
-      cityCtrl,
-      zipCtrl
-    ]) {
-      c.dispose();
-    }
+    firstNameCtrl.dispose();
+    lastNameCtrl.dispose();
+    emailCtrl.dispose();
+    phoneCtrl.dispose();
+    addressCtrl.dispose();
+    cityCtrl.dispose();
+    zipCtrl.dispose();
     super.dispose();
   }
 
@@ -136,20 +122,39 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                                 keyboardType: TextInputType.number)),
                       ],
                     ),
-                    _dropdown(
-                        label: "Country",
-                        value: countryId,
-                        items: countryMap,
-                        onChanged: (v) => setState(() => countryId = v)),
-                    _dropdown(
-                        label: "State",
-                        value: stateId,
-                        items: stateMap,
-                        onChanged: (v) => setState(() => stateId = v)),
+
+                    /// Country Dropdown
+                    Obx(() => _dropdown(
+                          label: "Country",
+                          value: controller.selectedCountryId.value,
+                          items: {
+                            for (var c in controller.countries) c.id!: c.name!
+                          },
+                          onChanged: (v) {
+                            controller.selectedCountryId.value = v;
+                            controller.selectedStateId.value = null;
+
+                            if (v != null) {
+                              controller.fetchStates(v);
+                            }
+                          },
+                        )),
+
+                    /// State Dropdown
+                    Obx(() => _dropdown(
+                          label: "State",
+                          value: controller.selectedStateId.value,
+                          items: {
+                            for (var s in controller.states) s.id!: s.name!
+                          },
+                          onChanged: (v) {
+                            controller.selectedStateId.value = v;
+                          },
+                        )),
                   ],
                 ),
                 SizedBox(height: 16.h),
-                _buildDefaultToggle(),
+                Obx(() => _buildDefaultToggle()),
                 SizedBox(height: 32.h),
                 _buildSubmitButton(),
               ],
@@ -212,7 +217,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
         ],
       ),
       child: SwitchListTile.adaptive(
-        value: isDefault,
+        value: isDefault.value,
         activeTrackColor: primaryColor,
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         title: Text("Set as primary address",
@@ -221,7 +226,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             style: AppTextStyle.normalRegular12.copyWith(color: Colors.grey)),
         onChanged: (v) {
           HapticFeedback.lightImpact();
-          setState(() => isDefault = v);
+          isDefault.value = v;
         },
       ),
     );
@@ -234,13 +239,16 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
         title: widget.address == null ? "Add Address" : "Update Address",
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            if (countryId == null || stateId == null) {
+            if (controller.selectedCountryId.value == null ||
+                controller.selectedStateId.value == null) {
               CommonMethod.getXSnackBar(
                   "Required", "Please select Country and State", redColor);
               return;
             }
+
             HapticFeedback.mediumImpact();
             Get.back();
+
             await controller.saveAddress(MyAddressModel(
               id: widget.address?.id,
               firstName: firstNameCtrl.text.trim(),
@@ -250,9 +258,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               address1: addressCtrl.text.trim(),
               city: cityCtrl.text.trim(),
               zipPostalCode: zipCtrl.text.trim(),
-              countryId: countryId,
-              stateId: stateId,
-              isDefaultAddress: isDefault,
+              countryId: controller.selectedCountryId.value,
+              stateId: controller.selectedStateId.value,
+              isDefaultAddress: isDefault.value,
             ));
           }
         },

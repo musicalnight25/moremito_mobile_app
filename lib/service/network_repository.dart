@@ -356,6 +356,15 @@ class NetworkRepository {
     return getRequest(context, AppConstants.myCashSentHistory);
   }
 
+  Future<dynamic> getCountries() {
+    return getRequest(null, AppConstants.myCashSentHistory);
+  }
+
+  Future<dynamic> getStates(int countryId) {
+    return getRequest(null, AppConstants.myCashSentHistory,
+        queryParameters: {'CountryId': countryId});
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

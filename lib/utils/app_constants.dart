@@ -80,4 +80,6 @@ class AppConstants {
 
   static const String myCommissionSpent = 'my-commission-spent';
   static const String myCashSentHistory = 'my-cash-sent-history';
+  static const String getCountries = 'get-countries';
+  static const String getStates = 'get-states';
 }
