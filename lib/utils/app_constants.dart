@@ -82,4 +82,6 @@ class AppConstants {
   static const String myCashSentHistory = 'my-cash-sent-history';
   static const String getCountries = 'get-countries';
   static const String getStates = 'get-states';
+  static const String myReferralOrders = 'get-orders-from-personals';
+  static const String myReferralOrderDetail = 'get-orders-detail';
 }

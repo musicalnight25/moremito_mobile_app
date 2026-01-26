@@ -33,7 +33,8 @@ class ShopMoremitoScreen extends StatelessWidget {
                 title: "People Health\nProducts",
                 subText: "Buy Now",
                 imageUrl:
-                "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80",
+                    // "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80",
+                    "https://moremito.com/Images/thumbnail/bb-bundle-1.jpeg",
                 onTap: () {
                   controller.getShopMoremitoWebview(
                       "PeopleHealthProducts"); // ← FIXED
@@ -47,7 +48,8 @@ class ShopMoremitoScreen extends StatelessWidget {
                 title: "Pet Health\nProducts",
                 subText: "Buy Now",
                 imageUrl:
-                "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?auto=format&fit=crop&w=800&q=80",
+                    // "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?auto=format&fit=crop&w=800&q=80",
+                    "https://moremito.com/Images/thumbnail/pet-life.jpeg",
                 onTap: () {
                   controller
                       .getShopMoremitoWebview("PetHealthProducts"); // ← FIXED
@@ -138,7 +140,7 @@ class ShopMoremitoScreen extends StatelessWidget {
                   SizedBox(height: 16.h),
                   Container(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30.r),

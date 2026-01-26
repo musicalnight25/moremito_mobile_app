@@ -209,26 +209,47 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.grey.shade200), // 👈 subtle border
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4))
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
-      child: SwitchListTile.adaptive(
-        value: isDefault.value,
-        activeTrackColor: primaryColor,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-        title: Text("Set as primary address",
-            style: AppTextStyle.normalSemiBold14),
-        subtitle: Text("Used for future recurring orders",
-            style: AppTextStyle.normalRegular12.copyWith(color: Colors.grey)),
-        onChanged: (v) {
-          HapticFeedback.lightImpact();
-          isDefault.value = v;
-        },
-      ),
+      child: Obx(() => SwitchListTile(
+            value: isDefault.value,
+
+            // ✅ Active colors
+            activeColor: Colors.white,
+            activeTrackColor: primaryColor,
+
+            // ✅ Inactive colors (this fixes invisible issue)
+            inactiveThumbColor: Colors.grey.shade400,
+            inactiveTrackColor: Colors.grey.shade300,
+
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+
+            title: Text(
+              "Set as primary address",
+              style: AppTextStyle.normalSemiBold14.copyWith(
+                color: Colors.black87,
+              ),
+            ),
+            subtitle: Text(
+              "Used for future recurring orders",
+              style: AppTextStyle.normalRegular12.copyWith(
+                color: Colors.grey.shade600,
+              ),
+            ),
+
+            onChanged: (v) {
+              HapticFeedback.lightImpact();
+              isDefault.value = v;
+            },
+          )),
     );
   }
 
@@ -315,11 +336,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     );
   }
 
-  Widget _dropdown(
-      {required String label,
-      required int? value,
-      required Map<int, String> items,
-      required Function(int?) onChanged}) {
+  Widget _dropdown({
+    required String label,
+    required int? value,
+    required Map<int, String> items,
+    required Function(int?) onChanged,
+  }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: Column(
@@ -330,21 +352,46 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                   .copyWith(color: Colors.black54)),
           SizedBox(height: 6.h),
           DropdownButtonFormField<int>(
-            isExpanded: true,
             value: value,
+            isExpanded: true,
             icon: Icon(Icons.keyboard_arrow_down_rounded,
-                color: Colors.grey.shade400, size: 20.sp),
-            hint: Text("Select $label",
-                style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade400)),
+                color: Colors.black54, size: 22.sp),
+            style: AppTextStyle.normalRegular14.copyWith(color: Colors.black),
+            hint: Text(
+              "Select $label",
+              style:
+                  AppTextStyle.normalRegular14.copyWith(color: Colors.black54),
+            ),
             items: items.entries
                 .map((e) => DropdownMenuItem<int>(
-                    value: e.key,
-                    child: Text(e.value, style: AppTextStyle.normalRegular14)))
+                      value: e.key,
+                      child: Text(e.value),
+                    ))
                 .toList(),
             onChanged: onChanged,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              // 🔥 instead of grey
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: BorderSide(color: primaryColor, width: 1),
+              ),
+
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: BorderSide(color: primaryColor, width: 1.5),
+              ),
+
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
             validator: (val) => val == null ? "Select $label" : null,
-            decoration:
-                _getInputDecoration("Select $label").copyWith(hintText: null),
           ),
         ],
       ),

@@ -12,7 +12,6 @@ import '../../model/menu_section_model.dart';
 import '../../service/webview_helper.dart';
 import '../../utils/common_web_view.dart';
 import '../account/my_deep_link_screen.dart';
-import '../account/rank_info_screen.dart';
 import '../auth/survey_screen.dart';
 import '../compensation/cash_sent_history_screen.dart';
 import '../compensation/cash_transfer_history_screen.dart';
@@ -25,6 +24,7 @@ import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
 import '../notification/notification_settings_screen.dart';
+import '../order/my_referral_orders_screen.dart';
 import '../support/create_support_ticket_screen.dart';
 import '../support/support_tickets_list_screen.dart';
 import '../profile/my_profile_screen.dart';
@@ -54,7 +54,7 @@ class MenuScreen extends StatelessWidget {
 
       List<MenuSection> sections = [];
 
-      // ================= MY INFO (COMMON) =================
+      // ================= MY INFO =================
       if (isAll(role)) {
         sections.add(
           MenuSection(
@@ -82,7 +82,7 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
-      // ================= ORDERS (COMMON) =================
+      // ================= ORDERS =================
       if (isAll(role)) {
         sections.add(
           MenuSection(
@@ -102,6 +102,14 @@ class MenuScreen extends StatelessWidget {
                   );
                 },
               ),
+
+              // ✅ NEW MENU ITEM
+              MenuItem(
+                title: "My Personal Referral's Orders",
+                icon: PhosphorIcons.usersThree(PhosphorIconsStyle.regular),
+                onTap: () => Get.to(() => const MyReferralOrdersScreen()),
+              ),
+
               MenuItem(
                 title: "Create A New Autoship Order",
                 icon: PhosphorIcons.calendarPlus(PhosphorIconsStyle.regular),
@@ -135,7 +143,7 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
-      // ================= SUPPORT (COMMON) =================
+      // ================= SUPPORT =================
       if (isAll(role)) {
         sections.add(
           MenuSection(
@@ -152,12 +160,25 @@ class MenuScreen extends StatelessWidget {
                 icon: PhosphorIcons.plusCircle(PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => CreateSupportTicketScreen()),
               ),
+              MenuItem(
+                title: "Order Comments",
+                icon: PhosphorIcons.chatCircleDots(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "MyOrders",
+                    onSuccess: (url) {
+                      Get.to(() => CommonWebView(url: url, title: "My Orders"));
+                    },
+                  );
+                },
+              ),
             ],
           ),
         );
       }
 
-      // ================= SHARE INFO (COMMON) =================
+      // ================= SHARE INFO =================
       if (isAll(role)) {
         sections.add(
           MenuSection(
@@ -203,7 +224,7 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
-      // ================= COMPENSATION (MEMBER + REFERRING ONLY) =================
+      // ================= COMPENSATION =================
       if (isMemberOrReferring(role)) {
         sections.add(
           MenuSection(
@@ -228,8 +249,6 @@ class MenuScreen extends StatelessWidget {
                 onTap: () =>
                     Get.to(() => const CommissionPayoutHistoryScreen()),
               ),
-
-              // ONLY MEMBER
               if (isMember(role))
                 MenuItem(
                   title: "Request A Payout",
@@ -245,7 +264,6 @@ class MenuScreen extends StatelessWidget {
                     );
                   },
                 ),
-
               MenuItem(
                 title: "Transfer History",
                 icon: PhosphorIcons.clockCounterClockwise(
@@ -275,8 +293,6 @@ class MenuScreen extends StatelessWidget {
             padding: EdgeInsets.all(10.sp),
             children: [
               ...sections.map((e) => MenuSectionWidget(section: e)),
-
-              // ================= COMMON FOOTER =================
               if (isAll(role))
                 SettingsTile(
                   title: "Shop MoreMito Products",

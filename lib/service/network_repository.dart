@@ -357,13 +357,26 @@ class NetworkRepository {
   }
 
   Future<dynamic> getCountries() {
-    return getRequest(null, AppConstants.myCashSentHistory);
+    return getRequest(null, AppConstants.getCountries);
   }
 
   Future<dynamic> getStates(int countryId) {
-    return getRequest(null, AppConstants.myCashSentHistory,
+    return getRequest(null, AppConstants.getStates,
         queryParameters: {'CountryId': countryId});
   }
+
+  Future<dynamic> getMyReferralOrders({BuildContext? context}) =>
+      getRequest(context, AppConstants.myReferralOrders);
+
+  Future<dynamic> getMyReferralOrderDetail({
+    required int orderId,
+    required int orderOwnerId,
+    BuildContext? context,
+  }) =>
+      getRequest(
+        context,
+        "${AppConstants.myReferralOrderDetail}?OrderId=$orderId&OrderOwnerId=$orderOwnerId",
+      );
 
   // ---------- INTERNAL HANDLERS ----------
 
