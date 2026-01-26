@@ -50,7 +50,6 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
     isDefault.value = widget.address?.isDefaultAddress ?? false;
 
-    /// Edit Mode Prefill
     if (widget.address != null) {
       controller.selectedCountryId.value = widget.address!.countryId;
       controller.selectedStateId.value = widget.address!.stateId;
@@ -85,7 +84,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 32.h),
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
+            // Added top padding for extendBodyBehindAppBar
             child: Column(
               children: [
                 _buildFormSection(
@@ -95,6 +95,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Expanded ensures they share width and don't overflow
                         Expanded(child: _field("First Name", firstNameCtrl)),
                         SizedBox(width: 12.w),
                         Expanded(child: _field("Last Name", lastNameCtrl)),
@@ -123,38 +124,49 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       ],
                     ),
 
-                    /// Country Dropdown
-                    Obx(() => _dropdown(
-                          label: "Country",
-                          value: controller.selectedCountryId.value,
-                          items: {
-                            for (var c in controller.countries) c.id!: c.name!
-                          },
-                          onChanged: (v) {
-                            controller.selectedCountryId.value = v;
-                            controller.selectedStateId.value = null;
+                    /// Country Dropdown - Added loading check to keep Obx active
+                    Obx(() {
+                      if (controller.isLoadingCountries.value) {
+                        return const Center(
+                            child: CircularProgressIndicator.adaptive());
+                      }
+                      return _dropdown(
+                        label: "Country",
+                        value: controller.selectedCountryId.value,
+                        items: {
+                          for (var c in controller.countries) c.id!: c.name!
+                        },
+                        onChanged: (v) {
+                          controller.selectedCountryId.value = v;
+                          controller.selectedStateId.value = null;
+                          if (v != null) controller.fetchStates(v);
+                        },
+                      );
+                    }),
 
-                            if (v != null) {
-                              controller.fetchStates(v);
-                            }
-                          },
-                        )),
-
-                    /// State Dropdown
-                    Obx(() => _dropdown(
-                          label: "State",
-                          value: controller.selectedStateId.value,
-                          items: {
-                            for (var s in controller.states) s.id!: s.name!
-                          },
-                          onChanged: (v) {
-                            controller.selectedStateId.value = v;
-                          },
-                        )),
+                    /// State Dropdown - Added list length check to prevent Obx error
+                    Obx(() {
+                      // Using .length ensures Obx has an observable to track
+                      if (controller.isLoadingStates.value) {
+                        return const Center(
+                            child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: LinearProgressIndicator(),
+                        ));
+                      }
+                      return _dropdown(
+                        label: "State",
+                        value: controller.selectedStateId.value,
+                        items: {
+                          for (var s in controller.states) s.id!: s.name!
+                        },
+                        onChanged: (v) => controller.selectedStateId.value = v,
+                      );
+                    }),
                   ],
                 ),
                 SizedBox(height: 16.h),
-                Obx(() => _buildDefaultToggle()),
+                _buildDefaultToggle(),
                 SizedBox(height: 32.h),
                 _buildSubmitButton(),
               ],
@@ -209,42 +221,28 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.shade200), // 👈 subtle border
+        border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3))
         ],
       ),
       child: Obx(() => SwitchListTile(
             value: isDefault.value,
-
-            // ✅ Active colors
             activeColor: Colors.white,
             activeTrackColor: primaryColor,
-
-            // ✅ Inactive colors (this fixes invisible issue)
             inactiveThumbColor: Colors.grey.shade400,
             inactiveTrackColor: Colors.grey.shade300,
-
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-
-            title: Text(
-              "Set as primary address",
-              style: AppTextStyle.normalSemiBold14.copyWith(
-                color: Colors.black87,
-              ),
-            ),
-            subtitle: Text(
-              "Used for future recurring orders",
-              style: AppTextStyle.normalRegular12.copyWith(
-                color: Colors.grey.shade600,
-              ),
-            ),
-
+            title: Text("Set as primary address",
+                style: AppTextStyle.normalSemiBold14
+                    .copyWith(color: Colors.black87)),
+            subtitle: Text("Used for future recurring orders",
+                style: AppTextStyle.normalRegular12
+                    .copyWith(color: Colors.grey.shade600)),
             onChanged: (v) {
               HapticFeedback.lightImpact();
               isDefault.value = v;
@@ -254,39 +252,41 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
   }
 
   Widget _buildSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: PrimaryTextButton(
-        title: widget.address == null ? "Add Address" : "Update Address",
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            if (controller.selectedCountryId.value == null ||
-                controller.selectedStateId.value == null) {
-              CommonMethod.getXSnackBar(
-                  "Required", "Please select Country and State", redColor);
-              return;
-            }
-
-            HapticFeedback.mediumImpact();
-            Get.back();
-
-            await controller.saveAddress(MyAddressModel(
-              id: widget.address?.id,
-              firstName: firstNameCtrl.text.trim(),
-              lastName: lastNameCtrl.text.trim(),
-              email: emailCtrl.text.trim(),
-              phoneNumber: phoneCtrl.text.trim(),
-              address1: addressCtrl.text.trim(),
-              city: cityCtrl.text.trim(),
-              zipPostalCode: zipCtrl.text.trim(),
-              countryId: controller.selectedCountryId.value,
-              stateId: controller.selectedStateId.value,
-              isDefaultAddress: isDefault.value,
-            ));
-          }
-        },
-      ),
-    );
+    return Obx(() => SizedBox(
+          width: double.infinity,
+          child: PrimaryTextButton(
+            title: controller.isLoading.value
+                ? "Saving..."
+                : (widget.address == null ? "Add Address" : "Update Address"),
+            onPressed: controller.isLoading.value
+                ? null
+                : () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (controller.selectedCountryId.value == null ||
+                          controller.selectedStateId.value == null) {
+                        CommonMethod.getXSnackBar("Required",
+                            "Please select Country and State", redColor);
+                        return;
+                      }
+                      HapticFeedback.mediumImpact();
+                      await controller.saveAddress(MyAddressModel(
+                        id: widget.address?.id,
+                        firstName: firstNameCtrl.text.trim(),
+                        lastName: lastNameCtrl.text.trim(),
+                        email: emailCtrl.text.trim(),
+                        phoneNumber: phoneCtrl.text.trim(),
+                        address1: addressCtrl.text.trim(),
+                        city: cityCtrl.text.trim(),
+                        zipPostalCode: zipCtrl.text.trim(),
+                        countryId: controller.selectedCountryId.value,
+                        stateId: controller.selectedStateId.value,
+                        isDefaultAddress: isDefault.value,
+                      ));
+                      Get.back();
+                    }
+                  },
+          ),
+        ));
   }
 
   InputDecoration _getInputDecoration(String hint) {
@@ -336,12 +336,11 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     );
   }
 
-  Widget _dropdown({
-    required String label,
-    required int? value,
-    required Map<int, String> items,
-    required Function(int?) onChanged,
-  }) {
+  Widget _dropdown(
+      {required String label,
+      required int? value,
+      required Map<int, String> items,
+      required Function(int?) onChanged}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: Column(
@@ -357,39 +356,30 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             icon: Icon(Icons.keyboard_arrow_down_rounded,
                 color: Colors.black54, size: 22.sp),
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.black),
-            hint: Text(
-              "Select $label",
-              style:
-                  AppTextStyle.normalRegular14.copyWith(color: Colors.black54),
-            ),
+            hint: Text("Select $label",
+                style: AppTextStyle.normalRegular14
+                    .copyWith(color: Colors.black54)),
             items: items.entries
-                .map((e) => DropdownMenuItem<int>(
-                      value: e.key,
-                      child: Text(e.value),
-                    ))
+                .map((e) =>
+                    DropdownMenuItem<int>(value: e.key, child: Text(e.value)))
                 .toList(),
             onChanged: onChanged,
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
-              // 🔥 instead of grey
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-                borderSide: BorderSide(color: primaryColor, width: 1),
-              ),
-
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide:
+                      BorderSide(color: Colors.grey.shade300, width: 1)),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-                borderSide: BorderSide(color: primaryColor, width: 1.5),
-              ),
-
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide:
+                      const BorderSide(color: primaryColor, width: 1.5)),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-                borderSide: BorderSide(color: Colors.red),
-              ),
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide: const BorderSide(color: Colors.red)),
             ),
             validator: (val) => val == null ? "Select $label" : null,
           ),
