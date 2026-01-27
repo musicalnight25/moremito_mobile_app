@@ -11,7 +11,6 @@ import '../../controller/my_addresses_controller.dart';
 import '../../model/my_address_model.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/primary_text_button.dart';
-import '../../utils/static_decoration.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final MyAddressModel? address;
@@ -109,7 +108,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 ),
                 SizedBox(height: 16.h),
                 _buildFormSection(
-                  title: "Delivery Address",
+                  title: "Address",
                   icon: Icons.location_on_outlined,
                   children: [
                     _field("Street Address", addressCtrl, maxLines: 2),
@@ -240,9 +239,6 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             title: Text("Set as primary address",
                 style: AppTextStyle.normalSemiBold14
                     .copyWith(color: Colors.black87)),
-            subtitle: Text("Used for future recurring orders",
-                style: AppTextStyle.normalRegular12
-                    .copyWith(color: Colors.grey.shade600)),
             onChanged: (v) {
               HapticFeedback.lightImpact();
               isDefault.value = v;

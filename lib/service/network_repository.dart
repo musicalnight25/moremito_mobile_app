@@ -378,6 +378,26 @@ class NetworkRepository {
         "${AppConstants.myReferralOrderDetail}?OrderId=$orderId&OrderOwnerId=$orderOwnerId",
       );
 
+  Future<dynamic> getDownlineOrders({
+    required Map<String, dynamic> data,
+  }) {
+    return postRequest(
+      null,
+      AppConstants.downlineOrders,
+      data: data,
+    );
+  }
+
+  Future<dynamic> getDownlineOrderDetails({
+    required int orderId,
+    required int userId,
+  }) {
+    return getRequest(
+      null,
+      '${AppConstants.downlineOrderDetails}?OrderId=$orderId&userId=$userId',
+    );
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response) {

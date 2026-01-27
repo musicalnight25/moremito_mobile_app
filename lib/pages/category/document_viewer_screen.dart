@@ -23,7 +23,6 @@ import '../../utils/full_screen_image_viewer.dart';
 import '../../utils/static_decoration.dart';
 import '../../utils/video_player_widget.dart';
 import 'contact_screen.dart';
-import '../main_dashboard_screen.dart';
 
 class DocumentViewerScreen extends StatefulWidget {
   final CategoryFileModel data;
@@ -263,8 +262,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                     generatedLink.value = link;
 
                     messageTextController.text =
-                        "Hey ${nameTextController.text}, "
-                        "${homeController.dashboardModel.value?.userName} has shared some information with you. "
+                        "Hey ${nameTextController.text}, ${homeController.dashboardModel.value?.userName} has shared some information with you. "
                         "Visit the link to view it. $link";
                   },
                 ),
@@ -272,6 +270,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
               /// ================= STEP 2 =================
               if (generatedLink.value.isNotEmpty) ...[
+                /// Generated link box (blue)
                 ShadowContainerWidget(
                   blurRadius: 0,
                   borderWidth: 1,
@@ -293,6 +292,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                 height15,
 
+                /// Web-style bullets
                 _bullet(
                     "A personalized message has been created for the recipient."),
                 _bullet("You can review and edit the message if needed."),
@@ -309,19 +309,15 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                 height15,
 
-                /// 🔥 UPDATED SHARE BUTTON (uses custom share sheet)
                 PrimaryTextButton(
                   title: "Share",
                   onPressed: () {
-                    Get.back(); // close this sheet
-
-                    controller.openShareBottomSheet(
-                      context: context,
-                      fileData: data,
-                      recipientName: nameTextController.text.trim(),
-                      message: messageTextController.text.trim(),
-                      sharedUrl: generatedLink.value,
-                    );
+                    Get.back();
+                    controller.shareFile(
+                        data: data,
+                        message: messageTextController.text.trim(),
+                        sharedUrl: generatedLink.value,
+                        recipientName: nameTextController.text.trim());
                   },
                 ),
               ],

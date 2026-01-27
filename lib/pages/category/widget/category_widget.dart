@@ -9,13 +9,11 @@ import '../../../utils/shadow_container_widget.dart';
 
 class CategoryWidget extends StatelessWidget {
   final CategoryModel category;
-  final bool isSelected;
   final bool isSubCategory;
 
   const CategoryWidget({
     Key? key,
     required this.category,
-    required this.isSelected,
     required this.isSubCategory,
   }) : super(key: key);
 
@@ -23,9 +21,6 @@ class CategoryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShadowContainerWidget(
       padding: 14.sp,
-      borderWidth: isSelected ? 1.5.sp : 1.sp,
-      blurRadius: isSelected ? 6 : 3,
-      borderColor: isSelected ? primaryColor : Colors.grey.shade200,
       widget: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

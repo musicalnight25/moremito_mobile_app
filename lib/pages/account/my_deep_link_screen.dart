@@ -10,8 +10,7 @@ import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:more_mitro_app/utils/no_data_found.dart';
-
-import '../../utils/comprehensive_share_sheet.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MyDeepLinksScreen extends StatelessWidget {
   const MyDeepLinksScreen({super.key});
@@ -133,14 +132,7 @@ class MyDeepLinksScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     onTap: () {
                       if (url.isNotEmpty) {
-                        CommonMethod.showCustomBottomSheet(
-                            title: title,
-                            message: "Share Via",
-                            customWidget: ComprehensiveShareSheet(
-                              shareContent: "Check this out: $url",
-                              onShared: (String platform) {},
-                            ));
-                        // Share.share("Check this out: $url");
+                        Share.share("Check this out: $url");
                       }
                     },
                     child: Padding(

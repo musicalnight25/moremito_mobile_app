@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -107,8 +108,7 @@ class ContactController extends GetxController {
   }
 
   void selectContact(Contact contact) {
-    selectedContact.value =
-        "${contact.displayName}, ${contact.phones.first.number}";
+    selectedContact.value = "${contact.displayName}";
     Get.back(result: contact);
   }
 }

@@ -116,7 +116,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         },
                         child: CategoryWidget(
                           category: category,
-                          isSelected: category.isPopular ?? false,
                           isSubCategory: false,
                         ),
                       );

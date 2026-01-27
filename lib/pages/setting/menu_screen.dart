@@ -8,6 +8,7 @@ import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../controller/home_controller.dart';
 import '../../model/menu_section_model.dart';
 import '../../service/webview_helper.dart';
 import '../../utils/common_web_view.dart';
@@ -24,12 +25,11 @@ import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
 import '../notification/notification_settings_screen.dart';
+import '../order/downline_orders_screen.dart';
 import '../order/my_referral_orders_screen.dart';
+import '../profile/my_profile_screen.dart';
 import '../support/create_support_ticket_screen.dart';
 import '../support/support_tickets_list_screen.dart';
-import '../profile/my_profile_screen.dart';
-
-import '../../controller/home_controller.dart';
 
 class MenuScreen extends StatelessWidget {
   MenuScreen({super.key});
@@ -108,6 +108,12 @@ class MenuScreen extends StatelessWidget {
                 title: "My Personal Referral's Orders",
                 icon: PhosphorIcons.usersThree(PhosphorIconsStyle.regular),
                 onTap: () => Get.to(() => const MyReferralOrdersScreen()),
+              ),
+
+              MenuItem(
+                title: "Downline Orders",
+                icon: PhosphorIcons.treeStructure(PhosphorIconsStyle.regular),
+                onTap: () => Get.to(() => const DownlineOrdersScreen()),
               ),
 
               MenuItem(

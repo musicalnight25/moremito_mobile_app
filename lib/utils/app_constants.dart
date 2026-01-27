@@ -84,4 +84,6 @@ class AppConstants {
   static const String getStates = 'get-states';
   static const String myReferralOrders = 'get-orders-from-personals';
   static const String myReferralOrderDetail = 'get-orders-detail';
+  static const String downlineOrders = 'downline-orders';
+  static const String downlineOrderDetails = 'downline-order-details';
 }

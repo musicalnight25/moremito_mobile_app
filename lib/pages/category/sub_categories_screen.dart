@@ -106,7 +106,6 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         },
                         child: CategoryWidget(
                           category: subCategory,
-                          isSelected: subCategory.isPopular ?? false,
                           isSubCategory: true,
                         ),
                       );
