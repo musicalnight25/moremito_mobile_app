@@ -11,6 +11,7 @@ class ContactController extends GetxController {
   final filteredContacts = <Contact>[].obs;
 
   final selectedContact = ''.obs;
+  final selectedContactNumber = ''.obs;
   final searchQuery = ''.obs;
   final isLoading = false.obs;
 
@@ -109,6 +110,7 @@ class ContactController extends GetxController {
 
   void selectContact(Contact contact) {
     selectedContact.value = "${contact.displayName}";
+    selectedContactNumber.value = "${contact.phones.first.number}";
     Get.back(result: contact);
   }
 }

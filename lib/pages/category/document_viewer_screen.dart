@@ -38,6 +38,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
   final controller = Get.put(CategoriesController());
   final contactController = Get.put(ContactController());
   final nameTextController = TextEditingController();
+  final phoneTextController = TextEditingController();
   final messageTextController = TextEditingController();
 
   @override
@@ -169,6 +170,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                       .selectedContact.value.isNotEmpty) {
                                     nameTextController.text =
                                         contactController.selectedContact.value;
+                                    phoneTextController.text = contactController
+                                        .selectedContactNumber.value;
                                     showEnterDetailsManuallySheet(data);
                                   }
                                 });
@@ -180,6 +183,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               onPressed: () {
                                 Get.back();
                                 nameTextController.clear();
+                                phoneTextController.clear();
                                 showEnterDetailsManuallySheet(widget.data);
                               },
                             ),
@@ -313,11 +317,14 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                   title: "Share",
                   onPressed: () {
                     Get.back();
-                    controller.shareFile(
-                        data: data,
-                        message: messageTextController.text.trim(),
-                        sharedUrl: generatedLink.value,
-                        recipientName: nameTextController.text.trim());
+
+                    controller.shareFileUsingBottomSheet(
+                      context: context,
+                      data: data,
+                      phoneNumber: phoneTextController.text.trim(),
+                      message: messageTextController.text.trim(),
+                      sharedUrl: generatedLink.value,
+                    );
                   },
                 ),
               ],
