@@ -149,6 +149,88 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
+      // ================= MY NETWORK =================
+      if (isAll(role)) {
+        sections.add(
+          MenuSection(
+            title: "My Network",
+            icon: PhosphorIcons.shareNetwork(PhosphorIconsStyle.regular),
+            items: [
+              MenuItem(
+                title: "My Personals",
+                icon: PhosphorIcons.users(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "MyPersonals",
+                    onSuccess: (url) {
+                      Get.to(
+                          () => CommonWebView(url: url, title: "My Personals"));
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "My Tree View",
+                icon: PhosphorIcons.treeStructure(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "Genealogy",
+                    onSuccess: (url) {
+                      Get.to(
+                          () => CommonWebView(url: url, title: "My Tree View"));
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "My Star Tree View",
+                icon: PhosphorIcons.star(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "treeview",
+                    onSuccess: (url) {
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "My Star Tree View"));
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "Search My Network",
+                icon: PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "GenealogySearch",
+                    onSuccess: (url) {
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "Search My Network"));
+                    },
+                  );
+                },
+              ),
+              MenuItem(
+                title: "My Support Network",
+                icon: PhosphorIcons.usersFour(PhosphorIconsStyle.regular),
+                onTap: () async {
+                  await WebviewHelper.getDynamicWebviewURL(
+                    page: "MemberPage",
+                    actionName: "MyRep",
+                    onSuccess: (url) {
+                      Get.to(() =>
+                          CommonWebView(url: url, title: "My Support Network"));
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      }
+
       // ================= SUPPORT =================
       if (isAll(role)) {
         sections.add(
