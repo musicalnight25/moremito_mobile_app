@@ -13,11 +13,13 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  VideoPlayerController? _videoController;
+  late VideoPlayerController _videoController;
   ChewieController? _chewieController;
 
   final VideoController videoController = Get.put(VideoController());
-  bool _isLoading = true;
+
+  bool _isInitialized = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -26,35 +28,55 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   Future<void> _initPlayer() async {
-    _videoController = VideoPlayerController.network(widget.videoUrl);
+    try {
+      _videoController = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrl),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
 
-    await _videoController!.initialize();
+      await _videoController.initialize();
 
-    _chewieController = ChewieController(
-      videoPlayerController: _videoController!,
-      autoPlay: true,
-      looping: true,
-      showControls: true,
-      allowFullScreen: true,
-      materialProgressColors: ChewieProgressColors(
-        playedColor: Colors.redAccent,
-        handleColor: Colors.white,
-        backgroundColor: Colors.grey.shade600,
-        bufferedColor: Colors.white54,
-      ),
-    );
+      if (!mounted) return;
 
-    videoController.setActiveVideo(_videoController!);
+      _chewieController = ChewieController(
+        videoPlayerController: _videoController,
+        autoPlay: true,
+        looping: false,
+        showControls: true,
+        allowFullScreen: true,
+        allowMuting: true,
+        materialProgressColors: ChewieProgressColors(
+          playedColor: Colors.redAccent,
+          handleColor: Colors.white,
+          backgroundColor: Colors.grey,
+          bufferedColor: Colors.white54,
+        ),
+        errorBuilder: (context, errorMessage) {
+          return const Center(
+            child: Text(
+              "Video failed to load",
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        },
+      );
 
-    if (mounted) {
-      setState(() => _isLoading = false);
+      videoController.setActiveVideo(_videoController);
+
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+      });
     }
   }
 
   @override
   void dispose() {
     _chewieController?.dispose();
-    _videoController?.dispose();
+    _videoController.dispose();
     super.dispose();
   }
 
@@ -65,16 +87,25 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       body: SafeArea(
         child: Stack(
           children: [
-            /// Video or Loader
+            /// Video Area
             Positioned.fill(
-              child: _isLoading
+              child: _hasError
                   ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 3,
+                      child: Text(
+                        "Error loading video",
+                        style: TextStyle(color: Colors.white),
                       ),
                     )
-                  : Chewie(controller: _chewieController!),
+                  : _isInitialized
+                      ? AspectRatio(
+                          aspectRatio: _videoController.value.aspectRatio,
+                          child: Chewie(controller: _chewieController!),
+                        )
+                      : const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        ),
             ),
 
             /// Back Button
@@ -82,9 +113,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               top: 12,
               left: 12,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
+                onTap: () => Navigator.pop(context),
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -106,7 +135,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 }
 
-/// Manages active video to avoid multiple playing
+/// Controller to prevent multiple videos playing
 class VideoController extends GetxController {
   VideoPlayerController? currentVideo;
 
