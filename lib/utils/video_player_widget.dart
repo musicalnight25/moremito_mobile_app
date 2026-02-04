@@ -75,6 +75,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void dispose() {
+    videoController.clearActiveVideo(_videoController);
     _chewieController?.dispose();
     _videoController.dispose();
     super.dispose();
@@ -144,6 +145,12 @@ class VideoController extends GetxController {
       currentVideo!.pause();
     }
     currentVideo = controller;
+  }
+
+  void clearActiveVideo(VideoPlayerController controller) {
+    if (currentVideo == controller) {
+      currentVideo = null;
+    }
   }
 
   @override
