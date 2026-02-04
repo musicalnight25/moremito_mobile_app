@@ -65,7 +65,7 @@ class PopupService {
 
       final String appUrl = Platform.isAndroid
           ? "https://play.google.com/store/apps/details?id=com.moremito.app"
-          : "https://moremito.com/";
+          : "https://apps.apple.com/us/app/moremito-learn-earn-grow/id6753805953";
 
       final packageInfo = await PackageInfo.fromPlatform();
       final String currentVersion = packageInfo.version;
