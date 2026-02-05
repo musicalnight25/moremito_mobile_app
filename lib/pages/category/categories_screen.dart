@@ -28,6 +28,7 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final CategoriesController controller = Get.put(CategoriesController());
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
 
   @override
@@ -36,12 +37,28 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getCategoriesList(context);
     });
+
+    _scrollController.addListener(() {
+      if (controller.isGlobalSearch.value &&
+          _scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          controller.hasMore.value &&
+          !controller.isLoading.value) {
+        controller.getSubCategoriesFiles(
+          context,
+          "",
+          searchText: controller.globalSearchText.value,
+          loadMore: true,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -121,12 +138,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   if (controller.isGlobalSearch.value) {
                     if (controller.isLoading.value &&
                         controller.categoriesFileList.isEmpty) {
-                      return MasonryGridView.count(
+                      return ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        crossAxisCount:
-                            MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
                         itemCount: 6,
                         itemBuilder: (_, __) => const CategoryFileShimmer(),
                       );
@@ -138,15 +151,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       );
                     }
 
-                    return MasonryGridView.count(
+                    return ListView.builder(
+                      controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(16),
-                      crossAxisCount:
-                          MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      itemCount: controller.categoriesFileList.length,
+                      itemCount: controller.categoriesFileList.length +
+                          (controller.hasMore.value ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == controller.categoriesFileList.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
                         final file = controller.categoriesFileList[index];
                         return CategoryFileTile(data: file);
                       },
