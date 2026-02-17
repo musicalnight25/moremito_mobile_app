@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -20,24 +21,21 @@ class NetworkRepository {
 
   // Prevent showing multiple session expiry alerts
   bool _isSessionExpiredShown = false;
-  String? _lastApiEndpoint;
 
   Future<dynamic> postRequest(
     BuildContext? context,
     String endpoint, {
     var data,
   }) async {
-    _lastApiEndpoint = endpoint; // ✅ ADD
-
     try {
       final response = await NetworkDioHttp.post(
         context: context,
         url: AppConstants.apiEndPoint + endpoint,
         data: data,
       );
-      return _processResponse(response);
+      return _processResponse(response, endpoint, requestBody: data);
     } catch (e, stack) {
-      return _handleError(e, stack);
+      return _handleError(e, stack, endpoint, requestBody: data);
     }
   }
 
@@ -46,17 +44,15 @@ class NetworkRepository {
     String endpoint, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    _lastApiEndpoint = endpoint; // ✅ ADD
-
     try {
       final response = await NetworkDioHttp.get(
         context: context,
         queryParameters: queryParameters,
         url: AppConstants.apiEndPoint + endpoint,
       );
-      return _processResponse(response);
+      return _processResponse(response, endpoint, requestBody: queryParameters);
     } catch (e, stack) {
-      return _handleError(e, stack);
+      return _handleError(e, stack, endpoint, requestBody: queryParameters);
     }
   }
 
@@ -400,7 +396,8 @@ class NetworkRepository {
 
   // ---------- INTERNAL HANDLERS ----------
 
-  dynamic _processResponse(Map<String, dynamic> response) {
+  dynamic _processResponse(Map<String, dynamic> response, String endpoint,
+      {dynamic requestBody}) {
     final int statusCode = response['statusCode'] ?? 0;
     final body = response['body'];
 
@@ -422,14 +419,21 @@ class NetworkRepository {
       "--------message------$errorMessage",
     );
 
+    String safeRequestBody;
+    try {
+      safeRequestBody = jsonEncode(requestBody);
+    } catch (e) {
+      safeRequestBody = requestBody.toString();
+    }
+
     // 🚀 SEND TO SERVER
     ErrorLogger.logErrorToServer(
       pageType: "NetworkRepository",
-      actionType: _lastApiEndpoint ?? "Unknown API",
+      actionType: endpoint,
       errorMessage1: errorMessage,
       errorMessage2: "StatusCode: $statusCode",
       errorMessage3:
-          "Endpoint: ${AppConstants.apiEndPoint}${_lastApiEndpoint ?? ''}",
+          "Endpoint: ${AppConstants.apiEndPoint}$endpoint\nRequest Body: $safeRequestBody",
     );
 
     CommonMethod.getXSnackBar("Error", errorMessage, redColor);
@@ -476,20 +480,33 @@ class NetworkRepository {
             .join("\n");
       }
     }
-    return 'Unexpected server error occurred.';
+    // Return the raw body if no specific error message format is found
+    try {
+      return body.toString();
+    } catch (e) {
+      return e.toString();
+    }
   }
 
-  dynamic _handleError(Object e, StackTrace stackTrace) {
+  dynamic _handleError(Object e, StackTrace stackTrace, String endpoint,
+      {dynamic requestBody}) {
     final message = e.toString();
 
     log("--------message------$message");
 
+    String safeRequestBody;
+    try {
+      safeRequestBody = jsonEncode(requestBody);
+    } catch (e) {
+      safeRequestBody = requestBody.toString();
+    }
+
     ErrorLogger.logErrorToServer(
       pageType: "NetworkRepository",
-      actionType: _lastApiEndpoint ?? "Unknown API",
+      actionType: endpoint,
       errorMessage1: message,
       errorMessage2: stackTrace.toString(),
-      errorMessage3: "Runtime exception",
+      errorMessage3: "Runtime exception\nRequest Body: $safeRequestBody",
     );
 
     CommonMethod.getXSnackBar("Error", message, redColor);

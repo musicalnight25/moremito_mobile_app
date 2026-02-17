@@ -178,7 +178,7 @@ class PopupService {
                           title: "Update Now",
                           onPressed: () => launchUrl(
                             Uri.parse(appUrl),
-                            mode: LaunchMode.externalApplication,
+                            // mode: LaunchMode.externalApplication,
                           ),
                         ),
                       ),

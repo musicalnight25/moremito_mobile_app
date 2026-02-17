@@ -12,6 +12,7 @@ class ContactController extends GetxController {
 
   final selectedContact = ''.obs;
   final selectedContactNumber = ''.obs;
+  final selectedContactEmail = ''.obs;
   final searchQuery = ''.obs;
   final isLoading = false.obs;
 
@@ -37,9 +38,14 @@ class ContactController extends GetxController {
     if (storedContacts != null) {
       final List decoded = jsonDecode(storedContacts);
       contacts.value = decoded.map<Contact>((e) {
+        List<Email> emails = [];
+        if (e['email'] != null && e['email'].toString().isNotEmpty) {
+          emails.add(Email(e['email']));
+        }
         return Contact(
           displayName: e['name'],
           phones: [Phone(e['phone'])],
+          emails: emails,
         );
       }).toList();
 
@@ -78,6 +84,7 @@ class ContactController extends GetxController {
       return {
         "name": c.displayName,
         "phone": c.phones.first.number,
+        "email": c.emails.isNotEmpty ? c.emails.first.address : "",
       };
     }).toList();
 
@@ -111,6 +118,8 @@ class ContactController extends GetxController {
   void selectContact(Contact contact) {
     selectedContact.value = "${contact.displayName}";
     selectedContactNumber.value = "${contact.phones.first.number}";
+    selectedContactEmail.value =
+        contact.emails.isNotEmpty ? contact.emails.first.address : "";
     Get.back(result: contact);
   }
 }

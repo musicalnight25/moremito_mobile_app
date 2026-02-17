@@ -20,8 +20,7 @@ class MessageLauncher {
     required String phoneNumber,
     required String message,
   }) async {
-    final String formattedPhone =
-    phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final String formattedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
 
     final Uri uri = Uri.parse(
       'https://wa.me/$formattedPhone?text=${Uri.encodeComponent(message)}',
@@ -43,6 +42,24 @@ class MessageLauncher {
       await openWhatsApp(phoneNumber: phoneNumber, message: message);
     } catch (_) {
       await sendSMS(phoneNumber: phoneNumber, message: message);
+    }
+  }
+
+  /// Open Email App
+  static Future<void> sendEmail({
+    required String email,
+    required String subject,
+    required String body,
+  }) async {
+    final Uri uri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query:
+          'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
+    );
+
+    if (!await launchUrl(uri)) {
+      throw 'Could not launch Email';
     }
   }
 }

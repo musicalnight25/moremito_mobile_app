@@ -169,11 +169,13 @@ class CategoriesController extends GetxController {
     required String message,
     required String sharedUrl,
     required String phoneNumber,
+    String? email,
   }) async {
     ShareBottomSheet.show(
       context: context,
       phoneNumber: phoneNumber,
       message: message,
+      email: email,
       onShared: (platform) async {
         await mobileSaveFileShare(
           context: context,

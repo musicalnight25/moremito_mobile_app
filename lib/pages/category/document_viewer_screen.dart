@@ -40,6 +40,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
   final nameTextController = TextEditingController();
   final phoneTextController = TextEditingController();
   final messageTextController = TextEditingController();
+  String? selectedEmail;
 
   @override
   void initState() {
@@ -172,6 +173,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                         contactController.selectedContact.value;
                                     phoneTextController.text = contactController
                                         .selectedContactNumber.value;
+                                    selectedEmail = contactController
+                                        .selectedContactEmail.value;
                                     showEnterDetailsManuallySheet(data);
                                   }
                                 });
@@ -184,6 +187,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                 Get.back();
                                 nameTextController.clear();
                                 phoneTextController.clear();
+                                selectedEmail = null;
                                 showEnterDetailsManuallySheet(widget.data);
                               },
                             ),
@@ -324,6 +328,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       phoneNumber: phoneTextController.text.trim(),
                       message: messageTextController.text.trim(),
                       sharedUrl: generatedLink.value,
+                      email: selectedEmail,
                     );
                   },
                 ),

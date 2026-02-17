@@ -11,6 +11,7 @@ class ShareBottomSheet {
     required BuildContext context,
     required String phoneNumber,
     required String message,
+    String? email,
     required Function(String platform) onShared,
   }) {
     showModalBottomSheet(
@@ -50,6 +51,21 @@ class ShareBottomSheet {
                   onShared("message");
                 },
               ),
+              if (email != null && email.isNotEmpty)
+                _buildItem(
+                  icon: PhosphorIconsFill.envelopeSimple,
+                  label: "Email",
+                  color: Colors.redAccent,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await MessageLauncher.sendEmail(
+                      email: email,
+                      subject: "File Shared with You",
+                      body: message,
+                    );
+                    onShared("email");
+                  },
+                ),
               _buildItem(
                 icon: PhosphorIconsRegular.dotsThreeOutline,
                 label: "More",

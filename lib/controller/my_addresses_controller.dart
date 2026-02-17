@@ -33,16 +33,18 @@ class MyAddressesController extends GetxController {
       isLoadingCountries.value = true;
       final response = await _repo.getCountries();
 
-      if (response != null && response['Status'] == true) {
+      if (response == null) return;
+
+      if (response['Status'] == true) {
         var fetchedCountries = List<CountryModel>.from(
           response['Data'].map((e) => CountryModel.fromJson(e)),
         );
         countries.assignAll(fetchedCountries);
       } else {
-        _handleError(response?['Message'] ?? "Failed to load countries");
+        _handleError(response);
       }
     } catch (e) {
-      _handleError("An unexpected error occurred while fetching countries: $e");
+      _handleError(e);
     } finally {
       isLoadingCountries.value = false;
     }
@@ -60,8 +62,9 @@ class MyAddressesController extends GetxController {
       }
 
       final response = await _repo.getStates(countryId);
+      if (response == null) return;
 
-      if (response != null && response['Status'] == true) {
+      if (response['Status'] == true) {
         var fetchedStates = List<StateModel>.from(
           response['Data'].map((e) => StateModel.fromJson(e)),
         );
@@ -76,11 +79,10 @@ class MyAddressesController extends GetxController {
           selectedStateId.value = states.first.id;
         }
       } else {
-        _handleError(
-            response?['Message'] ?? "No states found for this country");
+        _handleError(response);
       }
     } catch (e) {
-      _handleError("Connection error while loading states");
+      _handleError(e);
     } finally {
       isLoadingStates.value = false;
     }
@@ -91,16 +93,19 @@ class MyAddressesController extends GetxController {
     try {
       isLoading.value = true;
       final response = await _repo.getMyAddresses();
+      if (response == null) return;
 
-      if (response != null && response['Status'] == true) {
+      if (response['Status'] == true) {
         addresses.assignAll(
           List<MyAddressModel>.from(
             response['Data'].map((e) => MyAddressModel.fromJson(e)),
           ),
         );
+      } else {
+        _handleError(response);
       }
     } catch (e) {
-      _handleError("Could not refresh addresses: $e");
+      _handleError(e);
     } finally {
       isLoading.value = false;
     }
@@ -134,16 +139,21 @@ class MyAddressesController extends GetxController {
         },
       );
 
-      if (response != null && response['Status'] == true) {
+      if (response == null) {
+        fetchAddresses();
+        return;
+      }
+
+      if (response['Status'] == true) {
         CommonMethod.getXSnackBar(
             "Success", response['Message'] ?? "Saved successfully", greenColor);
         await fetchAddresses();
       } else {
-        _handleError(response?['Message'] ?? "Failed to save address");
+        _handleError(response);
         fetchAddresses();
       }
     } catch (e) {
-      _handleError("Network error: Please check your connection");
+      _handleError(e);
       fetchAddresses();
     } finally {
       isLoading.value = false;
@@ -151,7 +161,38 @@ class MyAddressesController extends GetxController {
   }
 
   // Helper method for consistent error reporting
-  void _handleError(String message) {
+  void _handleError(dynamic error) {
+    if (error == null) return;
+
+    String message = "";
+    if (error is String) {
+      message = error;
+    } else if (error is Map<String, dynamic>) {
+      message = _extractErrorMessage(error);
+    } else {
+      message = error.toString();
+    }
+
     CommonMethod.getXSnackBar("Notice", message, redColor);
+  }
+
+  String _extractErrorMessage(dynamic body) {
+    if (body is Map<String, dynamic>) {
+      if (body.containsKey('Message')) return body['Message'];
+      if (body.containsKey('message')) return body['message'];
+      if (body.containsKey('errors') &&
+          body['errors'] is Map<String, dynamic>) {
+        return (body['errors'] as Map<String, dynamic>)
+            .entries
+            .map((e) => '${e.key}: ${e.value.join(", ")}')
+            .join("\n");
+      }
+    }
+    // Return the raw body if no specific error message format is found
+    try {
+      return body.toString();
+    } catch (e) {
+      return e.toString();
+    }
   }
 }
