@@ -394,6 +394,10 @@ class NetworkRepository {
     );
   }
 
+  Future<dynamic> getUsersIHaveSharedReportsWith() {
+    return getRequest(null, AppConstants.getUsersIHaveSharedReportsWith);
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response, String endpoint,

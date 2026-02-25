@@ -5,6 +5,7 @@ import '../model/flyer_interaction_model.dart';
 import '../model/flyer_tracking_stats_model.dart';
 import '../model/link_activity_details_model.dart';
 import '../model/shared_flyers_model.dart';
+import '../model/shared_reports_users_model.dart';
 import '../service/network_repository.dart';
 
 class FlyersController extends GetxController {
@@ -31,6 +32,10 @@ class FlyersController extends GetxController {
   // RxList<FlyerInteractionModel> interactions = <FlyerInteractionModel>[].obs;
   RxList<LinkActivityDetailsModel> linkActivityDetailsModel =
       <LinkActivityDetailsModel>[].obs;
+
+  // ---------------- SHARED REPORTS USERS ----------------
+  RxBool sharedReportsUsersLoading = false.obs;
+  RxList<SharedReportUser> sharedReportsUsers = <SharedReportUser>[].obs;
 
   // ============================================================
   // FETCH STATS
@@ -164,6 +169,26 @@ class FlyersController extends GetxController {
       debugPrint("Flyer activity error: $e");
     } finally {
       activityLoading.value = false;
+    }
+  }
+
+  // ============================================================
+  // FETCH SHARED REPORTS USERS
+  // ============================================================
+  Future<void> getSharedReportsUsers() async {
+    sharedReportsUsersLoading.value = true;
+    try {
+      final response = await _repo.getUsersIHaveSharedReportsWith();
+      if (response != null) {
+        final model = sharedReportsUsersResponseFromJson(json.encode(response));
+        if (model.status == true) {
+          sharedReportsUsers.value = model.data ?? [];
+        }
+      }
+    } catch (e) {
+      debugPrint("Shared reports users error: $e");
+    } finally {
+      sharedReportsUsersLoading.value = false;
     }
   }
 

@@ -86,4 +86,6 @@ class AppConstants {
   static const String myReferralOrderDetail = 'get-orders-detail';
   static const String downlineOrders = 'downline-orders';
   static const String downlineOrderDetails = 'downline-order-details';
+  static const String getUsersIHaveSharedReportsWith =
+      'get-users-i-have-shared-reports-with';
 }
