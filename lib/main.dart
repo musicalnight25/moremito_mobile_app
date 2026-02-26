@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -15,18 +14,7 @@ import 'package:more_mitro_app/service/network_dio.dart';
 import 'package:more_mitro_app/utils/app_constants.dart';
 import 'package:more_mitro_app/utils/preferences_util.dart';
 
-// MUST IMPORT THIS
 import 'firebase_options.dart';
-
-/// ------------------------------------------------------------
-///  BACKGROUND HANDLER (MUST USE SAME FIREBASE OPTIONS)
-/// ------------------------------------------------------------
-Future<void> _backgroundMessageHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  log("🔔 Background message received: ${message.messageId}");
-}
 
 final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
 
@@ -35,14 +23,11 @@ Future<void> main() async {
 
   HttpOverrides.global = MyHttpOverrides();
 
-  /// ------------------------------------------------------------
-  /// Register Background Handler BEFORE FirebaseMessaging is used
-  /// ------------------------------------------------------------
-  FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+  /// Register Background FCM Handler BEFORE Firebase is used
+  /// This runs in a separate isolate; uses SharedPreferences to update badge count
+  FirebaseMessaging.onBackgroundMessage(FcmService.fcmBackgroundHandler);
 
-  /// ------------------------------------------------------------
   /// Initialize Firebase
-  /// ------------------------------------------------------------
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -50,11 +35,9 @@ Future<void> main() async {
   /// Preferences
   await PreferencesUtil.init();
 
-  /// ------------------------------------------------------------
-  /// Initialize FCM Service FIRST (must be before Hive or others)
-  /// ------------------------------------------------------------
+  /// Initialize FCM Service (Firebase must be ready first)
   final fcmService = Get.put(FcmService());
-  await fcmService.init(); // Safe now — Firebase already ready
+  await fcmService.init();
 
   /// API & Hive
   await NetworkDioHttp.setDynamicHeader(endPoint: AppConstants.apiEndPoint);
@@ -85,8 +68,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) {
-        return true;
-      };
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

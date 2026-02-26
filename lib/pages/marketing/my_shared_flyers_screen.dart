@@ -11,9 +11,9 @@ import '../../model/flyer_tracking_stats_model.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
-import '../../utils/common_method.dart';
 import 'shared_flyers_screen.dart';
 import 'shared_reports_users_screen.dart';
+import 'shared_reports_with_me_screen.dart';
 
 class MySharedFlyersScreen extends StatefulWidget {
   const MySharedFlyersScreen({super.key});
@@ -242,10 +242,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
           if (value == 1) {
             Get.to(() => const SharedReportsUsersScreen());
           } else if (value == 2) {
-            CommonMethod.getXSnackBar(
-                "Info",
-                "Activities of others shared with you will appear here.",
-                primaryColor);
+            Get.to(() => const SharedReportsWithMeScreen());
           }
         },
         dropdownStyleData: DropdownStyleData(

@@ -14,6 +14,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../controller/notification_controller.dart';
 import '../../model/notification_model.dart';
+import '../../service/fcm_service.dart';
 import 'notification_details_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.initialLoad(null);
+      // Clear launcher icon badge when user opens the Notification screen
+      FcmService.clearBadge();
     });
   }
 

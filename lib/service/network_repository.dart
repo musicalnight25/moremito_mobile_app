@@ -398,6 +398,27 @@ class NetworkRepository {
     return getRequest(null, AppConstants.getUsersIHaveSharedReportsWith);
   }
 
+  Future<dynamic> getSharedReportsWithMe(
+      {int pageNumber = 1, int pageSize = 10}) {
+    return getRequest(null, AppConstants.getSharedReportsWithMe,
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize});
+  }
+
+  Future<dynamic> deleteReportShare(int shareId) {
+    return postRequest(null, AppConstants.deleteReportShare,
+        data: {'shareId': shareId});
+  }
+
+  Future<dynamic> declineReportShare(int shareId, String declineComment) {
+    return postRequest(null, AppConstants.declineReportShare,
+        data: {'shareId': shareId, 'declineComment': declineComment});
+  }
+
+  Future<dynamic> getMySharedLinks({int? userId}) {
+    return getRequest(null, AppConstants.mySharedLinks,
+        queryParameters: userId != null ? {'userId': userId} : null);
+  }
+
   // ---------- INTERNAL HANDLERS ----------
 
   dynamic _processResponse(Map<String, dynamic> response, String endpoint,

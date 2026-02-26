@@ -22,6 +22,13 @@ class AppTextStyle {
         color: primaryBlack,
       );
 
+  static TextStyle get normalRegular11 => TextStyle(
+        fontSize: 11.sp,
+        fontWeight: FontWeight.w500,
+        fontFamily: fontFamilyManrope,
+        color: primaryBlack,
+      );
+
   static TextStyle get normalSemiBold10 => TextStyle(
         fontSize: 10.sp,
         fontWeight: FontWeight.w600,

@@ -6,6 +6,7 @@ import '../model/flyer_tracking_stats_model.dart';
 import '../model/link_activity_details_model.dart';
 import '../model/shared_flyers_model.dart';
 import '../model/shared_reports_users_model.dart';
+import '../model/shared_reports_with_me_model.dart';
 import '../service/network_repository.dart';
 
 class FlyersController extends GetxController {
@@ -190,6 +191,75 @@ class FlyersController extends GetxController {
     } finally {
       sharedReportsUsersLoading.value = false;
     }
+  }
+
+  // ============================================================
+  // DELETE REPORT SHARE (used in SharedReportsUsersScreen)
+  // ============================================================
+  Future<bool> deleteReportShare(int shareId) async {
+    try {
+      final response = await _repo.deleteReportShare(shareId);
+      if (response != null) {
+        // Remove from list
+        sharedReportsUsers.removeWhere((u) => u.shareId == shareId);
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Delete report share error: $e");
+    }
+    return false;
+  }
+
+  // ============================================================
+  // SHARED REPORTS WITH ME
+  // ============================================================
+  RxBool sharedReportsWithMeLoading = false.obs;
+  RxList<SharedReportWithMeItem> sharedReportsWithMe =
+      <SharedReportWithMeItem>[].obs;
+  RxBool hasMoreSharedWithMe = false.obs;
+  int _sharedWithMePage = 1;
+
+  void resetSharedReportsWithMe() {
+    _sharedWithMePage = 1;
+    sharedReportsWithMe.clear();
+    hasMoreSharedWithMe.value = false;
+  }
+
+  Future<void> getSharedReportsWithMe({bool loadMore = false}) async {
+    if (!loadMore) {
+      resetSharedReportsWithMe();
+      sharedReportsWithMeLoading.value = true;
+    }
+    try {
+      final response = await _repo.getSharedReportsWithMe(
+          pageNumber: _sharedWithMePage, pageSize: 10);
+      if (response != null) {
+        final model =
+            sharedReportsWithMeResponseFromJson(json.encode(response));
+        if (model.status == true) {
+          sharedReportsWithMe.addAll(model.data?.items ?? []);
+          hasMoreSharedWithMe.value = model.data?.hasMore ?? false;
+          if (hasMoreSharedWithMe.value) _sharedWithMePage++;
+        }
+      }
+    } catch (e) {
+      debugPrint("Shared reports with me error: $e");
+    } finally {
+      sharedReportsWithMeLoading.value = false;
+    }
+  }
+
+  Future<bool> declineReportShare(int shareId, String comment) async {
+    try {
+      final response = await _repo.declineReportShare(shareId, comment);
+      if (response != null) {
+        sharedReportsWithMe.removeWhere((i) => i.id == shareId);
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Decline report share error: $e");
+    }
+    return false;
   }
 
   // ============================================================

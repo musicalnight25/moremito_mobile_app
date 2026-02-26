@@ -88,4 +88,8 @@ class AppConstants {
   static const String downlineOrderDetails = 'downline-order-details';
   static const String getUsersIHaveSharedReportsWith =
       'get-users-i-have-shared-reports-with';
+  static const String getSharedReportsWithMe = 'get-shared-reports-with-me';
+  static const String deleteReportShare = 'delete-report-share';
+  static const String declineReportShare = 'decline-report-share';
+  static const String mySharedLinks = 'my-shared-links';
 }
