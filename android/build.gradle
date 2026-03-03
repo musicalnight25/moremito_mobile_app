@@ -23,6 +23,9 @@ subprojects {
                 if (namespace == null) {
                     namespace project.group
                 }
+                // Force all sub-projects (e.g. flutter_app_badger) to use
+                // compileSdk 35 to avoid "android:attr/lStar not found" error
+                compileSdkVersion 35
             }
         }
     }
