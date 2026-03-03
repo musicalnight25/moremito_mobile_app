@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import 'package:more_mitro_app/controller/login_controller.dart';
 import 'package:more_mitro_app/pages/auth/login_screen.dart';
 import 'package:more_mitro_app/pages/auth/start_survey_screen.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
@@ -65,6 +66,9 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
     // loading actual auth state later.
     final userToken = await PreferencesUtil.getUserToken();
     final isSurveyCompleted = await PreferencesUtil.getIsSurveyCompleted();
+
+    // Register controllers lazily so they're ready when pages look them up.
+    Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
 
     if (userToken != null) {
       initialPage = isSurveyCompleted ? MainHomeScreen() : StartSurveyScreen();

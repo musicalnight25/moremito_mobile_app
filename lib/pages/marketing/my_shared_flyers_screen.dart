@@ -14,6 +14,7 @@ import '../../utils/common_app_bar.dart';
 import 'shared_flyers_screen.dart';
 import 'shared_reports_users_screen.dart';
 import 'shared_reports_with_me_screen.dart';
+import 'share_your_activity_screen.dart';
 
 class MySharedFlyersScreen extends StatefulWidget {
   const MySharedFlyersScreen({super.key});
@@ -23,7 +24,9 @@ class MySharedFlyersScreen extends StatefulWidget {
 }
 
 class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
-  final FlyersController controller = Get.put(FlyersController());
+  final FlyersController controller = Get.isRegistered<FlyersController>()
+      ? Get.find<FlyersController>()
+      : Get.put(FlyersController());
 
   @override
   void initState() {
@@ -117,9 +120,48 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
               ),
             ),
             height16,
+            // ── Action buttons (stacked for full-width — no overflow) ─────
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              child: _buildViewActivityDropdown(),
+              child: Column(
+                children: [
+                  // "View Shared Activity" dropdown — full width
+                  _buildViewActivityDropdown(),
+                  SizedBox(height: 10.sp),
+                  // "Share Your Activity" button — full width
+                  GestureDetector(
+                    onTap: () => Get.to(() => const ShareYourActivityScreen()),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 13.sp),
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(10.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: primaryColor.withOpacity(0.25),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.share_outlined,
+                              color: Colors.white, size: 18.sp),
+                          SizedBox(width: 8.sp),
+                          Text(
+                            'Share Your Activity',
+                            style: AppTextStyle.normalBold14
+                                .copyWith(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             height10,
             Expanded(

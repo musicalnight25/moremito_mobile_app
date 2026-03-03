@@ -92,4 +92,6 @@ class AppConstants {
   static const String deleteReportShare = 'delete-report-share';
   static const String declineReportShare = 'decline-report-share';
   static const String mySharedLinks = 'my-shared-links';
+  static const String searchUsersForShare = 'search-users-for-share';
+  static const String shareReport = 'share-report';
 }

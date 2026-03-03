@@ -144,9 +144,10 @@ class NetworkRepository {
       getRequest(null, AppConstants.getLinkActivityDetails,
           queryParameters: queryParameters);
 
-  Future<dynamic> getFlyerTrackingStats() => getRequest(
+  Future<dynamic> getFlyerTrackingStats({int? userId}) => getRequest(
         null,
         AppConstants.getFlyerTrackingStats,
+        queryParameters: userId != null ? {'userId': userId} : null,
       );
 
   Future<dynamic> getNotificationDetail(
@@ -417,6 +418,18 @@ class NetworkRepository {
   Future<dynamic> getMySharedLinks({int? userId}) {
     return getRequest(null, AppConstants.mySharedLinks,
         queryParameters: userId != null ? {'userId': userId} : null);
+  }
+
+  Future<dynamic> searchUsersForShare(String username) {
+    return getRequest(null, AppConstants.searchUsersForShare,
+        queryParameters: {'username': username});
+  }
+
+  Future<dynamic> saveReportShare({required int userId, String? note}) {
+    return postRequest(null, AppConstants.shareReport, data: {
+      'TargetUserId': userId,
+      if (note != null && note.isNotEmpty) 'Note': note,
+    });
   }
 
   // ---------- INTERNAL HANDLERS ----------

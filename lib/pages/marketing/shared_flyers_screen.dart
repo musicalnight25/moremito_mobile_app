@@ -21,11 +21,15 @@ import 'flyer_activity_screen.dart';
 class SharedFlyersScreen extends StatefulWidget {
   final String title;
   final String filterKey;
+  final int? viewUserId; // null = own flyers; non-null = another user's
+  final String? viewUserName;
 
   const SharedFlyersScreen({
     super.key,
     required this.title,
     required this.filterKey,
+    this.viewUserId,
+    this.viewUserName,
   });
 
   @override
@@ -33,27 +37,33 @@ class SharedFlyersScreen extends StatefulWidget {
 }
 
 class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
-  final FlyersController controller = Get.put(FlyersController());
+  final FlyersController controller = Get.isRegistered<FlyersController>()
+      ? Get.find<FlyersController>()
+      : Get.put(FlyersController());
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Initial reset and fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.resetPagination();
-      controller.getSharedFlyers(filterKey: widget.filterKey);
+      controller.getSharedFlyers(
+        filterKey: widget.filterKey,
+        userId: widget.viewUserId,
+      );
     });
     _scrollController.addListener(() {
-      // Trigger when user is 90% down the list
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent * 0.9) {
         if (controller.hasMore &&
             !controller.loadMoreLoading.value &&
             !controller.listLoading.value) {
           controller.getSharedFlyers(
-              filterKey: widget.filterKey, search: _searchController.text);
+            filterKey: widget.filterKey,
+            search: _searchController.text,
+            userId: widget.viewUserId,
+          );
         }
       }
     });
@@ -93,11 +103,12 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   filterKey: widget.filterKey,
                   search: _searchController.text,
                   fileType: controller.currentFileType.value,
+                  userId: widget.viewUserId,
                 );
               },
             ),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
 
           const SizedBox(height: 10),
@@ -115,8 +126,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   ),
                   child: IgnorePointer(
                     ignoring: false,
-                    child: Obx(() =>
-                        DropdownButtonHideUnderline(
+                    child: Obx(() => DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
                             value: controller.currentFileType.value ?? "All",
@@ -135,13 +145,14 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                             ],
                             onChanged: (value) {
                               controller.currentFileType.value =
-                              value == "All" ? null : value;
+                                  value == "All" ? null : value;
 
                               controller.resetPagination();
                               controller.getSharedFlyers(
                                 filterKey: widget.filterKey,
                                 search: _searchController.text,
                                 fileType: controller.currentFileType.value,
+                                userId: widget.viewUserId,
                               );
                             },
                           ),
@@ -159,7 +170,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                   _searchController.clear();
                   controller.currentFileType.value = null;
                   controller.resetPagination();
-                  controller.getSharedFlyers(filterKey: widget.filterKey);
+                  controller.getSharedFlyers(
+                    filterKey: widget.filterKey,
+                    userId: widget.viewUserId,
+                  );
                 },
                 child: Container(
                   height: 44,
@@ -183,8 +197,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
 
     void navigateToDetails() {
       if (hasData) {
-        Get.to(() =>
-            FlyerActivityScreen(
+        Get.to(() => FlyerActivityScreen(
               sharedFlyerId: item.fileShareId!,
               title: item.title ?? "",
               fileType: item.fileType ?? 1,
@@ -272,9 +285,13 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                 ),
               ),
 
-              if (item.totalInteractions != 0)
-                TextPrimaryButton(
-                    title: "View Details", onPressed: navigateToDetails)
+              Opacity(
+                opacity: hasData ? 1.0 : 0.35,
+                child: TextPrimaryButton(
+                  title: "View Details",
+                  onPressed: navigateToDetails,
+                ),
+              )
             ],
           ),
         ],
@@ -289,11 +306,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 6,
-      itemBuilder: (_, __) =>
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: _shimmerCard(),
-          ),
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: _shimmerCard(),
+      ),
     );
   }
 
@@ -360,10 +376,17 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.title, style: AppTextStyle.normalBold20),
+                  Text(
+                    widget.viewUserName != null
+                        ? "${widget.viewUserName}'s ${widget.title} Activity"
+                        : widget.title,
+                    style: AppTextStyle.normalBold20,
+                  ),
                   const SizedBox(height: 6),
                   Text(
-                    "Below is the list of activities from your recipients",
+                    widget.viewUserName != null
+                        ? "Shared links activity from ${widget.viewUserName}'s recipients"
+                        : "Below is the list of activities from your recipients",
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.black54),
                   ),
@@ -390,6 +413,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                     controller.resetPagination();
                     await controller.getSharedFlyers(
                       filterKey: widget.filterKey,
+                      userId: widget.viewUserId,
                     );
                   },
                   child: ListView.builder(
@@ -403,10 +427,10 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                       } else {
                         return controller.hasMore
                             ? const Padding(
-                          padding: EdgeInsets.all(16),
-                          child:
-                          Center(child: CircularProgressIndicator()),
-                        )
+                                padding: EdgeInsets.all(16),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )
                             : const SizedBox.shrink();
                       }
                     },
@@ -424,7 +448,6 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
     if (iso == null || iso.isEmpty) return "N/A";
     final d = DateTime.tryParse(iso);
     if (d == null) return "N/A";
-    return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(
-        2, '0')}/${d.year}";
+    return "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}";
   }
 }

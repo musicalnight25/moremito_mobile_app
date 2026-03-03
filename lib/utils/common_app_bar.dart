@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-import '../pages/main_dashboard_screen.dart';
+import '../controller/home_controller.dart';
 import '../pages/profile/my_profile_screen.dart';
 import '../pages/setting/menu_screen.dart';
 import 'app_asset.dart';
@@ -90,13 +89,20 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   alignment: Alignment.center,
                   child: Obx(
-                    () => Text(
-                      CommonMethod.getProfileText(
-                        homeController.dashboardModel.value?.name ?? "U",
-                      ),
-                      style: AppTextStyle.normalSemiBold14
-                          .copyWith(color: primaryWhite),
-                    ),
+                    () {
+                      final name = Get.isRegistered<HomeController>()
+                          ? Get.find<HomeController>()
+                                  .dashboardModel
+                                  .value
+                                  ?.name ??
+                              'U'
+                          : 'U';
+                      return Text(
+                        CommonMethod.getProfileText(name),
+                        style: AppTextStyle.normalSemiBold14
+                            .copyWith(color: primaryWhite),
+                      );
+                    },
                   ),
                 ),
               ),
