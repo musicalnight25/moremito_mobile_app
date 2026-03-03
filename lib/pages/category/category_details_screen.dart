@@ -96,7 +96,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
         padding: const EdgeInsets.all(16),
         child: TextFormFieldWidget(
           controller: _searchController,
-          hintText: "Search files...",
+          hintText: "Search Audios, Videos & Docs",
           suffixIcon: controller.searchText.value.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close),

@@ -1,7 +1,7 @@
 class AppConstants {
   //live
-  static String apiEndPoint = "http://mormito.com/api/mobile/"; //DEV
-  // static String apiEndPoint = "https://moremito.com/api/mobile/"; //LIVE
+  // static String apiEndPoint = "http://mormito.com/api/mobile/"; //DEV
+  static String apiEndPoint = "https://moremito.com/api/mobile/"; //LIVE
 
   static String netWorkFileUrl = "${AppConstants.apiEndPoint}file/";
 
