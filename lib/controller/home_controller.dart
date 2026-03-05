@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:more_mitro_app/model/dashboard_model.dart';
+import 'package:more_mitro_app/service/fcm_service.dart';
 import 'package:more_mitro_app/service/network_repository.dart';
 import '../pages/main_dashboard_screen.dart';
 import '../utils/preferences_util.dart';
@@ -44,8 +45,11 @@ class HomeController extends GetxController {
         final model = dashboardResponseModelFromJson(json.encode(response));
         if (model.status == true) {
           dashboardModel.value = model.data;
-          unreadNotificationCount.value =
-              dashboardModel.value?.unreadNotificationCount ?? 0;
+          final count = dashboardModel.value?.unreadNotificationCount ?? 0;
+          unreadNotificationCount.value = count;
+
+          // Sync launcher icon badge with real count from server
+          await FcmService.syncBadgeFromApiCount(count);
         }
       }
     } catch (e) {

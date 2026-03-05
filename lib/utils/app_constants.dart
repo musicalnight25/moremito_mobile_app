@@ -1,6 +1,6 @@
 class AppConstants {
   //live
-  // static String apiEndPoint = "http://mormito.com/api/mobile/"; DEV
+  // static String apiEndPoint = "http://mormito.com/api/mobile/"; //DEV
   static String apiEndPoint = "https://moremito.com/api/mobile/"; //LIVE
 
   static String netWorkFileUrl = "${AppConstants.apiEndPoint}file/";
@@ -86,4 +86,12 @@ class AppConstants {
   static const String myReferralOrderDetail = 'get-orders-detail';
   static const String downlineOrders = 'downline-orders';
   static const String downlineOrderDetails = 'downline-order-details';
+  static const String getUsersIHaveSharedReportsWith =
+      'get-users-i-have-shared-reports-with';
+  static const String getSharedReportsWithMe = 'get-shared-reports-with-me';
+  static const String deleteReportShare = 'delete-report-share';
+  static const String declineReportShare = 'decline-report-share';
+  static const String mySharedLinks = 'my-shared-links';
+  static const String searchUsersForShare = 'search-users-for-share';
+  static const String shareReport = 'share-report';
 }

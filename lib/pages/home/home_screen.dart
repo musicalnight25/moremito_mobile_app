@@ -21,14 +21,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // HomeController is already put by HomeScreen itself or parent; find it here.
   final homeController = Get.put(HomeController());
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      homeController.getDashboard();
-    });
+    // HomeController.onInit() already schedules getDashboard() via
+    // addPostFrameCallback the first time. Only re-fetch if data is already
+    // loaded (i.e., controller was reused from a previous visit).
+    if (homeController.dashboardModel.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        homeController.getDashboard();
+      });
+    }
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/controller/home_controller.dart';
 import 'package:more_mitro_app/controller/login_controller.dart';
 import 'package:more_mitro_app/pages/category/categories_screen.dart';
 import 'package:more_mitro_app/pages/home/home_screen.dart';
@@ -20,7 +19,8 @@ import '../utils/colors.dart';
 import '../utils/common_method.dart';
 import 'notification/notification_screen.dart';
 
-var homeController = Get.put(HomeController());
+// HomeController is registered lazily by HomeScreen on first visit.
+// This global tracks real-time unread notification count.
 RxInt unreadNotificationCount = 0.obs;
 
 class MainHomeScreen extends StatefulWidget {
@@ -33,27 +33,41 @@ class MainHomeScreen extends StatefulWidget {
 class _MainHomeScreenState extends State<MainHomeScreen> {
   final RxInt selectedIndex = 0.obs;
 
-  LoginController loginController = Get.put(LoginController());
-  final List<Widget> widgetList = [
-    HomeScreen(key: ValueKey('HomeScreen')),
+  // Use lazyPut so the controller is only instantiated when first accessed.
+  LoginController get loginController => Get.find<LoginController>();
+  // Track which tabs have been visited so we can lazily build them.
+  final Set<int> _visitedTabs = {0}; // Start with tab 0 already "visited".
+
+  late final List<Widget> widgetList = [
+    HomeScreen(key: const ValueKey('HomeScreen')),
     CategoriesScreen(
-      key: ValueKey('CategoriesScreen'),
+      key: const ValueKey('CategoriesScreen'),
       isFromMenu: false,
     ),
-    NotificationScreen(key: ValueKey('NotificationScreen')),
-    SettingScreen(key: ValueKey('SettingScreen')),
+    NotificationScreen(key: const ValueKey('NotificationScreen')),
+    SettingScreen(key: const ValueKey('SettingScreen')),
   ];
 
   @override
   void initState() {
-    loginController.registerDeviceToken();
-    notificationPermistion();
-    PopupService.runAppChecks();
     super.initState();
+    // Defer all heavy/blocking work to after the first frame is rendered.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Register device token in background — does not touch UI.
+      loginController.registerDeviceToken();
+      // Request notification permission after first frame (avoids dialog-on-startup jank).
+      await notificationPermistion();
+      // Firebase Remote Config fetch can take seconds — delay it further
+      // so it never competes with initial UI rendering.
+      Future.delayed(const Duration(seconds: 2), () {
+        PopupService.runAppChecks();
+      });
+    });
   }
 
   void navigateToPage(int pageIndex) {
     selectedIndex.value = pageIndex;
+    _visitedTabs.add(pageIndex);
   }
 
   notificationPermistion() async {
@@ -65,7 +79,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return WillPopScope(
       onWillPop: () async {
         if (selectedIndex.value != 0) {
-          selectedIndex.value = 0;
+          navigateToPage(0);
           return false;
         }
         CommonMethod.showCustomBottomSheet(
@@ -83,15 +97,36 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         return false;
       },
       child: BaseBackgroundWidget(
-        child: Obx(() => Scaffold(
-              backgroundColor: Colors.transparent,
-              body: IndexedStack(
-                index: selectedIndex.value,
-                children: widgetList,
-              ),
-              bottomNavigationBar: _buildBottomNavigationBar(),
-            )),
+        child: Obx(() {
+          final idx = selectedIndex.value;
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            body: _buildLazyBody(idx),
+            bottomNavigationBar: _buildBottomNavigationBar(),
+          );
+        }),
       ),
+    );
+  }
+
+  /// Lazily build tab widgets: only construct a tab on first visit,
+  /// then use Offstage+TickerMode to hide/show without rebuilding.
+  Widget _buildLazyBody(int currentIndex) {
+    final tabs = widgetList;
+    return Stack(
+      children: List.generate(tabs.length, (i) {
+        if (!_visitedTabs.contains(i)) {
+          // Not yet visited — render nothing (zero cost).
+          return const SizedBox.shrink();
+        }
+        return Offstage(
+          offstage: currentIndex != i,
+          child: TickerMode(
+            enabled: currentIndex == i,
+            child: tabs[i],
+          ),
+        );
+      }),
     );
   }
 
@@ -108,7 +143,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
               currentIndex: selectedIndex.value,
               backgroundColor: Colors.transparent,
               onTap: (index) {
-                selectedIndex.value = index;
+                navigateToPage(index);
               },
               type: BottomNavigationBarType.fixed,
               selectedFontSize: 12.sp,

@@ -4,7 +4,10 @@ import 'package:get/get.dart';
 import '../model/flyer_interaction_model.dart';
 import '../model/flyer_tracking_stats_model.dart';
 import '../model/link_activity_details_model.dart';
+import '../model/search_users_for_share_model.dart';
 import '../model/shared_flyers_model.dart';
+import '../model/shared_reports_users_model.dart';
+import '../model/shared_reports_with_me_model.dart';
 import '../service/network_repository.dart';
 
 class FlyersController extends GetxController {
@@ -32,6 +35,10 @@ class FlyersController extends GetxController {
   RxList<LinkActivityDetailsModel> linkActivityDetailsModel =
       <LinkActivityDetailsModel>[].obs;
 
+  // ---------------- SHARED REPORTS USERS ----------------
+  RxBool sharedReportsUsersLoading = false.obs;
+  RxList<SharedReportUser> sharedReportsUsers = <SharedReportUser>[].obs;
+
   // ============================================================
   // FETCH STATS
   // ============================================================
@@ -56,6 +63,7 @@ class FlyersController extends GetxController {
     required String filterKey,
     String? search,
     String? fileType,
+    int? userId,
   }) async {
     if (!hasMore && page != 1) return;
     if (listLoading.value || loadMoreLoading.value) return;
@@ -72,6 +80,7 @@ class FlyersController extends GetxController {
         "filterDays": filterKey,
         "sharedTo": (search == null || search.isEmpty) ? null : search,
         "filterType": mapFileTypeToApi(fileType),
+        if (userId != null) "userId": userId,
       });
 
       if (response == null) return;
@@ -164,6 +173,161 @@ class FlyersController extends GetxController {
       debugPrint("Flyer activity error: $e");
     } finally {
       activityLoading.value = false;
+    }
+  }
+
+  // ============================================================
+  // FETCH SHARED REPORTS USERS
+  // ============================================================
+  Future<void> getSharedReportsUsers() async {
+    sharedReportsUsersLoading.value = true;
+    try {
+      final response = await _repo.getUsersIHaveSharedReportsWith();
+      if (response != null) {
+        final model = sharedReportsUsersResponseFromJson(json.encode(response));
+        if (model.status == true) {
+          sharedReportsUsers.value = model.data ?? [];
+        }
+      }
+    } catch (e) {
+      debugPrint("Shared reports users error: $e");
+    } finally {
+      sharedReportsUsersLoading.value = false;
+    }
+  }
+
+  // ============================================================
+  // DELETE REPORT SHARE (used in SharedReportsUsersScreen)
+  // ============================================================
+  Future<bool> deleteReportShare(int shareId) async {
+    try {
+      final response = await _repo.deleteReportShare(shareId);
+      if (response != null) {
+        // Remove from list
+        sharedReportsUsers.removeWhere((u) => u.shareId == shareId);
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Delete report share error: $e");
+    }
+    return false;
+  }
+
+  // ============================================================
+  // SHARED REPORTS WITH ME
+  // ============================================================
+  RxBool sharedReportsWithMeLoading = false.obs;
+  RxList<SharedReportWithMeItem> sharedReportsWithMe =
+      <SharedReportWithMeItem>[].obs;
+  RxBool hasMoreSharedWithMe = false.obs;
+  int _sharedWithMePage = 1;
+
+  // ============================================================
+  // SHARED USER STATS (for "View" — another user's tracking page)
+  // ============================================================
+  RxBool sharedUserStatsLoading = false.obs;
+  Rxn<FlyerTrackingStats> sharedUserStats = Rxn<FlyerTrackingStats>();
+
+  Future<void> getSharedLinksForUser(int userId) async {
+    sharedUserStatsLoading.value = true;
+    sharedUserStats.value = null;
+    try {
+      // Use get-flyer-tracking-stats?userId=X — same format as own stats
+      // but scoped to the user who shared their report with us.
+      final response = await _repo.getFlyerTrackingStats(userId: userId);
+      if (response != null) {
+        final model = flyerTrackingStatsFromJson(json.encode(response));
+        if (model.status == true) {
+          sharedUserStats.value = model.data;
+        }
+      }
+    } catch (e) {
+      debugPrint('Shared user stats error: $e');
+    } finally {
+      sharedUserStatsLoading.value = false;
+    }
+  }
+
+  void resetSharedReportsWithMe() {
+    _sharedWithMePage = 1;
+    sharedReportsWithMe.clear();
+    hasMoreSharedWithMe.value = false;
+  }
+
+  Future<void> getSharedReportsWithMe({bool loadMore = false}) async {
+    if (!loadMore) {
+      resetSharedReportsWithMe();
+      sharedReportsWithMeLoading.value = true;
+    }
+    try {
+      final response = await _repo.getSharedReportsWithMe(
+          pageNumber: _sharedWithMePage, pageSize: 10);
+      if (response != null) {
+        final model =
+            sharedReportsWithMeResponseFromJson(json.encode(response));
+        if (model.status == true) {
+          sharedReportsWithMe.addAll(model.data?.items ?? []);
+          hasMoreSharedWithMe.value = model.data?.hasMore ?? false;
+          if (hasMoreSharedWithMe.value) _sharedWithMePage++;
+        }
+      }
+    } catch (e) {
+      debugPrint("Shared reports with me error: $e");
+    } finally {
+      sharedReportsWithMeLoading.value = false;
+    }
+  }
+
+  Future<bool> declineReportShare(int shareId, String comment) async {
+    try {
+      final response = await _repo.declineReportShare(shareId, comment);
+      if (response != null) {
+        sharedReportsWithMe.removeWhere((i) => i.id == shareId);
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Decline report share error: $e");
+    }
+    return false;
+  }
+
+  // ============================================================
+  // SHARE YOUR ACTIVITY — search users + save share
+  // ============================================================
+  RxBool searchUsersLoading = false.obs;
+  RxList<ShareUserItem> searchUserResults = <ShareUserItem>[].obs;
+
+  Future<void> searchUsersForShare(String username) async {
+    if (username.trim().isEmpty) {
+      searchUserResults.clear();
+      return;
+    }
+    searchUsersLoading.value = true;
+    try {
+      final response = await _repo.searchUsersForShare(username.trim());
+      if (response != null) {
+        final model = searchUsersForShareFromJson(json.encode(response));
+        if (model.status == true) {
+          searchUserResults.assignAll(model.data ?? []);
+        } else {
+          searchUserResults.clear();
+        }
+      }
+    } catch (e) {
+      debugPrint('Search users error: $e');
+      searchUserResults.clear();
+    } finally {
+      searchUsersLoading.value = false;
+    }
+  }
+
+  Future<bool> saveReportShare({required int userId, String? note}) async {
+    try {
+      final response = await _repo.saveReportShare(userId: userId, note: note);
+      return response != null;
+    } catch (e) {
+      debugPrint('Save report share error: $e');
+      return false;
     }
   }
 
