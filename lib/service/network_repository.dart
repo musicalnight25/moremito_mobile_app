@@ -150,6 +150,12 @@ class NetworkRepository {
         queryParameters: userId != null ? {'userId': userId} : null,
       );
 
+  Future<dynamic> getSharedUserLinksStats(int userId) => getRequest(
+        null,
+        AppConstants.mySharedLinks,
+        queryParameters: {'userId': userId},
+      );
+
   Future<dynamic> getNotificationDetail(
           BuildContext? context, String notificationId) =>
       getRequest(context, AppConstants.getNotificationDetail + notificationId);
