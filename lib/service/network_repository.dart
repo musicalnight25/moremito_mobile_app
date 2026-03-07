@@ -136,6 +136,10 @@ class NetworkRepository {
       getRequest(null, AppConstants.getSharedFlyers,
           queryParameters: queryParameters);
 
+  Future<dynamic> getSharedFlyersSharedUser(var queryParameters) =>
+      getRequest(null, AppConstants.getSharedFlyersSharedUser,
+          queryParameters: queryParameters);
+
   Future<dynamic> getFlyerInteractions(var queryParameters) =>
       getRequest(null, AppConstants.getFlyerInteractions,
           queryParameters: queryParameters);

@@ -74,14 +74,18 @@ class FlyersController extends GetxController {
     currentFileType.value = fileType;
 
     try {
-      final response = await _repo.getSharedFlyers({
+      final params = {
         "pageNumber": page,
         "pageSize": 10,
         "filterDays": filterKey,
         "sharedTo": (search == null || search.isEmpty) ? null : search,
         "filterType": mapFileTypeToApi(fileType),
         if (userId != null) "userId": userId,
-      });
+      };
+
+      final response = userId != null
+          ? await _repo.getSharedFlyersSharedUser(params)
+          : await _repo.getSharedFlyers(params);
 
       if (response == null) return;
 
