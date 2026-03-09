@@ -155,7 +155,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
         .join();
 
     final date = item.createdUtc != null
-        ? DateFormat('dd MMM yyyy, hh:mm a').format(item.createdUtc!)
+        ? DateFormat('MM/dd/yyyy HH:mm').format(item.createdUtc!)
         : '-';
 
     return Container(
@@ -204,16 +204,27 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 2.sp),
-                    // Username in brand colour
-                    Text(
-                      '@${item.sharedByUserName ?? ''}',
-                      style: AppTextStyle.normalRegular12
-                          .copyWith(color: primaryColor),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4.sp),
+                    if (item.sharedByUserName != null &&
+                        item.sharedByUserName!.isNotEmpty) ...[
+                      SizedBox(height: 2.sp),
+                      RichText(
+                        text: TextSpan(
+                          style: AppTextStyle.normalRegular12
+                              .copyWith(color: subTitleColor),
+                          children: [
+                            TextSpan(
+                              text: "Username: ",
+                              style: AppTextStyle.normalBold12
+                                  .copyWith(color: subTitleColor),
+                            ),
+                            TextSpan(text: item.sharedByUserName!),
+                          ],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4.sp),
+                    ],
                     // Date + clock icon
                     Row(
                       children: [

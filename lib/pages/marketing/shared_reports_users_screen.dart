@@ -148,7 +148,8 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
                             .join()
                         : "?";
                     final date = user.sharedDate != null
-                        ? DateFormat('dd MMM yyyy').format(user.sharedDate!)
+                        ? DateFormat('MM/dd/yyyy HH:mm')
+                            .format(user.sharedDate!)
                         : "-";
 
                     return Container(
@@ -188,6 +189,26 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
                                   style: AppTextStyle.normalBold14
                                       .copyWith(color: primaryBlack),
                                 ),
+                                if (name.isNotEmpty &&
+                                    user.userName != null &&
+                                    user.userName!.isNotEmpty) ...[
+                                  height04,
+                                  RichText(
+                                    text: TextSpan(
+                                      style: AppTextStyle.normalRegular12
+                                          .copyWith(color: subTitleColor),
+                                      children: [
+                                        TextSpan(
+                                          text: "Username: ",
+                                          style: AppTextStyle.normalBold12
+                                              .copyWith(color: subTitleColor),
+                                        ),
+                                        TextSpan(text: user.userName!),
+                                      ],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                                 height04,
                                 Text(
                                   user.email ?? "-",

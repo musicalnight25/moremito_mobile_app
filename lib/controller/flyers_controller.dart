@@ -74,14 +74,18 @@ class FlyersController extends GetxController {
     currentFileType.value = fileType;
 
     try {
-      final response = await _repo.getSharedFlyers({
+      final params = {
         "pageNumber": page,
         "pageSize": 10,
         "filterDays": filterKey,
         "sharedTo": (search == null || search.isEmpty) ? null : search,
         "filterType": mapFileTypeToApi(fileType),
         if (userId != null) "userId": userId,
-      });
+      };
+
+      final response = userId != null
+          ? await _repo.getSharedFlyersSharedUser(params)
+          : await _repo.getSharedFlyers(params);
 
       if (response == null) return;
 
@@ -232,13 +236,20 @@ class FlyersController extends GetxController {
     sharedUserStatsLoading.value = true;
     sharedUserStats.value = null;
     try {
-      // Use get-flyer-tracking-stats?userId=X — same format as own stats
-      // but scoped to the user who shared their report with us.
-      final response = await _repo.getFlyerTrackingStats(userId: userId);
+      // Use my-shared-links?userId=X — as per the new requirement
+      final response = await _repo.getSharedUserLinksStats(userId);
       if (response != null) {
-        final model = flyerTrackingStatsFromJson(json.encode(response));
-        if (model.status == true) {
-          sharedUserStats.value = model.data;
+        // The endpoint 'my-shared-links' wraps the stats inside 'TrackingInfo' under 'Data'
+        // So we manually extract it to reuse the FlyerTrackingStats model
+        if (response['Status'] == true) {
+          final data = response['Data'];
+          if (data != null) {
+            final trackingInfo = data['TrackingInfo'];
+            if (trackingInfo != null) {
+              sharedUserStats.value = FlyerTrackingStats.fromJson(
+                  Map<String, dynamic>.from(trackingInfo));
+            }
+          }
         }
       }
     } catch (e) {

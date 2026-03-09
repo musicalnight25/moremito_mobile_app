@@ -136,6 +136,10 @@ class NetworkRepository {
       getRequest(null, AppConstants.getSharedFlyers,
           queryParameters: queryParameters);
 
+  Future<dynamic> getSharedFlyersSharedUser(var queryParameters) =>
+      getRequest(null, AppConstants.getSharedFlyersSharedUser,
+          queryParameters: queryParameters);
+
   Future<dynamic> getFlyerInteractions(var queryParameters) =>
       getRequest(null, AppConstants.getFlyerInteractions,
           queryParameters: queryParameters);
@@ -148,6 +152,12 @@ class NetworkRepository {
         null,
         AppConstants.getFlyerTrackingStats,
         queryParameters: userId != null ? {'userId': userId} : null,
+      );
+
+  Future<dynamic> getSharedUserLinksStats(int userId) => getRequest(
+        null,
+        AppConstants.mySharedLinks,
+        queryParameters: {'userId': userId},
       );
 
   Future<dynamic> getNotificationDetail(
