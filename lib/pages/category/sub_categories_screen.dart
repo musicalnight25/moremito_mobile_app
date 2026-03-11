@@ -14,6 +14,8 @@ import '../../utils/common_app_bar.dart';
 import '../../utils/input_text_field_widget.dart';
 import '../../utils/no_data_found.dart';
 import 'category_details_screen.dart';
+import 'widget/category_file_shimmer.dart';
+import 'widget/category_file_tile.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
   final CategoryModel data;
@@ -27,10 +29,9 @@ class SubCategoriesScreen extends StatefulWidget {
 class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   final CategoriesController controller = Get.put(CategoriesController());
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
 
-  // Local reactive filtered list
-  final RxList<CategoryModel> _filteredList = <CategoryModel>[].obs;
   final RxBool _isSearching = false.obs;
 
   @override
@@ -38,27 +39,31 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await controller.getSubCategories(null, widget.data.categoryId ?? "0");
-      _filteredList.assignAll(controller.subCategoriesList);
     });
 
-    // Update filtered list whenever subCategoriesList changes (e.g., on refresh)
-    ever(controller.subCategoriesList, (_) {
-      _applySearch(_searchController.text);
+    _scrollController.addListener(() {
+      if (_isSearching.value &&
+          _scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          controller.hasMore.value &&
+          !controller.isLoading.value) {
+        controller.getSubCategoriesFiles(
+          context,
+          widget.data.categoryId ?? "0",
+          searchText: _searchController.text.trim(),
+          loadMore: true,
+        );
+      }
     });
   }
 
   void _applySearch(String query) {
-    final trimmed = query.trim().toLowerCase();
+    final trimmed = query.trim();
     if (trimmed.isEmpty) {
-      _isSearching.value = false;
-      _filteredList.assignAll(controller.subCategoriesList);
+      _clearSearch();
     } else {
       _isSearching.value = true;
-      _filteredList.assignAll(
-        controller.subCategoriesList.where(
-          (item) => (item.categoryName ?? '').toLowerCase().contains(trimmed),
-        ),
-      );
+      controller.resetAndSearch(trimmed, widget.data.categoryId ?? "0");
     }
   }
 
@@ -72,12 +77,16 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   void _clearSearch() {
     _searchController.clear();
     _isSearching.value = false;
-    _filteredList.assignAll(controller.subCategoriesList);
+    controller.categoriesFileList.clear();
   }
 
   Future<void> _onRefresh() async {
-    await controller.getSubCategories(null, widget.data.categoryId ?? "0");
-    _applySearch(_searchController.text);
+    if (_isSearching.value) {
+      controller.resetAndSearch(
+          _searchController.text.trim(), widget.data.categoryId ?? "0");
+    } else {
+      await controller.getSubCategories(null, widget.data.categoryId ?? "0");
+    }
   }
 
   Widget _searchBar() {
@@ -104,6 +113,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -134,41 +144,93 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
             // 🔹 Content
             Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        sliver: SliverMasonryGrid.count(
-                          crossAxisCount:
-                              MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childCount: 6,
-                          itemBuilder: (context, index) {
-                            return const CategoryCardShimmer();
-                          },
+              child: RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: primaryColor,
+                child: Obx(() {
+                  // 🔍 SEARCH RESULT (FILES)
+                  if (_isSearching.value) {
+                    if (controller.isLoading.value &&
+                        controller.categoriesFileList.isEmpty) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: 6,
+                        itemBuilder: (_, __) => const CategoryFileShimmer(),
+                      );
+                    }
+
+                    if (controller.categoriesFileList.isEmpty) {
+                      return const CustomScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          SliverFillRemaining(
+                            child: Center(
+                              child: NoDataFound(title: "Files"),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      itemCount: controller.categoriesFileList.length +
+                          (controller.hasMore.value ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == controller.categoriesFileList.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                        final file = controller.categoriesFileList[index];
+                        return CategoryFileTile(data: file);
+                      },
+                    );
+                  }
+
+                  // 🔄 Loading (Shimmer) for SubCategories
+                  if (controller.isLoading.value) {
+                    return CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          sliver: SliverMasonryGrid.count(
+                            crossAxisCount:
+                                MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childCount: 6,
+                            itemBuilder: (context, index) {
+                              return const CategoryCardShimmer();
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                }
+                      ],
+                    );
+                  }
 
-                final list = _filteredList;
+                  // 📭 Empty SubCategories
+                  if (controller.subCategoriesList.isEmpty) {
+                    return const CustomScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverFillRemaining(
+                          child: Center(
+                            child: NoDataFound(title: "Subcategories"),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
 
-                if (list.isEmpty) {
-                  return NoDataFound(
-                    title: _isSearching.value
-                        ? 'No results for "${_searchController.text}"'
-                        : 'Subcategories',
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: _onRefresh,
-                  color: primaryColor,
-                  child: CustomScrollView(
+                  // 📂 Loaded SubCategories
+                  return CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       SliverPadding(
@@ -178,9 +240,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                               MediaQuery.of(context).size.width > 600 ? 3 : 2,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
-                          childCount: list.length,
+                          childCount: controller.subCategoriesList.length,
                           itemBuilder: (context, index) {
-                            final subCategory = list[index];
+                            final subCategory =
+                                controller.subCategoriesList[index];
                             return GestureDetector(
                               onTap: () {
                                 controller.categoriesFileList.clear();
@@ -199,9 +262,9 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         child: SizedBox(height: 24),
                       ),
                     ],
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ],
         ),
