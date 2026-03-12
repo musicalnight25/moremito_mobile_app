@@ -54,8 +54,8 @@ android {
         applicationId = "com.moremito.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 20
-        versionName = "2.0.20"
+        versionCode = 21
+        versionName = "2.0.21"
     }
 
     signingConfigs {
