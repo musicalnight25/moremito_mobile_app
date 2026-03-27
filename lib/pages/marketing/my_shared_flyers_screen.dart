@@ -152,7 +152,7 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
                               color: Colors.white, size: 18.sp),
                           SizedBox(width: 8.sp),
                           Text(
-                            'Share Your Activity',
+                            'Share My Activity',
                             style: AppTextStyle.normalBold14
                                 .copyWith(color: Colors.white),
                           ),
@@ -216,33 +216,32 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
         customButton: Container(
           padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 11.sp),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: primaryColor,
             borderRadius: BorderRadius.circular(10.r),
-            border:
-                Border.all(color: primaryColor.withOpacity(0.8), width: 1.5),
+            border: Border.all(color: primaryColor, width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 5),
+                color: primaryColor.withOpacity(0.25),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               )
             ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.people_outline, color: primaryColor, size: 20.sp),
+              Icon(Icons.people_outline, color: Colors.white, size: 20.sp),
               width10,
               Text(
                 "View Shared Activity",
                 style: AppTextStyle.normalBold14.copyWith(
-                  color: primaryColor,
+                  color: Colors.white,
                   letterSpacing: 0.1,
                 ),
               ),
               const Spacer(),
               Icon(Icons.keyboard_arrow_down_rounded,
-                  color: primaryColor.withOpacity(0.7), size: 24.sp),
+                  color: Colors.white.withOpacity(0.85), size: 24.sp),
             ],
           ),
         ),
