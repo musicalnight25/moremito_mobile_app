@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/category/sub_categories_screen.dart';
 import 'package:more_mitro_app/pages/category/widget/category_card_shimmer.dart';
@@ -174,23 +173,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
                   // 🔄 Loading (Shimmer) for Categories
                   if (controller.isLoading.value) {
-                    return CustomScrollView(
+                    return ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverPadding(
-                          padding: const EdgeInsets.all(16),
-                          sliver: SliverMasonryGrid.count(
-                            crossAxisCount:
-                                MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childCount: 6,
-                            itemBuilder: (context, index) {
-                              return const CategoryCardShimmer();
-                            },
-                          ),
-                        ),
-                      ],
+                      padding: const EdgeInsets.all(16),
+                      itemCount: 6,
+                      itemBuilder: (context, index) {
+                        return const Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: CategoryCardShimmer(),
+                        );
+                      },
                     );
                   }
 
@@ -202,14 +194,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   }
 
                   // 📂 Loaded Categories
-                  return MasonryGridView.count(
+                  return ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
-                    crossAxisCount:
-                        MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
                     itemCount: controller.categoriesList.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final category = controller.categoriesList[index];
                       return GestureDetector(
@@ -220,6 +209,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         child: CategoryWidget(
                           category: category,
                           isSubCategory: false,
+                          isListTile: true,
                         ),
                       );
                     },

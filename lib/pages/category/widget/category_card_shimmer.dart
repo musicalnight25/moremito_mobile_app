@@ -10,13 +10,11 @@ class CategoryCardShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShadowContainerWidget(
-      padding: 14.sp,
+      padding: 12.sp,
       borderWidth: 1.sp,
-      blurRadius: 3,
-      widget: Column(
-        mainAxisSize: MainAxisSize.min,
+      blurRadius: 2,
+      widget: Row(
         children: [
-          // 🔵 Icon shimmer
           Shimmer.fromColors(
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.grey.shade100,
@@ -29,30 +27,32 @@ class CategoryCardShimmer extends StatelessWidget {
               ),
             ),
           ),
-
-          SizedBox(height: 10.sp),
-
-          // 📝 Title shimmer (line 1)
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
-              height: 14.sp,
-              width: double.infinity,
-              color: Colors.white,
-            ),
-          ),
-
-          SizedBox(height: 6.sp),
-
-          // 📝 Title shimmer (line 2 – optional)
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
-              height: 12.sp,
-              width: 100.sp,
-              color: Colors.white,
+          SizedBox(width: 12.sp),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    height: 14.sp,
+                    width: double.infinity,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 6.sp),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    height: 12.sp,
+                    width: 170.sp,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

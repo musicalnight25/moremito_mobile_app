@@ -10,15 +10,71 @@ import '../../../utils/shadow_container_widget.dart';
 class CategoryWidget extends StatelessWidget {
   final CategoryModel category;
   final bool isSubCategory;
+  final bool isListTile;
 
   const CategoryWidget({
     Key? key,
     required this.category,
     required this.isSubCategory,
+    this.isListTile = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (isListTile) {
+      final String title =
+          isSubCategory ? category.subCategoryName ?? "" : category.categoryName ?? "";
+      final String subtitle = (category.shortDesc ?? category.description ?? "").trim();
+
+      return ShadowContainerWidget(
+        padding: 12.sp,
+        borderWidth: 1.sp,
+        blurRadius: 2,
+        widget: Row(
+          children: [
+            Container(
+              height: 44.sp,
+              width: 44.sp,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primaryColor.withValues(alpha: 0.1),
+              ),
+              child: Icon(
+                category.icon ?? PhosphorIcons.folder(),
+                color: primaryColor,
+                size: 20.sp,
+              ),
+            ),
+            SizedBox(width: 12.sp),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.normalBold14.copyWith(height: 1.2),
+                  ),
+                  if (subtitle.isNotEmpty) ...[
+                    SizedBox(height: 4.sp),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.normalRegular12
+                          .copyWith(color: Colors.black54, height: 1.3),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return ShadowContainerWidget(
       padding: 14.sp,
       widget: Column(
@@ -32,8 +88,8 @@ class CategoryWidget extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [
-                  primaryColor.withOpacity(0.9),
-                  primaryColor.withOpacity(0.6),
+                  primaryColor.withValues(alpha: 0.9),
+                  primaryColor.withValues(alpha: 0.6),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
