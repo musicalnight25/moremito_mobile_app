@@ -269,8 +269,13 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                     generatedLink.value = link;
 
+                    final dashboard = homeController.dashboardModel.value;
+                    final senderName = (dashboard?.name ?? "").trim().isNotEmpty
+                        ? (dashboard?.name ?? "").trim()
+                        : (dashboard?.userName ?? "Someone");
+
                     messageTextController.text =
-                        "Hey ${nameTextController.text}, ${homeController.dashboardModel.value?.userName} has shared some information with you. "
+                        "Hey ${nameTextController.text}, $senderName has shared some information with you. "
                         "Visit the link to view it. $link";
                   },
                 ),

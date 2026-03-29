@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/pages/category/widget/category_card_shimmer.dart';
 import 'package:more_mitro_app/pages/category/widget/category_widget.dart';
@@ -195,23 +194,16 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
                   // 🔄 Loading (Shimmer) for SubCategories
                   if (controller.isLoading.value) {
-                    return CustomScrollView(
+                    return ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          sliver: SliverMasonryGrid.count(
-                            crossAxisCount:
-                                MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childCount: 6,
-                            itemBuilder: (context, index) {
-                              return const CategoryCardShimmer();
-                            },
-                          ),
-                        ),
-                      ],
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: 6,
+                      itemBuilder: (_, __) {
+                        return const Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: CategoryCardShimmer(),
+                        );
+                      },
                     );
                   }
 
@@ -230,38 +222,25 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   }
 
                   // 📂 Loaded SubCategories
-                  return CustomScrollView(
+                  return ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        sliver: SliverMasonryGrid.count(
-                          crossAxisCount:
-                              MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childCount: controller.subCategoriesList.length,
-                          itemBuilder: (context, index) {
-                            final subCategory =
-                                controller.subCategoriesList[index];
-                            return GestureDetector(
-                              onTap: () {
-                                controller.categoriesFileList.clear();
-                                Get.to(() =>
-                                    CategoryDetailsScreen(data: subCategory));
-                              },
-                              child: CategoryWidget(
-                                category: subCategory,
-                                isSubCategory: true,
-                              ),
-                            );
-                          },
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: controller.subCategoriesList.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final subCategory = controller.subCategoriesList[index];
+                      return GestureDetector(
+                        onTap: () {
+                          controller.categoriesFileList.clear();
+                          Get.to(() => CategoryDetailsScreen(data: subCategory));
+                        },
+                        child: CategoryWidget(
+                          category: subCategory,
+                          isSubCategory: true,
+                          isListTile: true,
                         ),
-                      ),
-                      const SliverToBoxAdapter(
-                        child: SizedBox(height: 24),
-                      ),
-                    ],
+                      );
+                    },
                   );
                 }),
               ),

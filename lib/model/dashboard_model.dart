@@ -40,6 +40,8 @@ class DashboardModel {
   int? id;
   String? name;
   String? userName;
+  String? firstName;
+  String? lastName;
   String? email;
   String? phone;
   String? currentRank;
@@ -54,6 +56,8 @@ class DashboardModel {
     this.id,
     this.name,
     this.userName,
+    this.firstName,
+    this.lastName,
     this.email,
     this.phone,
     this.currentRank,
@@ -69,6 +73,8 @@ class DashboardModel {
         id: json["Id"],
         name: json["Name"],
         userName: json["UserName"],
+        firstName: json["FirstName"],
+        lastName: json["LastName"],
         email: json["Email"],
         phone: json["Phone"],
         currentRank: json["CurrentRank"],
@@ -94,6 +100,8 @@ class DashboardModel {
     "Id": id,
     "Name": name,
     "UserName": userName,
+    "FirstName": firstName,
+    "LastName": lastName,
     "Email": email,
     "Phone": phone,
     "CurrentRank": currentRank,
