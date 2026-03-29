@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:more_mitro_app/utils/static_decoration.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -120,44 +119,36 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
               ),
             ),
             height16,
-            // ── Action buttons (stacked for full-width — no overflow) ─────
+            // ── Action buttons (Horizontal layout for space saving) ─────
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              child: Column(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // "View Shared Activity" dropdown — full width
-                  _buildViewActivityDropdown(),
-                  SizedBox(height: 10.sp),
-                  // "Share Your Activity" button — full width
-                  GestureDetector(
-                    onTap: () => Get.to(() => const ShareYourActivityScreen()),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 13.sp),
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(10.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withOpacity(0.25),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.share_outlined,
-                              color: Colors.white, size: 18.sp),
-                          SizedBox(width: 8.sp),
-                          Text(
-                            'Share Your Activity',
-                            style: AppTextStyle.normalBold14
-                                .copyWith(color: Colors.white),
-                          ),
-                        ],
-                      ),
+                  Expanded(
+                    child: _buildSmallActionCard(
+                      title: "Share\nActivity",
+                      icon: Icons.ios_share_rounded,
+                      isPrimary: true,
+                      onTap: () => Get.to(() => const ShareYourActivityScreen()),
+                    ),
+                  ),
+                  SizedBox(width: 10.sp),
+                  Expanded(
+                    child: _buildSmallActionCard(
+                      title: "Shared\nby Me",
+                      icon: Icons.people_alt_outlined,
+                      isPrimary: false,
+                      onTap: () => Get.to(() => const SharedReportsUsersScreen()),
+                    ),
+                  ),
+                  SizedBox(width: 10.sp),
+                  Expanded(
+                    child: _buildSmallActionCard(
+                      title: "Shared\nwith Me",
+                      icon: Icons.mark_as_unread_outlined,
+                      isPrimary: false,
+                      onTap: () => Get.to(() => const SharedReportsWithMeScreen()),
                     ),
                   ),
                 ],
@@ -210,96 +201,49 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
     );
   }
 
-  Widget _buildViewActivityDropdown() {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<int>(
-        customButton: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 11.sp),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.r),
-            border:
-                Border.all(color: primaryColor.withOpacity(0.8), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 5),
-              )
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.people_outline, color: primaryColor, size: 20.sp),
-              width10,
-              Text(
-                "View Shared Activity",
-                style: AppTextStyle.normalBold14.copyWith(
-                  color: primaryColor,
-                  letterSpacing: 0.1,
-                ),
+  Widget _buildSmallActionCard({
+    required String title,
+    required IconData icon,
+    required bool isPrimary,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12.sp, horizontal: 4.sp),
+        decoration: BoxDecoration(
+          color: isPrimary ? primaryColor : Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
+          border: isPrimary ? null : Border.all(color: Colors.grey.shade200, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isPrimary ? Colors.white : Colors.black87,
+              size: 22.sp,
+            ),
+            SizedBox(height: 6.sp),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppTextStyle.normalBold12.copyWith(
+                color: isPrimary ? Colors.white : Colors.black87,
+                height: 1.2,
+                fontSize: 11.sp,
               ),
-              const Spacer(),
-              Icon(Icons.keyboard_arrow_down_rounded,
-                  color: primaryColor.withOpacity(0.7), size: 24.sp),
-            ],
-          ),
-        ),
-        items: [
-          DropdownMenuItem<int>(
-            value: 1,
-            child: Row(
-              children: [
-                const Icon(Icons.people_outline, size: 18),
-                width08,
-                Expanded(
-                  child: Text(
-                    "See who my activity is shared with",
-                    style: AppTextStyle.normalRegular14,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          DropdownMenuItem<int>(
-            value: 2,
-            child: Row(
-              children: [
-                const Icon(Icons.mark_as_unread_outlined, size: 18),
-                width08,
-                Expanded(
-                  child: Text(
-                    "See activities of others shared with me",
-                    style: AppTextStyle.normalRegular14,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-        onChanged: (value) {
-          if (value == 1) {
-            Get.to(() => const SharedReportsUsersScreen());
-          } else if (value == 2) {
-            Get.to(() => const SharedReportsWithMeScreen());
-          }
-        },
-        dropdownStyleData: DropdownStyleData(
-          width: 0.9.sw,
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            color: Colors.white,
-          ),
-          offset: const Offset(0, -4),
-          elevation: 8,
-        ),
-        menuItemStyleData: MenuItemStyleData(
-          customHeights: [45.sp, 45.sp],
-          padding: EdgeInsets.symmetric(horizontal: 16.sp),
+          ],
         ),
       ),
     );
@@ -307,46 +251,45 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
 
   Widget _shimmerTile() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: Colors.grey.shade200,
+      highlightColor: Colors.grey.shade50,
       child: Container(
+        padding: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12.sp),
-          border: Border.all(color: borderGreyColor),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: 38.sp,
+              height: 14.sp,
+              width: 80.sp,
               decoration: BoxDecoration(
-                color: Colors.grey.shade400,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(12.sp)),
-              ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r)
+              )
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(12.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                      2,
-                      (_) => Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  height: 10.sp,
-                                  width: 60.sp,
-                                  color: Colors.grey),
-                              Container(
-                                  height: 14.sp,
-                                  width: 20.sp,
-                                  color: Colors.grey),
-                            ],
-                          )),
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(height: 10.sp, width: 60.sp, color: Colors.white),
+                    Container(height: 14.sp, width: 20.sp, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4.r))),
+                  ],
                 ),
-              ),
+                SizedBox(height: 8.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(height: 10.sp, width: 60.sp, color: Colors.white),
+                    Container(height: 14.sp, width: 20.sp, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4.r))),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
@@ -364,50 +307,37 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        padding: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
-          color: primaryWhite,
-          borderRadius: BorderRadius.circular(10.sp),
-          border: Border.all(color: headerColor.withOpacity(0.3), width: 1.1),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
           boxShadow: [
             BoxShadow(
-              color: headerColor.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            )
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 8.sp),
-              decoration: BoxDecoration(
-                color: headerColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(8.sp)),
+            Text(
+              title,
+              style: AppTextStyle.normalBold14.copyWith(
+                color: Colors.black87,
               ),
-              child: Center(
-                child: Text(
-                  title,
-                  style: AppTextStyle.normalBold14
-                      .copyWith(color: Colors.white, fontSize: 13.sp),
-                ),
-              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-
-            // Body
-            Expanded(
-              child: Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _row("RECIPIENTS", recipients.toString(), headerColor),
-                    _row("ACTIVITY", activity.toString(), headerColor),
-                  ],
-                ),
-              ),
+            Column(
+              children: [
+                _row("Recipients", recipients.toString(), Colors.black87),
+                SizedBox(height: 6.sp),
+                _row("Activity", activity.toString(), primaryColor),
+              ],
             ),
           ],
         ),
@@ -421,10 +351,9 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
       children: [
         Text(
           label,
-          style: AppTextStyle.normalRegular10.copyWith(
-            color: subTitleColor,
+          style: AppTextStyle.normalRegular12.copyWith(
+            color: Colors.grey.shade600,
             fontWeight: FontWeight.w500,
-            fontSize: 9.sp,
           ),
         ),
         Text(
