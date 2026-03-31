@@ -26,7 +26,7 @@ class YearDetailsScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "$year Details",
+        title: "$year Details".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -43,7 +43,7 @@ class YearDetailsScreen extends StatelessWidget {
                   Icon(Icons.calendar_today_outlined,
                       size: 48.sp, color: Colors.grey),
                   height10,
-                  Text("No data available for $year",
+                  Text("No data available for $year".tr,
                       style: AppTextStyle.normalRegular14
                           .copyWith(color: Colors.grey)),
                 ],

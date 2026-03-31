@@ -34,7 +34,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: "Call Details",
+        title: "Call Details".tr,
         visibleBackButton: true,
       ),
 
@@ -45,7 +45,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> {
 
         final html = controller.details.value?.htmlPart;
         if (html == null || html.isEmpty) {
-          return const Center(child: Text("No content available"));
+          return Center(child: Text("No content available".tr));
         }
 
         return SafeArea(

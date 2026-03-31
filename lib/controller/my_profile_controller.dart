@@ -80,8 +80,7 @@ class MyProfileController extends GetxController {
       );
 
       if (response != null && response["Status"] == true) {
-        CommonMethod.getXSnackBar(
-            "Success", "Profile updated successfully", greenColor);
+        CommonMethod.getXSnackBar("Success".tr, "Profile updated successfully".tr, greenColor);
       }
     } catch (e, stack) {
       await ErrorLogger.logErrorToServer(

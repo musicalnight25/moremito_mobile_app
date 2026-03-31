@@ -37,8 +37,8 @@ class _CommissionPayoutHistoryScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Commission Payout History",
+      appBar: CommonAppBar(
+        title: "Commission Payout History".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -58,7 +58,7 @@ class _CommissionPayoutHistoryScreenState
                       size: 48.sp, color: Colors.grey),
                   height10,
                   Text(
-                    "No payout history found",
+                    "No payout history found".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.grey),
                   ),
@@ -76,7 +76,7 @@ class _CommissionPayoutHistoryScreenState
                 _buildTotalCard(data.totalApprovedAmount),
                 SizedBox(height: 24.sp),
                 Text(
-                  "Requested Commission History",
+                  "Requested Commission History".tr,
                   style: AppTextStyle.normalBold16,
                 ),
                 height10,
@@ -118,7 +118,7 @@ class _CommissionPayoutHistoryScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Total Approved Amount",
+                "Total Approved Amount".tr,
                 style: AppTextStyle.normalRegular12
                     .copyWith(color: Colors.black54),
               ),
@@ -166,28 +166,28 @@ class _CommissionPayoutHistoryScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _dataRow(
-              label: "Transaction Id",
+              label: "Transaction Id".tr,
               value: "${tx.transactionId ?? '-'}",
             ),
             _dataRow(
-              label: "Amount",
+              label: "Amount".tr,
               value: "\$${tx.amount?.toStringAsFixed(2) ?? '0.00'}",
             ),
             _dataRow(
-              label: "Date",
+              label: "Date".tr,
               value: CommonMethod.formatDateFromDateTime(tx.date),
             ),
             _dataRow(
-              label: "Payment Method",
+              label: "Payment Method".tr,
               value: tx.paymentMethod ?? "-",
             ),
             _dataRow(
-              label: "Payment Status",
+              label: "Payment Status".tr,
               value: tx.paymentStatus ?? "-",
             ),
             if ((tx.description ?? "").isNotEmpty)
               _dataRow(
-                label: "Description",
+                label: "Description".tr,
                 value: tx.description!,
                 isMultiline: true,
               ),

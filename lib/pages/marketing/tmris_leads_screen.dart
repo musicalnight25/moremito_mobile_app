@@ -39,8 +39,8 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "TMRIS Leads",
+      appBar: CommonAppBar(
+        title: "TMRIS Leads".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -178,7 +178,7 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
             onPressed: () {
               Get.to(() => TmrisLeadDetailsScreen(lead: lead));
             },
-            title: "View Details",
+            title: "View Details".tr,
           ),
         ],
       ),
@@ -211,7 +211,7 @@ class _TmrisLeadsScreenState extends State<TmrisLeadsScreen> {
               ),
               width10,
               Text(
-                "Notes",
+                "Notes".tr,
                 style:
                     AppTextStyle.normalSemiBold14.copyWith(color: primaryBlack),
               ),

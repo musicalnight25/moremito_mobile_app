@@ -122,12 +122,12 @@ class MonthDetailsScreen extends StatelessWidget {
       child: Obx(() => Row(
             children: [
               _buildTabItem(
-                label: "Commission Type Summary",
+                label: "Commission Type Summary".tr,
                 isSelected: controller.selectedTab.value == 0,
                 onTap: () => controller.selectedTab.value = 0,
               ),
               _buildTabItem(
-                label: "Commissions Details",
+                label: "Commissions Details".tr,
                 isSelected: controller.selectedTab.value == 1,
                 onTap: () => controller.selectedTab.value = 1,
               ),

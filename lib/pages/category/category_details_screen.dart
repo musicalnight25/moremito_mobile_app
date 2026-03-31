@@ -63,7 +63,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
               _searchBar(),
               Expanded(
                 child: list.isEmpty
-                    ? const NoDataFound(title: "Files")
+                    ? NoDataFound(title: "Files".tr)
                     : ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 16.sp),
                         controller: _scrollController,
@@ -96,7 +96,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
         padding: const EdgeInsets.all(16),
         child: TextFormFieldWidget(
           controller: _searchController,
-          hintText: "Search Audios, Videos & Docs",
+          hintText: "Search Audios, Videos & Docs".tr,
           suffixIcon: controller.searchText.value.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close),

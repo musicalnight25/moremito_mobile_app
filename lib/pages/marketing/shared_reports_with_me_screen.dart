@@ -68,7 +68,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
         title: Text(
-          'Decline Report',
+          "Decline Report".tr,
           style: AppTextStyle.normalBold16.copyWith(color: primaryBlack),
         ),
         content: Column(
@@ -76,8 +76,8 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Decline report shared by '
-              '"${item.sharedByName ?? item.sharedByUserName ?? ''}"?',
+              ("Decline report shared by " +
+              '"${item.sharedByName ?? item.sharedByUserName ?? ''}"?').tr,
               style:
                   AppTextStyle.normalRegular14.copyWith(color: subTitleColor),
             ),
@@ -85,7 +85,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
             TextField(
               controller: commentController,
               decoration: InputDecoration(
-                hintText: 'Reason (optional)',
+                hintText: "Reason (optional)".tr,
                 hintStyle: AppTextStyle.normalRegular14
                     .copyWith(color: borderGreyColor),
                 border: OutlineInputBorder(
@@ -107,7 +107,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
+              "Cancel".tr,
               style:
                   AppTextStyle.normalRegular14.copyWith(color: subTitleColor),
             ),
@@ -120,7 +120,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Decline',
+              "Decline".tr,
               style: AppTextStyle.normalBold14.copyWith(color: Colors.white),
             ),
           ),
@@ -291,7 +291,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
                             color: Colors.white, size: 14.sp),
                         SizedBox(width: 5.sp),
                         Text(
-                          'View',
+                          "View".tr,
                           style: AppTextStyle.normalSemiBold13
                               .copyWith(color: Colors.white),
                         ),
@@ -323,7 +323,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
                             color: Colors.orangeAccent, size: 14.sp),
                         SizedBox(width: 5.sp),
                         Text(
-                          'Decline',
+                          "Decline".tr,
                           style: AppTextStyle.normalSemiBold13
                               .copyWith(color: Colors.orangeAccent.shade700),
                         ),
@@ -343,8 +343,8 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: 'Shared With Me',
+      appBar: CommonAppBar(
+        title: "Shared With Me".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -355,7 +355,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                'Activities Shared With Me',
+                "Activities Shared With Me".tr,
                 style: AppTextStyle.normalBold18
                     .copyWith(color: primaryColor, height: 1.2),
               ),
@@ -364,7 +364,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                'Reports shared with you by other users.',
+                "Reports shared with you by other users.".tr,
                 style: AppTextStyle.normalRegular13
                     .copyWith(color: subTitleColor, height: 1.3),
               ),
@@ -388,7 +388,7 @@ class _SharedReportsWithMeScreenState extends State<SharedReportsWithMeScreen> {
                             size: 56.sp, color: borderGreyColor),
                         height12,
                         Text(
-                          'No activities shared with you yet.',
+                          "No activities shared with you yet.".tr,
                           textAlign: TextAlign.center,
                           style: AppTextStyle.normalRegular14
                               .copyWith(color: subTitleColor),

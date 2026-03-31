@@ -165,8 +165,7 @@ class TicketController extends GetxController {
 
       if (response != null) {
         Get.back();
-        CommonMethod.getXSnackBar(
-            "Success", "Ticket created successfully.", primaryColor);
+        CommonMethod.getXSnackBar("Success".tr, "Ticket created successfully.".tr, primaryColor);
 
         getTicketList();
       }
@@ -203,7 +202,7 @@ class TicketController extends GetxController {
       var response = await _repo.addTicketComment(null, formData);
 
       if (response != null) {
-        CommonMethod.getXSnackBar("Success", "Ticket reopened", primaryColor);
+        CommonMethod.getXSnackBar("Success".tr, "Ticket reopened".tr, primaryColor);
         getTicketList();
         await getTicketDetails(ticketId); // refresh
       }

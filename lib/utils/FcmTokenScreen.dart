@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _FcmTokenScreenState extends State<FcmTokenScreen> {
     if (_fcmToken != null) {
       Clipboard.setData(ClipboardData(text: _fcmToken!));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Token copied to clipboard!')),
+        SnackBar(content: Text("Token copied to clipboard!".tr)),
       );
     }
   }
@@ -40,14 +41,14 @@ class _FcmTokenScreenState extends State<FcmTokenScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text("FCM Token")),
+        appBar: AppBar(title: Text("FCM Token".tr)),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "Your Device Token:",
+                "Your Device Token:".tr,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
@@ -61,7 +62,7 @@ class _FcmTokenScreenState extends State<FcmTokenScreen> {
               ElevatedButton.icon(
                 onPressed: _copyToClipboard,
                 icon: Icon(Icons.copy),
-                label: Text("Copy Token"),
+                label: Text("Copy Token".tr),
               ),
             ],
           ),

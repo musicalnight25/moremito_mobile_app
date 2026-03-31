@@ -11,6 +11,7 @@ import 'package:more_mitro_app/pages/auth/login_screen.dart';
 import 'package:more_mitro_app/pages/auth/start_survey_screen.dart';
 import 'package:more_mitro_app/pages/main_dashboard_screen.dart';
 import 'package:more_mitro_app/service/pop_up_service.dart';
+import 'package:more_mitro_app/utils/app_translations.dart';
 
 import 'utils/app_text_style.dart';
 import 'utils/colors.dart';
@@ -88,9 +89,11 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
       builder: (_, child) {
         return GetMaterialApp(
           navigatorKey: navigatorKey,
-          title: 'MoreMito',
+          title: "MoreMito".tr,
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
+          translations: AppTranslations(),
+          locale: Get.deviceLocale ?? const Locale('en', 'US'),
           fallbackLocale: const Locale('en', 'US'),
           defaultTransition: Transition.fadeIn,
           themeMode: ThemeMode.light,

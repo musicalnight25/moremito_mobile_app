@@ -21,7 +21,7 @@ class ChangePasswordScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "Change Password",
+        title: "Change Password".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -33,7 +33,7 @@ class ChangePasswordScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Create new password",
+                "Create new password".tr,
                 style: AppTextStyle.normalBold16.copyWith(
                   fontSize: 18.sp,
                   color: lightBlackColor,
@@ -41,7 +41,7 @@ class ChangePasswordScreen extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                "Your new password must be different from previously used passwords.",
+                "Your new password must be different from previously used passwords.".tr,
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: textGreyColor,
                   height: 1.5,
@@ -51,15 +51,15 @@ class ChangePasswordScreen extends StatelessWidget {
 
               // --- Form Fields ---
               _passwordField(
-                label: "Current Password",
+                label: "Current Password".tr,
                 controller: controller.currentPasswordCtrl,
               ),
               _passwordField(
-                label: "New Password",
+                label: "New Password".tr,
                 controller: controller.newPasswordCtrl,
               ),
               _passwordField(
-                label: "Confirm Password",
+                label: "Confirm Password".tr,
                 controller: controller.confirmPasswordCtrl,
               ),
 
@@ -75,7 +75,7 @@ class ChangePasswordScreen extends StatelessWidget {
                     onPressed: controller.isLoading.value
                         ? null // Disable button while loading
                         : controller.changePassword,
-                    title: "Update Password",
+                    title: "Update Password".tr,
                   ),
                 ),
               ),
@@ -99,7 +99,7 @@ class ChangePasswordScreen extends StatelessWidget {
           PasswordWidget(
             controller: controller,
             labelText: label,
-            hintText: "Please Enter $label",
+            hintText: "Please Enter $label".tr,
             // Add hint text or styles if your widget supports it for better UX
           ),
         ],

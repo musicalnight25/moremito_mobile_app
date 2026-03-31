@@ -44,8 +44,8 @@ class _DownlineOrderDetailScreenState extends State<DownlineOrderDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Downline Order Details",
+      appBar: CommonAppBar(
+        title: "Downline Order Details".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -57,7 +57,7 @@ class _DownlineOrderDetailScreenState extends State<DownlineOrderDetailScreen> {
           final data = controller.orderData.value;
 
           if (data == null) {
-            return const Center(child: Text("No order details found"));
+            return Center(child: Text("No order details found".tr));
           }
 
           return SingleChildScrollView(
@@ -70,7 +70,7 @@ class _DownlineOrderDetailScreenState extends State<DownlineOrderDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Order #${data.myOrders.orderId}",
+                        "Order #${data.myOrders.orderId}".tr,
                         style: AppTextStyle.normalSemiBold16
                             .copyWith(color: primaryBlack),
                       ),
@@ -94,7 +94,7 @@ class _DownlineOrderDetailScreenState extends State<DownlineOrderDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Products",
+                        "Products".tr,
                         style: AppTextStyle.normalSemiBold16
                             .copyWith(color: primaryBlack),
                       ),

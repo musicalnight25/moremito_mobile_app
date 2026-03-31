@@ -27,26 +27,26 @@ class NotificationSettingsScreen extends StatelessWidget {
             children: [
               height20,
               Text(
-                "Push Notifications",
+                "Push Notifications".tr,
                 style: AppTextStyle.normalExtraBold
                     .copyWith(fontSize: 24.sp, color: primaryBlack),
               ),
               Text(
-                "Manage how you receive alerts and updates",
+                "Manage how you receive alerts and updates".tr,
                 style:
                     AppTextStyle.normalRegular14.copyWith(color: hintGreyColor),
               ),
               height24,
               _masterToggleSection(
-                title: "All Notifications",
+                title: "All Notifications".tr,
                 toggle: c.isAllEnabled,
                 onToggle: c.toggleAll,
               ),
               height20,
               _buildCategoryCard(
-                title: "Shared Link Notifications",
+                title: "Shared Link Notifications".tr,
                 subtitle:
-                    "Messages about promotions and information sent by us",
+                    "Messages about promotions and information sent by us".tr,
                 toggle: c.isMarketingEnabled,
                 list: c.marketingList,
                 onCategoryToggle: (v) =>
@@ -54,8 +54,8 @@ class NotificationSettingsScreen extends StatelessWidget {
                 onItemToggle: c.toggleSingle,
               ),
               _buildCategoryCard(
-                title: "Announcement Notifications",
-                subtitle: "Important updates and reminders",
+                title: "Announcement Notifications".tr,
+                subtitle: "Important updates and reminders".tr,
                 toggle: c.isAnnouncementEnabled,
                 list: c.announcementList,
                 onCategoryToggle: (v) => c.toggleCategory(
@@ -95,7 +95,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                         .copyWith(color: primaryColor)),
                 height04,
                 Text(
-                  "Enable/Disable app push notifications",
+                  "Enable/Disable app push notifications".tr,
                   style: AppTextStyle.normalRegular12
                       .copyWith(color: hintGreyColor),
                 )

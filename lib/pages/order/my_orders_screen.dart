@@ -166,7 +166,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Order Number : ${order.orderId}",
+                    "Order Number : ${order.orderId}".tr,
                     style: AppTextStyle.normalSemiBold18,
                   ),
                 ),
@@ -229,7 +229,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Shipping Method",
+                    "Shipping Method".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.black54),
                   ),
@@ -250,7 +250,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Tracking ID",
+                    "Tracking ID".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.black54),
                   ),
@@ -279,7 +279,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             // ---------------- SUPPORT LINK -----------------------
             // ======================================================
             // CommonTextActionButton(
-            //   title: "Send/View messages with support team",
+            //   title: "Send/View messages with support team".tr,
             //   onTap: () {
             //     CommonMethod.getXSnackBar(
             //       "Support",
@@ -340,7 +340,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: CommonAppBar(title: "My Order", visibleBackButton: true),
+      appBar: CommonAppBar(title: "My Order".tr, visibleBackButton: true),
       body: BaseBackgroundWidget(
         child: RefreshIndicator(
           color: primaryColor,
@@ -362,7 +362,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             }
 
             if (controller.orderList.isEmpty) {
-              return const NoDataFound(title: "Orders");
+              return NoDataFound(title: "Orders".tr);
             }
 
             return SingleChildScrollView(

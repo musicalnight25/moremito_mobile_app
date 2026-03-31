@@ -52,7 +52,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
 
   Future<void> submitComment() async {
     if (commentController.text.isEmpty) {
-      CommonMethod.getXSnackBar("Warning", "Enter comment", redColor);
+      CommonMethod.getXSnackBar("Warning".tr, "Enter comment".tr, redColor);
       return;
     }
 
@@ -75,7 +75,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: primaryWhite,
       appBar: CommonAppBar(
-        title: "Ticket #${widget.ticketId}",
+        title: "Ticket #${widget.ticketId}".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -96,7 +96,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
                 _addCommentCard(),
                 customHeight(26),
                 Text(
-                  "Previous Comments",
+                  "Previous Comments".tr,
                   style: AppTextStyle.normalSemiBold18
                       .copyWith(color: primaryBlack),
                 ),
@@ -125,7 +125,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
             size: 50, color: textGreyColor.withOpacity(0.6)),
         customHeight(10),
         Text(
-          "No comments yet",
+          "No comments yet".tr,
           style: AppTextStyle.normalRegular16.copyWith(
             color: textGreyColor,
           ),
@@ -157,7 +157,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Add Comment",
+            "Add Comment".tr,
             style: AppTextStyle.normalSemiBold18.copyWith(
               color: primaryBlack,
             ),
@@ -165,7 +165,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
           customHeight(12),
           TextFormFieldWidget(
             controller: commentController,
-            hintText: "Write your comment...",
+            hintText: "Write your comment...".tr,
             maxLines: 4,
           ),
           customHeight(16),
@@ -178,7 +178,7 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
                     ),
                   )
                 : PrimaryTextButton(
-                    title: "Submit Comment",
+                    title: "Submit Comment".tr,
                     onPressed: submitComment,
                   ),
           ),

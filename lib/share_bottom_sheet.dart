@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -27,7 +28,7 @@ class ShareBottomSheet {
             children: [
               _buildItem(
                 icon: PhosphorIconsFill.whatsappLogo,
-                label: "WhatsApp",
+                label: "WhatsApp".tr,
                 color: Colors.green,
                 onTap: () async {
                   Navigator.pop(context);
@@ -40,7 +41,7 @@ class ShareBottomSheet {
               ),
               _buildItem(
                 icon: PhosphorIconsFill.chatCircleText,
-                label: "Message",
+                label: "Message".tr,
                 color: Colors.blue,
                 onTap: () async {
                   Navigator.pop(context);
@@ -54,7 +55,7 @@ class ShareBottomSheet {
               if (email != null && email.isNotEmpty)
                 _buildItem(
                   icon: PhosphorIconsFill.envelopeSimple,
-                  label: "Email",
+                  label: "Email".tr,
                   color: Colors.redAccent,
                   onTap: () async {
                     Navigator.pop(context);
@@ -68,7 +69,7 @@ class ShareBottomSheet {
                 ),
               _buildItem(
                 icon: PhosphorIconsRegular.dotsThreeOutline,
-                label: "More",
+                label: "More".tr,
                 color: Colors.grey,
                 onTap: () async {
                   Navigator.pop(context);
@@ -201,14 +202,16 @@ class ShareBottomSheet {
                     if (result.status == ShareResultStatus.success) {
                       onShared("other");
                       CommonMethod.getXSnackBar(
-                          "Success 🎉",
-                          "You're amazing! 🌟 Thank you for sharing on $platform. We truly appreciate your support! 🙌😊",
-                          greenColor);
+                        "Success 🎉".tr, 
+                        "You're amazing! 🌟 Thank you for sharing on $platform. We truly appreciate your support! 🙌😊".tr,
+                        greenColor,
+                      );
                     } else if (result.status == ShareResultStatus.dismissed) {
                       CommonMethod.getXSnackBar(
-                          "No Share 😕",
-                          "Looks like the share wasn’t completed. No worries! You can try again whenever you're ready. We appreciate you! ❤️",
-                          primaryBlack);
+                        "No Share 😕".tr, 
+                        "Looks like the share wasn’t completed. No worries! You can try again whenever you're ready. We appreciate you! ❤️".tr,
+                        primaryBlack,
+                      );
                     }
                   }
                 },

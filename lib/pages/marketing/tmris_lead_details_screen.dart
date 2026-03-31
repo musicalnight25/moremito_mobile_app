@@ -25,7 +25,7 @@ class TmrisLeadDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: CommonAppBar(
-        title: "TMRIS Lead Details",
+        title: "TMRIS Lead Details".tr,
         visibleBackButton: true,
       ),
       body: SingleChildScrollView(
@@ -108,7 +108,7 @@ class TmrisLeadDetailsScreen extends StatelessWidget {
 
   Widget _notesBox(String? notes) {
     if ((notes ?? "").isEmpty) {
-      return Text("-", style: AppTextStyle.normalRegular14);
+      return Text("-".tr, style: AppTextStyle.normalRegular14);
     }
 
     return Container(
@@ -137,13 +137,13 @@ class TmrisLeadDetailsScreen extends StatelessWidget {
           SizedBox(
             width: 130.sp,
             child: Text(
-              "$label:",
+              "$label:".tr,
               style: AppTextStyle.normalBold14,
             ),
           ),
           Expanded(
             child: Text(
-              value ?? "-",
+              value ?? ".tr-",
               style: AppTextStyle.normalRegular14,
             ),
           ),

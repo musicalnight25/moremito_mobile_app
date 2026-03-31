@@ -76,7 +76,7 @@ class _DocumentViewerWidgetState extends State<DocumentViewerWidget>
             children: [
               ListTile(
                 leading: Icon(Icons.remove_red_eye, color: primaryColor),
-                title: const Text("Preview Document"),
+                title: Text("Preview Document".tr),
                 onTap: () {
                   Navigator.pop(context);
                   _openDocument();
@@ -84,7 +84,7 @@ class _DocumentViewerWidgetState extends State<DocumentViewerWidget>
               ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser, color: primaryBlack),
-                title: const Text("Open in Browser"),
+                title: Text("Open in Browser".tr),
                 onTap: () {
                   Navigator.pop(context);
                   launchURL(widget.filePath);

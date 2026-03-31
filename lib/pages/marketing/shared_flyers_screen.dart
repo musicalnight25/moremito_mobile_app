@@ -94,7 +94,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           // 🔍 Search Field
           TextFormFieldWidget(
             controller: _searchController,
-            hintText: "Search recipient",
+            hintText: "Search recipient".tr,
             suffixIcon: IconButton(
               icon: const Icon(Icons.search, size: 20),
               onPressed: () {
@@ -119,7 +119,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               Expanded(
                 child: Container(
                   height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
@@ -130,18 +130,18 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                           child: DropdownButton<String>(
                             isExpanded: true,
                             value: controller.currentFileType.value ?? "All",
-                            icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                            items: const [
+                            icon: Icon(Icons.keyboard_arrow_down_rounded),
+                            items: [
                               DropdownMenuItem(
-                                  value: "All", child: Text("All")),
+                                  value: "All", child: Text("All".tr)),
                               DropdownMenuItem(
                                   value: "Files",
-                                  child: Text("Audios, Videos & Docs")),
+                                  child: Text("Audios, Videos & Docs".tr)),
                               DropdownMenuItem(
-                                  value: "Flyers", child: Text("Flyers")),
+                                  value: "Flyers", child: Text("Flyers".tr)),
                               DropdownMenuItem(
                                   value: "SMS",
-                                  child: Text("SMS requested info ")),
+                                  child: Text("SMS requested info ".tr)),
                             ],
                             onChanged: (value) {
                               controller.currentFileType.value =
@@ -227,7 +227,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           // 1. Who (Recipient)
           CompactInfoRow(
             icon: Icons.person_search_outlined,
-            label: "Who :",
+            label: "Who :".tr,
             value: item.sharedTo ?? "N/A",
             valueColor: primaryBlack,
           ),
@@ -236,7 +236,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           if (item.title != null && item.title!.isNotEmpty)
             CompactInfoRow(
               icon: Icons.description_outlined,
-              label: "What :",
+              label: "What :".tr,
               value: item.title ?? "",
               valueColor: primaryBlack,
               // isHighlighted: true, // Highlights the main content
@@ -245,7 +245,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           // 3. When
           CompactInfoRow(
             icon: Icons.calendar_today_outlined,
-            label: "When :",
+            label: "When :".tr,
             value: _formatDate(item.sharedOn),
             valueColor: primaryBlack,
           ),
@@ -253,7 +253,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
           // 4. Last Activity
           CompactInfoRow(
             icon: Icons.history_outlined,
-            label: "Last Activity :",
+            label: "Last Activity :".tr,
             value: _formatDate(item.lastInteractionDate),
             valueColor: primaryBlack,
           ),
@@ -277,7 +277,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                         size: 16.sp, color: Colors.green.shade700),
                     SizedBox(width: 6.sp),
                     Text(
-                      "Total Activities : ${item.totalInteractions ?? 0}",
+                      "Total Activities : ${item.totalInteractions ?? 0}".tr,
                       style: AppTextStyle.normalSemiBold12
                           .copyWith(color: Colors.green.shade900),
                     ),
@@ -288,7 +288,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
               Opacity(
                 opacity: hasData ? 1.0 : 0.35,
                 child: TextPrimaryButton(
-                  title: "View Details",
+                  title: "View Details".tr,
                   onPressed: navigateToDetails,
                 ),
               )
@@ -405,7 +405,7 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                 }
 
                 if (controller.sharedFlyers.isEmpty) {
-                  return const NoDataFound(title: "Shared Flyers");
+                  return NoDataFound(title: "Shared Flyers".tr);
                 }
 
                 return RefreshIndicator(

@@ -24,8 +24,8 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
     return Scaffold(
       // Soft professional off-white
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Manage Addresses",
+      appBar: CommonAppBar(
+        title: "Manage Addresses".tr,
         visibleBackButton: true,
       ),
       // Sticky bottom button for better UX/Reachability
@@ -77,7 +77,7 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
-              "Note: Changing your address here does not update existing recurring orders. Please update those manually in the Orders tab.",
+              "Note: Changing your address here does not update existing recurring orders. Please update those manually in the Orders tab.".tr,
               style: AppTextStyle.normalRegular13.copyWith(
                 color: Colors.orange.shade900,
                 height: 1.4,
@@ -126,7 +126,7 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "${address.firstName} ${address.lastName}",
+                              "${address.firstName} ${address.lastName}".tr,
                               style: AppTextStyle.normalBold16,
                             ),
                             if (isDefault) _buildDefaultBadge(),
@@ -167,7 +167,7 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Text(
-        "Default",
+        "Default".tr,
         style: TextStyle(
             color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
       ),
@@ -196,14 +196,14 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
               HapticFeedback.lightImpact();
               Get.to(() => AddEditAddressScreen(address: address));
             },
-            title: "Edit",
+            title: "Edit".tr,
           ),
           const Spacer(),
           if (!isDefault)
             TextPrimaryButton(
               onPressed: () =>
                   controller.saveAddress(address..isDefaultAddress = true),
-              title: "Set as Default",
+              title: "Set as Default".tr,
             ),
         ],
       ),
@@ -223,7 +223,7 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
         ],
       ),
       child: PrimaryTextButton(
-        title: "Add New Address",
+        title: "Add New Address".tr,
         onPressed: () {
           HapticFeedback.mediumImpact();
           Get.to(() => AddEditAddressScreen());
@@ -240,9 +240,9 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
           Icon(Icons.location_off_rounded,
               size: 100.sp, color: Colors.grey.shade200),
           SizedBox(height: 20.h),
-          Text("No addresses yet", style: AppTextStyle.normalBold18),
+          Text("No addresses yet".tr, style: AppTextStyle.normalBold18),
           SizedBox(height: 8.h),
-          Text("Add your delivery address to get started",
+          Text("Add your delivery address to get started".tr,
               style: AppTextStyle.normalRegular14.copyWith(color: Colors.grey)),
         ],
       ),

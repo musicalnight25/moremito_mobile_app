@@ -83,7 +83,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           return false;
         }
         CommonMethod.showCustomBottomSheet(
-            title: "Confirm Exit",
+            title: "Confirm Exit".tr,
             message: 'Are you sure you want to close the app?',
             confirmButtonTitle: "Exit",
             showCancelButton: true,
@@ -180,7 +180,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           width: 24.sp,
           color: redColor,
         ),
-        label: "Home",
+        label: "Home".tr,
       ),
       BottomNavigationBarItem(
         icon: SvgPicture.asset(
@@ -197,12 +197,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           width: 24.sp,
           color: redColor,
         ),
-        label: "Share Info",
+        label: "Share Info".tr,
       ),
       BottomNavigationBarItem(
         icon: _buildNotificationIcon(),
         activeIcon: _buildNotificationIcon(),
-        label: "Notification",
+        label: "Notification".tr,
       ),
       BottomNavigationBarItem(
         icon: SvgPicture.asset(
@@ -219,7 +219,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           width: 24.sp,
           color: redColor,
         ),
-        label: "Setting",
+        label: "Setting".tr,
       ),
     ];
   }

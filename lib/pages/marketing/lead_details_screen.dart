@@ -48,8 +48,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppBar(
-        title: "Lead Details",
+      appBar: CommonAppBar(
+        title: "Lead Details".tr,
         visibleBackButton: true,
       ),
       body: SingleChildScrollView(
@@ -129,10 +129,10 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
         children: [
           SizedBox(
             width: 130.sp,
-            child: Text("$label:", style: AppTextStyle.normalBold14),
+            child: Text("$label:".tr, style: AppTextStyle.normalBold14),
           ),
           Expanded(
-            child: Text(value ?? "-", style: AppTextStyle.normalRegular14),
+            child: Text(value ?? ".tr-", style: AppTextStyle.normalRegular14),
           ),
         ],
       ),
@@ -182,7 +182,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
     return TextFormFieldWidget(
       controller: notesController,
       maxLines: 6,
-      hintText: "Enter internal notes",
+      hintText: "Enter internal notes".tr,
     );
   }
 
@@ -203,9 +203,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                 isSaving.value = false;
 
                 if (success) {
-                  CommonMethod.getXSnackBar(
-                    "Success",
-                    "Notes saved successfully",
+                  CommonMethod.getXSnackBar("Success".tr, "Notes saved successfully".tr,
                     greenColor,
                   );
 

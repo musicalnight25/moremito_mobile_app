@@ -33,7 +33,7 @@ class UpcomingFeatureScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.sp),
               child: Text(
-                'Exciting features are on the way! Stay tuned for updates and new enhancements.',
+                "Exciting features are on the way! Stay tuned for updates and new enhancements.".tr,
                 style: AppTextStyle.normalSemiBold18,
                 textAlign: TextAlign.center,
               ),
@@ -42,7 +42,7 @@ class UpcomingFeatureScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 36.sp),
               child: PrimaryTextButton(
-                title: "Back to Home",
+                title: "Back to Home".tr,
                 onPressed: () {
                   Get.back();
                 },

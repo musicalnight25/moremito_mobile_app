@@ -34,8 +34,8 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: 'Select Contact',
+      appBar: CommonAppBar(
+        title: "Select Contact".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -45,7 +45,7 @@ class _ContactScreenState extends State<ContactScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: TextFormFieldWidget(
-                hintText: 'Search contacts...',
+                hintText: "Search contacts...".tr,
                 prefixIcon: const Icon(Icons.search, color: primaryColor),
                 onChanged: (value) =>
                     controller.searchQuery.value = value ?? '',
@@ -62,7 +62,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 if (controller.filteredContacts.isEmpty) {
                   return Center(
                     child: Text(
-                      "No Contacts Found",
+                      "No Contacts Found".tr,
                       style: AppTextStyle.normalRegular14
                           .copyWith(color: hintGreyColor),
                     ),

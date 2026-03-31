@@ -81,9 +81,7 @@ class SurveyController extends GetxController {
   /// Submit survey
   Future<void> saveSurvey(BuildContext context) async {
     if (selectedAnswersList.length < surveyQuestionsList.length) {
-      CommonMethod.getXSnackBar(
-        "Incomplete Survey",
-        "Please answer all questions before submitting.",
+      CommonMethod.getXSnackBar("Incomplete Survey".tr, "Please answer all questions before submitting.".tr,
         redColor,
       );
       return;
@@ -95,24 +93,18 @@ class SurveyController extends GetxController {
       if (res != null && res['Status'] == true) {
         await PreferencesUtil.setSurveyCompleted();
 
-        CommonMethod.getXSnackBar(
-          "Success",
-          "Your survey has been submitted.",
+        CommonMethod.getXSnackBar("Success".tr, "Your survey has been submitted.".tr,
           greenColor,
         );
 
         Get.offAll(() => MainHomeScreen());
       } else {
-        CommonMethod.getXSnackBar(
-          "Error",
-          "Submission failed, try again.",
+        CommonMethod.getXSnackBar("Error".tr, "Submission failed, try again.".tr,
           redColor,
         );
       }
     } catch (e) {
-      CommonMethod.getXSnackBar(
-        "Error",
-        "Unable to submit survey. Try again later.",
+      CommonMethod.getXSnackBar("Error".tr, "Unable to submit survey. Try again later.".tr,
         redColor,
       );
     }

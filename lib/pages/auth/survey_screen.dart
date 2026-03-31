@@ -50,8 +50,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
               .any((item) => item['QuestionId'] == q.questionId);
 
           if (!answered) {
-            CommonMethod.getXSnackBar(
-                "Answer Required", "Please answer first.", redColor);
+            CommonMethod.getXSnackBar("Answer Required".tr, "Please answer first.".tr, redColor);
             return false;
           }
 
@@ -84,9 +83,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
                 color: primaryColor,
                 child: ListView(
                   padding: EdgeInsets.fromLTRB(16.sp, 16.sp, 16.sp, 16.sp),
-                  children: const [
+                  children: [
                     SizedBox(height: 200),
-                    NoDataFound(title: "Survey"),
+                    NoDataFound(title: "Survey".tr),
                   ],
                 ),
               );
@@ -202,8 +201,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                                     : "Next",
                                 onPressed: () async {
                                   if (!answered) {
-                                    CommonMethod.getXSnackBar("Required",
-                                        "Select an answer first.", redColor);
+                                    CommonMethod.getXSnackBar("Required".tr, "Select an answer first.".tr, redColor);
                                     return;
                                   }
 

@@ -22,8 +22,8 @@ class MyDeepLinksScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: primaryWhite,
-      appBar: const CommonAppBar(
-        title: "My Deep Links",
+      appBar: CommonAppBar(
+        title: "My Deep Links".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -45,9 +45,9 @@ class MyDeepLinksScreen extends StatelessWidget {
               color: primaryColor,
               child: ListView(
                 padding: EdgeInsets.all(16.sp),
-                children: const [
+                children: [
                   SizedBox(height: 150),
-                  NoDataFound(title: "No Deep Links Generated"),
+                  NoDataFound(title: "No Deep Links Generated".tr),
                 ],
               ),
             );
@@ -165,7 +165,7 @@ class MyDeepLinksScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "LINK URL",
+                  "LINK URL".tr,
                   style: TextStyle(
                     color: textGreyColor,
                     fontSize: 10.sp,
@@ -219,7 +219,7 @@ class MyDeepLinksScreen extends StatelessWidget {
                                     size: 16.sp, color: primaryColor),
                                 SizedBox(width: 6.w),
                                 Text(
-                                  "COPY",
+                                  "COPY".tr,
                                   style: TextStyle(
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.bold,
@@ -245,9 +245,7 @@ class MyDeepLinksScreen extends StatelessWidget {
   void _copy(String link) {
     if (link.isEmpty) return;
     Clipboard.setData(ClipboardData(text: link));
-    CommonMethod.getXSnackBar(
-      "Success",
-      "Link copied to clipboard",
+    CommonMethod.getXSnackBar("Success".tr, "Link copied to clipboard".tr,
       primaryColor,
     );
     // Optional: Add haptic feedback for "Pro" feel

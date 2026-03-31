@@ -47,8 +47,8 @@ class _DownlineOrdersScreenState extends State<DownlineOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Downline Orders",
+      appBar: CommonAppBar(
+        title: "Downline Orders".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -121,11 +121,11 @@ class _DownlineOrdersScreenState extends State<DownlineOrdersScreen> {
                           controller.fetchDownlineOrders(isRefresh: true),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.search, size: 15, color: primaryWhite),
                           SizedBox(width: 6),
                           Text(
-                            "Search",
+                            "Search".tr,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -151,11 +151,11 @@ class _DownlineOrdersScreenState extends State<DownlineOrdersScreen> {
                       onPressed: controller.resetFilters,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.refresh, size: 15, color: primaryColor),
                           SizedBox(width: 6),
                           Text(
-                            "Reset",
+                            "Reset".tr,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -305,7 +305,7 @@ class _DownlineOrdersScreenState extends State<DownlineOrdersScreen> {
                   size: 48.sp, color: Colors.grey),
               height10,
               Text(
-                "No orders found",
+                "No orders found".tr,
                 style:
                     AppTextStyle.normalRegular14.copyWith(color: Colors.grey),
               ),

@@ -51,11 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
             DashboardModel? user = homeController.dashboardModel.value;
 
             if (user == null && !homeController.isLoading.value) {
-              return const SingleChildScrollView(
+              return SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
                   height: 400,
-                  child: Center(child: NoDataFound(title: "Dashboard")),
+                  child: Center(child: NoDataFound(title: "Dashboard".tr)),
                 ),
               );
             }
@@ -108,14 +108,14 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Welcome",
+            "Welcome".tr,
             style: AppTextStyle.normalSemiBold20.copyWith(
               color: primaryBlack,
             ),
           ),
           height08,
           Text(
-            "${user.name} (${user.userName})",
+            "${user.name} (${user.userName})".tr,
             style: AppTextStyle.normalSemiBold18.copyWith(
               color: primaryColor,
             ),
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Call Announcement",
+          "Call Announcement".tr,
           style: AppTextStyle.normalSemiBold20.copyWith(color: primaryBlack),
         ),
         height12,
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height08,
 
                 Text(
-                  "Click to View",
+                  "Click to View".tr,
                   style: AppTextStyle.normalSemiBold14.copyWith(
                     color: primaryColor,
                     decoration: TextDecoration.underline,
@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Announcements",
+          "Announcements".tr,
           style: AppTextStyle.normalSemiBold20.copyWith(color: primaryBlack),
         ),
         height12,
@@ -269,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   height06,
                   Text(
-                    "Click to View",
+                    "Click to View".tr,
                     style: AppTextStyle.normalSemiBold14.copyWith(
                       color: primaryColor,
                       decoration: TextDecoration.underline,
@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               width10,
                               Text(
-                                "BETA VERSION",
+                                "BETA VERSION".tr,
                                 style: AppTextStyle.normalBold12.copyWith(
                                   color: primaryColor,
                                   letterSpacing: 1.5,
@@ -374,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  "v1.0.0",
+                                  "v1.0.0".tr,
                                   style: AppTextStyle.normalBold10
                                       .copyWith(color: primaryColor),
                                 ),
@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           height10,
                           Text(
-                            "This app is currently in Beta, which means some features may be incomplete, under testing, or subject to change. You may experience occasional issues or variations. We appreciate your feedback as we work to improve the app.",
+                            "This app is currently in Beta, which means some features may be incomplete, under testing, or subject to change. You may experience occasional issues or variations. We appreciate your feedback as we work to improve the app.".tr,
                             style: AppTextStyle.normalRegular13.copyWith(
                               color: lightBlackColor,
                               height: 1.5,

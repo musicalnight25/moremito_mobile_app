@@ -36,8 +36,8 @@ class _MyReferralOrdersScreenState extends State<MyReferralOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Referral & Downline Orders",
+      appBar: CommonAppBar(
+        title: "Referral & Downline Orders".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -57,7 +57,7 @@ class _MyReferralOrdersScreenState extends State<MyReferralOrdersScreen> {
                       size: 48.sp, color: Colors.grey),
                   height10,
                   Text(
-                    "No orders found",
+                    "No orders found".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.grey),
                   ),

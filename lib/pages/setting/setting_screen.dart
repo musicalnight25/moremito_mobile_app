@@ -29,7 +29,7 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
             CommonAppBar(
-              title: "Settings",
+              title: "Settings".tr,
               visibleBackButton: false,
             ),
             Expanded(
@@ -44,11 +44,11 @@ class _SettingScreenState extends State<SettingScreen> {
 
                     // --- SECTION 1: ACCOUNT ---
                     _CompactSettingsGroup(
-                      title: "Account",
+                      title: "Account".tr,
                       children: [
                         _SleekSettingsTile(
                           icon: Icons.lock_outline_rounded,
-                          title: "Change Password",
+                          title: "Change Password".tr,
                           // Removed subtitle for a cleaner look, or keep it short
                           onTap: () =>
                               Get.to(() => const ChangePasswordScreen()),
@@ -60,11 +60,11 @@ class _SettingScreenState extends State<SettingScreen> {
 
                     // --- SECTION 2: ACTIONS ---
                     _CompactSettingsGroup(
-                      title: "Actions",
+                      title: "Actions".tr,
                       children: [
                         _SleekSettingsTile(
                           icon: Icons.logout_rounded,
-                          title: "Logout",
+                          title: "Logout".tr,
                           isDestructive: true,
                           // Special flag for red styling
                           showTrailing: false,
@@ -87,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   void _handleLogout() {
     CommonMethod.showCustomBottomSheet(
-      title: "Confirm Logout",
+      title: "Confirm Logout".tr,
       message: 'Are you sure you want to logout?',
       confirmButtonTitle: "Logout",
       showCancelButton: true,

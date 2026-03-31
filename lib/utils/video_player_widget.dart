@@ -52,9 +52,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           bufferedColor: Colors.white54,
         ),
         errorBuilder: (context, errorMessage) {
-          return const Center(
+          return Center(
             child: Text(
-              "Video failed to load",
+              "Video failed to load".tr,
               style: TextStyle(color: Colors.white),
             ),
           );
@@ -91,9 +91,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             /// Video Area
             Positioned.fill(
               child: _hasError
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        "Error loading video",
+                        "Error loading video".tr,
                         style: TextStyle(color: Colors.white),
                       ),
                     )

@@ -6,8 +6,8 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar:
-//           CommonAppBar(title: "My Recurring Order", visibleBackButton: true),
-//       body: Center(child: Text("My Recurring Order Screen")),
+//           CommonAppBar(title: "My Recurring Order".tr, visibleBackButton: true),
+//       body: Center(child: Text("My Recurring Order Screen".tr)),
 //     );
 //   }
 // }

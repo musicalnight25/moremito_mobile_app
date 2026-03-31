@@ -25,8 +25,8 @@ class MyCompensationHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "My Compensation",
+      appBar: CommonAppBar(
+        title: "My Compensation".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -45,7 +45,7 @@ class MyCompensationHistoryScreen extends StatelessWidget {
                   Icon(Icons.history_toggle_off,
                       size: 48.sp, color: Colors.grey),
                   height10,
-                  Text("No compensation history found",
+                  Text("No compensation history found".tr,
                       style: AppTextStyle.normalRegular14
                           .copyWith(color: Colors.grey)),
                 ],
@@ -61,7 +61,7 @@ class MyCompensationHistoryScreen extends StatelessWidget {
               children: [
                 _buildTotalCard(history.totalCompensationEarned),
                 SizedBox(height: 24.sp),
-                Text("Yearly Details", style: AppTextStyle.normalBold16),
+                Text("Yearly Details".tr, style: AppTextStyle.normalBold16),
                 height10,
                 ...(history.yearItems ?? [])
                     .map((e) => _buildYearCard(e, controller))
@@ -105,7 +105,7 @@ class MyCompensationHistoryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Total Compensation",
+                "Total Compensation".tr,
                 style: AppTextStyle.normalRegular12.copyWith(
                   color: Colors.black54,
                 ),
@@ -175,28 +175,28 @@ class MyCompensationHistoryScreen extends StatelessWidget {
               ),
               const Divider(height: 16),
               _dataRow(
-                label: "MoreMito Cash",
+                label: "MoreMito Cash".tr,
                 value: "\$${item.moreMitoCash ?? '0.00'}",
               ),
               _dataRow(
-                label: "MoreMito Commission",
+                label: "MoreMito Commission".tr,
                 value: "\$${item.moreMitoCommission ?? '0.00'}",
               ),
               _dataRow(
-                label: "Total Compensation Earned",
+                label: "Total Compensation Earned".tr,
                 value: "\$${item.totalCompensationEarned ?? '0.00'}",
               ),
               _dataRow(
-                label: "Average Order Amount",
+                label: "Average Order Amount".tr,
                 value:
                     "\$${item.averageOrderAmount?.toStringAsFixed(2) ?? '0.00'}",
               ),
               _dataRow(
-                label: "Customer Count",
+                label: "Customer Count".tr,
                 value: "${item.customerCount ?? 0}",
               ),
               _dataRow(
-                label: "Avg. Earned / Customer",
+                label: "Avg. Earned / Customer".tr,
                 value:
                     "\$${item.avgEarnedPerCustomer?.toStringAsFixed(2) ?? '0.00'}",
               ),

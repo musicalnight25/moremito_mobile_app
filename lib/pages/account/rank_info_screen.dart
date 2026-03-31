@@ -15,8 +15,8 @@ class RankInfoScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: primaryWhite, // Clean white background
-      appBar: const CommonAppBar(
-        title: "My Rank History",
+      appBar: CommonAppBar(
+        title: "My Rank History".tr,
         visibleBackButton: true,
       ),
       body: Column(
@@ -76,14 +76,14 @@ class RankInfoScreen extends StatelessWidget {
         child: Row(
           children: [
             _buildRankCard(
-              title: "Current Rank",
+              title: "Current Rank".tr,
               value: data.currentRank ?? "-",
               bgColor: primaryColor.withOpacity(0.08),
               textColor: primaryColor,
             ),
             const SizedBox(width: 12),
             _buildRankCard(
-              title: "Highest Rank",
+              title: "Highest Rank".tr,
               value: data.highestRankAchieved ?? "-",
               bgColor: paleYellowColor,
               textColor: lightBlackColor,
@@ -147,9 +147,9 @@ class RankInfoScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildHeaderText("Date", flex: 3),
-          _buildHeaderText("Order No.", flex: 2, textAlign: TextAlign.center),
-          _buildHeaderText("Rank", flex: 3, textAlign: TextAlign.end),
+          _buildHeaderText("Date".tr, flex: 3),
+          _buildHeaderText("Order No.".tr, flex: 2, textAlign: TextAlign.center),
+          _buildHeaderText("Rank".tr, flex: 3, textAlign: TextAlign.end),
         ],
       ),
     );
@@ -246,7 +246,7 @@ class RankInfoScreen extends StatelessWidget {
           const Icon(Icons.history, size: 48, color: disableButtonColor),
           const SizedBox(height: 12),
           Text(
-            "No rank history found",
+            "No rank history found".tr,
             style: TextStyle(
               color: greySubTitleColor,
               fontSize: 14,

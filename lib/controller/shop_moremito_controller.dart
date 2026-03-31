@@ -8,7 +8,7 @@ class ShopMoremitoController extends GetxController {
       actionName: actionName,
       page: "MemberPage",
       onSuccess: (url) {
-        Get.to(() => CommonWebView(url: url, title: "Shop Moremito"));
+        Get.to(() => CommonWebView(url: url, title: "Shop Moremito".tr));
       },
     );
   }

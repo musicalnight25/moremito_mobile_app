@@ -117,7 +117,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
           final OrderDetailData? data = controller.orderDetail.value;
           if (data == null) {
-            return const NoDataFound(title: "Order Details");
+            return NoDataFound(title: "Order Details".tr);
           }
 
           return RefreshIndicator(
@@ -131,14 +131,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   _orderHeader(data.orderInfo),
                   height16,
                   _addressCard(
-                    title: "Billing Address",
+                    title: "Billing Address".tr,
                     billing: data.billingInfo,
                     shipping: null,
                     info: data.orderInfo,
                   ),
                   height12,
                   _addressCard(
-                    title: "Shipping Address",
+                    title: "Shipping Address".tr,
                     billing: null,
                     shipping: data.shippingInfo,
                     info: data.orderInfo,
@@ -167,12 +167,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Order Number - ${_value(info?.customOrderNumber)}",
+            "Order Number - ${_value(info?.customOrderNumber)}".tr,
             style: AppTextStyle.normalSemiBold18.copyWith(color: primaryBlack),
           ),
           height06,
           Text(
-            "Order Date: $date (UTC)",
+            "Order Date: $date (UTC)".tr,
             style: AppTextStyle.normalRegular14.copyWith(color: textGreyColor),
           ),
         ],
@@ -240,7 +240,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Products",
+          Text("Products".tr,
               style:
                   AppTextStyle.normalSemiBold16.copyWith(color: primaryBlack)),
           height12,

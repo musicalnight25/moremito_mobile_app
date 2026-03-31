@@ -39,19 +39,19 @@ class InternetError {
                       height: 25,
                     ),
                     Text(
-                      "No internet connection",
+                      "No internet connection".tr,
                       style: AppTextStyle.normalBold20,
                     ),
                     height10,
                     Text(
-                      "Please check your keyword or try again your browsing keyword",
+                      "Please check your keyword or try again your browsing keyword".tr,
                       style: AppTextStyle.normalRegular16
                           .copyWith(color: primaryWhite.withOpacity(0.60)),
                       textAlign: TextAlign.center,
                     ),
                     customHeight(30),
                     PrimaryTextButton(
-                        title: "Try again",
+                        title: "Try again".tr,
                         onPressed: () {
                           removeOverlay();
                         }),
@@ -67,7 +67,7 @@ class InternetError {
                         ),
                         child: Center(
                           child: Text(
-                            "Check your network",
+                            "Check your network".tr,
                             style: AppTextStyle.normalBold16
                                 .copyWith(color: primaryBlack),
                           ),

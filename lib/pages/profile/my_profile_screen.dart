@@ -31,8 +31,8 @@ class MyProfileScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "My Profile",
+      appBar: CommonAppBar(
+        title: "My Profile".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -50,7 +50,7 @@ class MyProfileScreen extends StatelessWidget {
                 if (profile == null) return const SizedBox.shrink();
 
                 return _buildSectionContainer(
-                  title: "Account Information",
+                  title: "Account Information".tr,
                   child: Column(
                     children: [
                       _readOnlyField("Username", profile.userName),
@@ -72,7 +72,7 @@ class MyProfileScreen extends StatelessWidget {
                       height16,
                       PrimaryTextButton(
                         onPressed: () => profileController.updateProfile(),
-                        title: "Update Profile",
+                        title: "Update Profile".tr,
                       ),
                     ],
                   ),
@@ -83,12 +83,12 @@ class MyProfileScreen extends StatelessWidget {
 
               /// --- SECTION 2: MANAGE ADDRESSES ---
               _buildSectionContainer(
-                title: "Manage your addresses",
+                title: "Manage your addresses".tr,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Note: Changing your address here does not change your address on already created recurring orders.",
+                      "Note: Changing your address here does not change your address on already created recurring orders.".tr,
                       style: AppTextStyle.normalRegular12
                           .copyWith(color: Colors.red.shade700),
                     ),
@@ -107,7 +107,7 @@ class MyProfileScreen extends StatelessWidget {
                       );
 
                       if (addressController.addresses.isEmpty) {
-                        return const Text("No addresses found.");
+                        return Text("No addresses found.".tr);
                       }
 
                       return Column(
@@ -128,7 +128,7 @@ class MyProfileScreen extends StatelessWidget {
                     TextPrimaryButton(
                       onPressed: () =>
                           Get.to(() => const ManageAddressesScreen()),
-                      title: "Edit address",
+                      title: "Edit address".tr,
                     ),
                   ],
                 ),
@@ -138,7 +138,7 @@ class MyProfileScreen extends StatelessWidget {
 
               /// --- SECTION 3: WEBSITE HEADER DISPLAY ---
               _buildSectionContainer(
-                title: "Your Website Header Display",
+                title: "Your Website Header Display".tr,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -158,7 +158,7 @@ class MyProfileScreen extends StatelessWidget {
                     height16,
                     TextPrimaryButton(
                       onPressed: () => Get.to(() => const WelcomeTagScreen()),
-                      title: "Edit",
+                      title: "Edit".tr,
                     ),
                   ],
                 ),
@@ -175,7 +175,7 @@ class MyProfileScreen extends StatelessWidget {
 
   Widget _buildProfileShimmer() {
     return _buildSectionContainer(
-      title: "Loading...",
+      title: "Loading...".tr,
       child: Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
