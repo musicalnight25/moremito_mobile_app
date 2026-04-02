@@ -52,16 +52,16 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 TextFormFieldWidget(
                   controller: controller.usernameController,
-                  labelText: "Username*",
-                  hintText: "Enter username",
+                  labelText: "Username*".tr,
+                  hintText: "Enter username".tr,
                   keyboardType: TextInputType.emailAddress,
                   autofillHints: const [AutofillHints.username],
                   focusedBorderColor: primaryColor,
                 ),
                 PasswordWidget(
                   controller: controller.passwordController,
-                  hintText: "Enter password",
-                  labelText: "Password*",
+                  hintText: "Enter password".tr,
+                  labelText: "Password*".tr,
                   // keyboardType: TextInputType.visiblePassword,
                   autofillHints: const [AutofillHints.password],
                   focusedBorderColor: primaryColor,
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 Text(
-                  "Remember me",
+                  "Remember me".tr,
                   style: AppTextStyle.normalRegular14,
                 ),
               ],
@@ -92,17 +92,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
           customHeight(32),
           PrimaryTextButton(
-            title: "Login",
+            title: "Login".tr,
             onPressed: () {
               if (controller.usernameController.text.trim().isEmpty) {
-                CommonMethod.getXSnackBar(
-                    "Error",
-                    "Username is required. Please enter your username.",
+                CommonMethod.getXSnackBar("Error".tr, "Username is required. Please enter your username.".tr,
                     redColor);
               } else if (controller.passwordController.text.trim().isEmpty) {
-                CommonMethod.getXSnackBar(
-                    "Error",
-                    "Password is required. Please enter your password.",
+                CommonMethod.getXSnackBar("Error".tr, "Password is required. Please enter your password.".tr,
                     redColor);
               } else {
                 controller.loginWithPassword(context);

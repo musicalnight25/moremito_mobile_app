@@ -496,15 +496,11 @@ class NetworkRepository {
     // Check if already on LoginScreen
     final isAlreadyOnLogin = Get.currentRoute.toLowerCase().contains('login');
     if (isAlreadyOnLogin) {
-      CommonMethod.getXSnackBar(
-        "Error",
-        "Invalid username or password.",
+      CommonMethod.getXSnackBar("Error".tr, "Invalid username or password.".tr,
         redColor,
       );
     } else {
-      CommonMethod.getXSnackBar(
-        "Access Denied!",
-        "Session expired. Please log in again.",
+      CommonMethod.getXSnackBar("Access Denied!".tr, "Session expired. Please log in again.".tr,
         redColor,
       );
     }

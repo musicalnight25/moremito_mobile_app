@@ -31,6 +31,11 @@ extension ByteListEquality on List<int> {
 }
 
 class CommonMethod {
+  static void changeLanguage(String languageCode, String countryCode) {
+    var locale = Locale(languageCode, countryCode);
+    Get.updateLocale(locale);
+  }
+
   static String formatDate(DateTime? dateTime) {
     if (dateTime == null) return "-";
 
@@ -221,9 +226,7 @@ class CommonMethod {
           }
         } catch (e) {
           log("⚠️ iOS token fetch error: $e");
-          CommonMethod.getXSnackBar(
-            "Test",
-            "⚠️ iOS token fetch error: $e",
+          CommonMethod.getXSnackBar("Test".tr, "⚠️ iOS token fetch error: $e".tr,
             primaryColor,
           );
         }
@@ -268,7 +271,7 @@ class CommonMethod {
 
   static showLostConnecationDialog() {
     return CommonMethod.showCustomBottomSheet(
-      title: "Lost Connection",
+      title: "Lost Connection".tr,
       messageWidget: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.sp),
@@ -316,13 +319,13 @@ class CommonMethod {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '•  ',
+                    "•  ".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: lightBlackColor),
                   ),
                   Flexible(
                     child: Text(
-                      'Check your internet connection.',
+                      "Check your internet connection.".tr,
                       style: AppTextStyle.normalRegular14
                           .copyWith(color: lightBlackColor),
                     ),
@@ -334,13 +337,13 @@ class CommonMethod {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '•  ',
+                    "•  ".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: lightBlackColor),
                   ),
                   Flexible(
                     child: Text(
-                      'Try again in a few moments.',
+                      "Try again in a few moments.".tr,
                       style: AppTextStyle.normalRegular14
                           .copyWith(color: lightBlackColor),
                     ),
@@ -439,21 +442,21 @@ class CommonMethod {
 
   static void _showPermissionDeniedDialog(String permission) {
     Get.defaultDialog(
-      title: 'Permission Required',
-      content: Text('Please grant $permission permission in the settings.'),
+      title: "Permission Required".tr,
+      content: Text("Please grant $permission permission in the settings.".tr),
       actions: [
         TextButton(
           onPressed: () {
             Get.back();
             openAppSettings();
           },
-          child: Text('Open Settings'),
+          child: Text("Open Settings".tr),
         ),
         TextButton(
           onPressed: () {
             Get.back();
           },
-          child: Text('Cancel'),
+          child: Text("Cancel".tr),
         ),
       ],
     );

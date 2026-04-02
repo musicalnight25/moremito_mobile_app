@@ -31,7 +31,7 @@ class _AnnouncementDetailScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: "Announcement Details",
+        title: "Announcement Details".tr,
         visibleBackButton: true,
       ),
 
@@ -42,7 +42,7 @@ class _AnnouncementDetailScreenState
 
         final html = controller.details.value?.htmlPart;
         if (html == null || html.isEmpty) {
-          return const Center(child: Text("No content available"));
+          return Center(child: Text("No content available".tr));
         }
 
         return SafeArea(

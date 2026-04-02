@@ -222,7 +222,7 @@ class _FlyerActivityScreenState extends State<FlyerActivityScreen> {
           final items = controller.linkActivityDetailsModel;
 
           if (items.isEmpty) {
-            return const NoDataFound(title: "No interactions yet");
+            return NoDataFound(title: "No interactions yet".tr);
           }
 
           return SingleChildScrollView(

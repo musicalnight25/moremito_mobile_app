@@ -19,15 +19,12 @@ class ChangePasswordController extends GetxController {
     if (currentPasswordCtrl.text.isEmpty ||
         newPasswordCtrl.text.isEmpty ||
         confirmPasswordCtrl.text.isEmpty) {
-      CommonMethod.getXSnackBar(
-          "Required", "Please fill in all fields", Colors.red);
+      CommonMethod.getXSnackBar("Required".tr, "Please fill in all fields".tr, Colors.red);
       return;
     }
 
     if (newPasswordCtrl.text != confirmPasswordCtrl.text) {
-      CommonMethod.getXSnackBar(
-          "Mismatch",
-          "New password and confirm password do not match",
+      CommonMethod.getXSnackBar("Mismatch".tr, "New password and confirm password do not match".tr,
           snackPosition: SnackPosition.BOTTOM,
           Colors.red);
       return;
@@ -35,8 +32,7 @@ class ChangePasswordController extends GetxController {
 
     // Optional: Check min length
     if (newPasswordCtrl.text.length < 6) {
-      CommonMethod.getXSnackBar("Weak Password",
-          "Password must be at least 6 characters", Colors.red);
+      CommonMethod.getXSnackBar("Weak Password".tr, "Password must be at least 6 characters".tr, Colors.red);
       return;
     }
 
@@ -56,8 +52,7 @@ class ChangePasswordController extends GetxController {
       if (response != null && response["Status"] == true) {
         Get.back(); // Return to settings
 
-        CommonMethod.getXSnackBar(
-            "Success", "Password updated successfully", greenColor);
+        CommonMethod.getXSnackBar("Success".tr, "Password updated successfully".tr, greenColor);
       } else {
         // Handle API specific error message if available
         String msg = response?["Message"] ?? "Failed to update password";
@@ -70,8 +65,7 @@ class ChangePasswordController extends GetxController {
         errorMessage1: e.toString(),
         errorMessage3: stack.toString(),
       );
-      CommonMethod.getXSnackBar(
-          "Error", "Something went wrong. Please try again.", Colors.red);
+      CommonMethod.getXSnackBar("Error".tr, "Something went wrong. Please try again.".tr, Colors.red);
     } finally {
       isLoading.value = false;
     }

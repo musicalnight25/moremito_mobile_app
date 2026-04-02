@@ -21,7 +21,7 @@ class WelcomeTagScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "Your Website Header Display",
+        title: "Your Website Header Display".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -66,7 +66,7 @@ class WelcomeTagScreen extends StatelessWidget {
                           width10,
                           Expanded(
                             child: Text(
-                              "Use aliases (my Welcome Tag info) for name, email, and phone number",
+                              "Use aliases (my Welcome Tag info) for name, email, and phone number".tr,
                               style: AppTextStyle.normalRegular14,
                             ),
                           ),
@@ -75,7 +75,7 @@ class WelcomeTagScreen extends StatelessWidget {
                       height30,
                       PrimaryTextButton(
                           onPressed: controller.updateWelcomeTag,
-                          title: "Save Changes"),
+                          title: "Save Changes".tr),
                     ],
                   ),
                 ),

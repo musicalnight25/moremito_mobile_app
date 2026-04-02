@@ -29,8 +29,8 @@ class _DailyOrderDetailsScreenState extends State<DailyOrderDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Order Details",
+      appBar: CommonAppBar(
+        title: "Order Details".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -149,7 +149,7 @@ class _DailyOrderDetailsScreenState extends State<DailyOrderDetailsScreen> {
           Icon(Icons.receipt_long_outlined,
               size: 64.sp, color: Colors.grey.shade300),
           SizedBox(height: 16.sp),
-          Text("No orders found",
+          Text("No orders found".tr,
               style:
                   AppTextStyle.normalSemiBold16.copyWith(color: Colors.grey)),
         ],

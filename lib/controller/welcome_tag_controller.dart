@@ -106,9 +106,7 @@ class WelcomeTagController extends GetxController {
       );
 
       if (response != null && response["Status"] == true) {
-        CommonMethod.getXSnackBar(
-          "Success",
-          "Welcome tag updated successfully",
+        CommonMethod.getXSnackBar("Success".tr, "Welcome tag updated successfully".tr,
           greenColor,
         );
       } else {

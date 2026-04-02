@@ -21,8 +21,8 @@ class OrderCompensationDetailScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Order Details",
+      appBar: CommonAppBar(
+        title: "Order Details".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -33,7 +33,7 @@ class OrderCompensationDetailScreen extends StatelessWidget {
           }
 
           if (controller.orderDetailItems.isEmpty) {
-            return const Center(child: Text("No details found"));
+            return Center(child: Text("No details found".tr));
           }
 
           final items = controller.orderDetailItems;
@@ -44,13 +44,13 @@ class OrderCompensationDetailScreen extends StatelessWidget {
             children: [
               /// Order Header
               Text(
-                "$orderId",
+                "$orderId".tr,
                 style:
                     AppTextStyle.normalSemiBold16.copyWith(color: primaryColor),
               ),
               height06,
               Text(
-                "Commission processing date",
+                "Commission processing date".tr,
                 style:
                     AppTextStyle.normalRegular14.copyWith(color: hintGreyColor),
               ),

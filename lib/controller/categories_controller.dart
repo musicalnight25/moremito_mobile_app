@@ -184,9 +184,7 @@ class CategoriesController extends GetxController {
           sharedBy: platform,
         );
 
-        CommonMethod.getXSnackBar(
-          "Success 🎉",
-          "Thanks for sharing via $platform",
+        CommonMethod.getXSnackBar("Success 🎉".tr, "Thanks for sharing via $platform".tr,
           greenColor,
         );
       },

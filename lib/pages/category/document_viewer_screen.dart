@@ -107,8 +107,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         () => FullScreenImageViewer(imageUrl: data.filePath!));
                   } else if (GetUtils.isAudio(data.filePath!) ||
                       data.fileType == '.m4a') {
-                    CommonMethod.getXSnackBar(
-                        "Audio", "Playing audio file.", primaryBlack);
+                    CommonMethod.getXSnackBar("Audio".tr, "Playing audio file.".tr, primaryBlack);
                   } else {
                     Get.to(() => DocumentViewerWidget(
                           filePath: data.filePath!,
@@ -154,7 +153,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 IconButton(
                   onPressed: () async {
                     CommonMethod.showCustomBottomSheet(
-                      title: "Select an Option",
+                      title: "Select an Option".tr,
                       message: "Please choose how you would like to share.",
                       showCancelButton: true,
                       cancelButtonTextColor: redColor,
@@ -163,7 +162,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         child: Column(
                           children: [
                             PrimaryTextButton(
-                              title: "Choose from Contacts",
+                              title: "Choose from Contacts".tr,
                               onPressed: () async {
                                 Get.back();
                                 Get.to(() => ContactScreen())!.then((value) {
@@ -182,7 +181,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             ),
                             height15,
                             PrimaryTextButton(
-                              title: "Enter Name Manually",
+                              title: "Enter Name Manually".tr,
                               onPressed: () {
                                 Get.back();
                                 nameTextController.clear();
@@ -205,7 +204,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         fit: BoxFit.scaleDown,
                       ),
                       width06,
-                      Text("Share")
+                      Text("Share".tr)
                     ],
                   ),
                 ),
@@ -221,7 +220,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     final RxString generatedLink = ''.obs;
 
     CommonMethod.showCustomBottomSheet(
-      title: 'Generate Link To Share',
+      title: "Generate Link To Share".tr,
       message: null,
       showCancelButton: true,
       cancelButtonTitle: "Close",
@@ -241,17 +240,16 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 height15,
                 TextFormFieldWidget(
                   controller: nameTextController,
-                  labelText: 'Enter recipient name',
-                  hintText: 'e.g. John Doe',
+                  labelText: "Enter recipient name".tr,
+                  hintText: "e.g. John Doe".tr,
                   prefixIcon: const Icon(Icons.person, color: lightBlackColor),
                 ),
                 height15,
                 PrimaryTextButton(
-                  title: "Generate a Link",
+                  title: "Generate a Link".tr,
                   onPressed: () async {
                     if (nameTextController.text.trim().isEmpty) {
-                      CommonMethod.getXSnackBar(
-                          "Error", "Please enter recipient name", redColor);
+                      CommonMethod.getXSnackBar("Error".tr, "Please enter recipient name".tr, redColor);
                       return;
                     }
 
@@ -262,8 +260,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                     );
 
                     if (link == null || link.isEmpty) {
-                      CommonMethod.getXSnackBar(
-                          "Error", "Failed to generate link", redColor);
+                      CommonMethod.getXSnackBar("Error".tr, "Failed to generate link".tr, redColor);
                       return;
                     }
 
@@ -316,14 +313,14 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 TextFormFieldWidget(
                   controller: messageTextController,
                   maxLines: 4,
-                  labelText: "Message",
-                  hintText: "Write a message for the recipient",
+                  labelText: "Message".tr,
+                  hintText: "Write a message for the recipient".tr,
                 ),
 
                 height15,
 
                 PrimaryTextButton(
-                  title: "Share",
+                  title: "Share".tr,
                   onPressed: () {
                     Get.back();
 
@@ -379,7 +376,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("•  "),
+          Text("•  ".tr),
           Expanded(
             child: Text(text,
                 style: AppTextStyle.normalRegular13

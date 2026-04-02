@@ -57,7 +57,7 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
               children: [
                 height20,
                 Text(
-                  "My Leads",
+                  "My Leads".tr,
                   style: AppTextStyle.normalExtraBold.copyWith(fontSize: 26.sp),
                 ),
                 height08,
@@ -236,7 +236,7 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
           height18,
 
           TextPrimaryButton(
-            title: "View Details",
+            title: "View Details".tr,
             onPressed: () {
               Get.to(() => LeadDetailsScreen(lead: lead))!.then((value) {
                 refreshPage();
@@ -305,8 +305,8 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
         color: primaryColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Text(
-        "Contacted",
+      child: Text(
+        "Contacted".tr,
         style: TextStyle(color: Colors.white, fontSize: 11),
       ),
     );

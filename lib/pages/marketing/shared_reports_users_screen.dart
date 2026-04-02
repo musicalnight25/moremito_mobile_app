@@ -32,7 +32,7 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
       builder: (ctx) => AlertDialog(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
-        title: Text("Remove Share",
+        title: Text("Remove Share".tr,
             style: AppTextStyle.normalBold16.copyWith(color: primaryBlack)),
         content: Text(
           "Stop sharing your report with \"$name\"?",
@@ -41,7 +41,7 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text("Cancel",
+            child: Text("Cancel".tr,
                 style: AppTextStyle.normalRegular14
                     .copyWith(color: subTitleColor)),
           ),
@@ -52,7 +52,7 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
                   borderRadius: BorderRadius.circular(8.r)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text("Remove",
+            child: Text("Remove".tr,
                 style: AppTextStyle.normalBold14.copyWith(color: Colors.white)),
           ),
         ],
@@ -78,8 +78,8 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "My Shared Reports",
+      appBar: CommonAppBar(
+        title: "My Shared Reports".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -90,7 +90,7 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "Users I Have Shared Reports With",
+                "Users I Have Shared Reports With".tr,
                 style: AppTextStyle.normalBold18
                     .copyWith(color: primaryColor, height: 1.2),
               ),
@@ -99,7 +99,7 @@ class _SharedReportsUsersScreenState extends State<SharedReportsUsersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "Manage users who can see your shared link activity report.",
+                "Manage users who can see your shared link activity report.".tr,
                 style: AppTextStyle.normalRegular13
                     .copyWith(color: subTitleColor, height: 1.3),
               ),

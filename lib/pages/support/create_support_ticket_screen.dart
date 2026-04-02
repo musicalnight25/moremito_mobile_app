@@ -44,7 +44,7 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
-        title: "Create Support Ticket",
+        title: "Create Support Ticket".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -63,8 +63,8 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                     /// SUBJECT
                     TextFormFieldWidget(
                       controller: subjectController,
-                      labelText: 'Ticket Subject:',
-                      hintText: "Enter subject",
+                      labelText: "Ticket Subject:".tr,
+                      hintText: "Enter subject".tr,
                     ),
 
                     height16,
@@ -78,8 +78,8 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                       }
 
                       return CustomDropdown(
-                        labelText: "Ticket Related To:",
-                        hintText: "Select",
+                        labelText: "Ticket Related To:".tr,
+                        hintText: "Select".tr,
                         value: selectedModuleId.value == 0
                             ? null
                             : selectedModuleId.value,
@@ -108,8 +108,8 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                       }
 
                       return CustomDropdown(
-                        labelText: "Ticket Priority:",
-                        hintText: "Select",
+                        labelText: "Ticket Priority:".tr,
+                        hintText: "Select".tr,
                         value: selectedPriorityId.value == 0
                             ? null
                             : selectedPriorityId.value,
@@ -134,9 +134,9 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                     /// DESCRIPTION
                     TextFormFieldWidget(
                       controller: descriptionController,
-                      labelText: "Ticket Description:",
+                      labelText: "Ticket Description:".tr,
                       hintText:
-                          "Describe your issue (order no., username, etc.)",
+                          "Describe your issue (order no., username, etc.)".tr,
                       maxLines: 5,
                     ),
                   ],
@@ -156,7 +156,7 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                                   color: primaryColor),
                             )
                           : PrimaryTextButton(
-                              title: "Create Ticket",
+                              title: "Create Ticket".tr,
                               onPressed: _createTicket,
                             );
                     }),
@@ -164,7 +164,7 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
                   width16,
                   Expanded(
                     child: PrimaryTextButton(
-                      title: "Cancel",
+                      title: "Cancel".tr,
                       buttonColor: lightBlackColor,
                       onPressed: () => Get.back(),
                     ),
@@ -220,7 +220,7 @@ class _CreateSupportTicketScreenState extends State<CreateSupportTicketScreen> {
         descriptionController.text.isEmpty ||
         selectedModuleId.value == 0 ||
         selectedPriorityId.value == 0) {
-      CommonMethod.getXSnackBar("Warning", "Please fill all fields", redColor);
+      CommonMethod.getXSnackBar("Warning".tr, "Please fill all fields".tr, redColor);
       return;
     }
 

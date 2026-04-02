@@ -37,7 +37,7 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: CommonAppBar(
-        title: "Support Tickets",
+        title: "Support Tickets".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -49,7 +49,7 @@ class _SupportTicketsListScreenState extends State<SupportTicketsListScreen> {
           }
 
           if (tc.ticketList.isEmpty) {
-            return const NoDataFound(title: "Support Tickets");
+            return NoDataFound(title: "Support Tickets".tr);
           }
 
           return SingleChildScrollView(
@@ -146,7 +146,7 @@ class TicketItemCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "#${ticket.ticketId}",
+                      "#${ticket.ticketId}".tr,
                       style: AppTextStyle.normalSemiBold18,
                     ),
                     SizedBox(height: 4.sp),
@@ -169,7 +169,7 @@ class TicketItemCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Ticket Related To:",
+                  "Ticket Related To:".tr,
                   style: AppTextStyle.normalRegular14
                       .copyWith(color: Colors.black54),
                 ),
@@ -188,7 +188,7 @@ class TicketItemCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Priority",
+                  "Priority".tr,
                   style: AppTextStyle.normalRegular14
                       .copyWith(color: Colors.black54),
                 ),
@@ -205,7 +205,7 @@ class TicketItemCard extends StatelessWidget {
 
           // ---------------- SUBJECT ----------------
           Text(
-            "Subject",
+            "Subject".tr,
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.black54),
           ),
           SizedBox(height: 4.sp),
@@ -255,7 +255,7 @@ class TicketItemCard extends StatelessWidget {
                     controller.getTicketList();
                   },
                   child: Text(
-                    "Re-open Ticket",
+                    "Re-open Ticket".tr,
                     style: AppTextStyle.normalSemiBold14.copyWith(
                       color: primaryColor,
                       decoration: TextDecoration.underline,

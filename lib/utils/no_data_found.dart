@@ -23,7 +23,7 @@ class _NoDataFoundState extends State<NoDataFound> {
           children: [
             Lottie.asset('assets/json/nodata.json'),
             Text(
-              "Oops! No ${widget.title ?? "Data"} Available",
+              "Oops! No ${widget.title ?? ".trData"} Available",
               style: AppTextStyle.normalBold16
                   .copyWith(color: lightBlackColor.withOpacity(.4)),
             )

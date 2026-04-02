@@ -23,8 +23,8 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Daily Compensation Log",
+      appBar: CommonAppBar(
+        title: "Daily Compensation Log".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -84,7 +84,7 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
               textInputAction: TextInputAction.search,
               onSubmitted: (_) => controller.searchByOrderNo(),
               decoration: InputDecoration(
-                hintText: "Search by Order No.",
+                hintText: "Search by Order No.".tr,
                 hintStyle:
                     AppTextStyle.normalRegular14.copyWith(color: Colors.grey),
                 prefixIcon: Icon(Icons.search,
@@ -120,7 +120,7 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
               ),
             ),
             child: Text(
-              "Go",
+              "Go".tr,
               style:
                   AppTextStyle.normalSemiBold14.copyWith(color: Colors.white),
             ),
@@ -274,7 +274,7 @@ class MyDailyCompensationLogScreen extends StatelessWidget {
             TextButton.icon(
               onPressed: controller.clearSearch,
               icon: const Icon(Icons.refresh),
-              label: const Text("View All Logs"),
+              label: Text("View All Logs".tr),
             )
           ]
         ],

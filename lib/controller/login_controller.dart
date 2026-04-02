@@ -83,9 +83,7 @@ class LoginController extends GetxController {
       }
     } catch (e, stack) {
       debugPrint("Error in loginWithPassword: $e");
-      CommonMethod.getXSnackBar(
-        "Login Failed",
-        "Please check your credentials.",
+      CommonMethod.getXSnackBar("Login Failed".tr, "Please check your credentials.".tr,
         redColor,
       );
 

@@ -164,7 +164,7 @@ class PopupService {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            'This update is mandatory',
+                            "This update is mandatory".tr,
                             style: AppTextStyle.normalSemiBold14.copyWith(
                               color: primaryColor,
                             ),
@@ -175,7 +175,7 @@ class PopupService {
                       SizedBox(
                         width: double.infinity,
                         child: PrimaryTextButton(
-                          title: "Update Now",
+                          title: "Update Now".tr,
                           onPressed: () => launchUrl(
                             Uri.parse(appUrl),
                             // mode: LaunchMode.externalApplication,

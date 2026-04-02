@@ -92,7 +92,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     return Obx(() {
       return TextFormFieldWidget(
         controller: _searchController,
-        hintText: "Search Audios, Videos & Docs",
+        hintText: "Search Audios, Videos & Docs".tr,
         onChanged: _onSearchChanged,
         suffixIcon: _isSearching.value
             ? IconButton(
@@ -159,12 +159,12 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                     }
 
                     if (controller.categoriesFileList.isEmpty) {
-                      return const CustomScrollView(
+                      return CustomScrollView(
                         physics: AlwaysScrollableScrollPhysics(),
                         slivers: [
                           SliverFillRemaining(
                             child: Center(
-                              child: NoDataFound(title: "Files"),
+                              child: NoDataFound(title: "Files".tr),
                             ),
                           ),
                         ],
@@ -209,12 +209,12 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
                   // 📭 Empty SubCategories
                   if (controller.subCategoriesList.isEmpty) {
-                    return const CustomScrollView(
+                    return CustomScrollView(
                       physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverFillRemaining(
                           child: Center(
-                            child: NoDataFound(title: "Subcategories"),
+                            child: NoDataFound(title: "Subcategories".tr),
                           ),
                         ),
                       ],

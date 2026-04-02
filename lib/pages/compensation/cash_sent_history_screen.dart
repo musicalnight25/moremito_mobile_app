@@ -35,8 +35,8 @@ class _CashSentHistoryScreenState extends State<CashSentHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "MoreMito Cash Sent To Others",
+      appBar: CommonAppBar(
+        title: "MoreMito Cash Sent To Others".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -56,7 +56,7 @@ class _CashSentHistoryScreenState extends State<CashSentHistoryScreen> {
                       size: 48.sp, color: Colors.grey),
                   height10,
                   Text(
-                    "No sent history found",
+                    "No sent history found".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.grey),
                   ),
@@ -71,11 +71,11 @@ class _CashSentHistoryScreenState extends State<CashSentHistoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("MoreMito Cash Transfer History",
+                Text("MoreMito Cash Transfer History".tr,
                     style: AppTextStyle.normalBold20),
                 const SizedBox(height: 6),
                 Text(
-                  "Below is the history of the MoreMito Cash you have transferred.",
+                  "Below is the history of the MoreMito Cash you have transferred.".tr,
                   style: AppTextStyle.normalRegular14
                       .copyWith(color: Colors.black54),
                 ),
@@ -125,14 +125,14 @@ class _CashSentHistoryScreenState extends State<CashSentHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "MoreMito Cash Transferred By You",
+            "MoreMito Cash Transferred By You".tr,
             style: AppTextStyle.normalRegular16.copyWith(color: Colors.black54),
           ),
           SizedBox(height: 6.sp),
           Row(
             children: [
               Text(
-                "Total Sent: ",
+                "Total Sent: ".tr,
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: hintGreyColor,
                   letterSpacing: 0.3,
@@ -163,20 +163,20 @@ class _CashSentHistoryScreenState extends State<CashSentHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _dataRow(
-              label: "Date Transferred",
+              label: "Date Transferred".tr,
               value: CommonMethod.formatDateFromDateTime(item.dateTransferred),
             ),
             _dataRow(
-              label: "Sent To",
+              label: "Sent To".tr,
               value: item.sentTo ?? "-",
             ),
             _dataRow(
-              label: "Amount",
+              label: "Amount".tr,
               value: "\$${item.amount?.toStringAsFixed(2) ?? '0.00'}",
             ),
             if ((item.message ?? "").isNotEmpty)
               _dataRow(
-                label: "Message",
+                label: "Message".tr,
                 value: item.message!,
                 isMultiline: true,
               ),

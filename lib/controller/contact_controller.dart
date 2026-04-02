@@ -64,9 +64,7 @@ class ContactController extends GetxController {
 
     final permissionGranted = await FlutterContacts.requestPermission();
     if (!permissionGranted) {
-      CommonMethod.getXSnackBar(
-        "Permission Required",
-        "Please allow contacts permission",
+      CommonMethod.getXSnackBar("Permission Required".tr, "Please allow contacts permission".tr,
         redColor,
       );
       isLoading.value = false;

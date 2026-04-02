@@ -21,7 +21,7 @@ class UserRoleScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "User Role",
+        title: "User Role".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -48,7 +48,7 @@ class UserRoleScreen extends StatelessWidget {
                       height30,
                       PrimaryTextButton(
                         onPressed: controller.changeRole,
-                        title: "Change Role",
+                        title: "Change Role".tr,
                       ),
                     ],
                   ),

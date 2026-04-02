@@ -101,7 +101,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.sp),
           child: Text(
-            'Share Your Activity',
+            "Share Your Activity".tr,
             style: AppTextStyle.normalBold18.copyWith(color: primaryColor),
           ),
         ),
@@ -127,10 +127,10 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => _doSearch(),
                   decoration: InputDecoration(
-                    labelText: 'Search by Username',
+                    labelText: "Search by Username".tr,
                     labelStyle: AppTextStyle.normalRegular13
                         .copyWith(color: subTitleColor),
-                    hintText: 'Enter username',
+                    hintText: "Enter username".tr,
                     hintStyle: AppTextStyle.normalRegular13
                         .copyWith(color: borderGreyColor),
                     prefixIcon: Icon(Icons.person_search_outlined,
@@ -176,7 +176,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                       )
                     : Icon(Icons.search_rounded,
                         color: Colors.white, size: 18.sp),
-                label: Text('Search',
+                label: Text("Search".tr,
                     style: AppTextStyle.normalBold14
                         .copyWith(color: Colors.white)),
               ),
@@ -202,7 +202,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                       size: 60.sp, color: borderGreyColor),
                   height12,
                   Text(
-                    'Enter a username and tap Search.',
+                    "Enter a username and tap Search.".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: subTitleColor),
                     textAlign: TextAlign.center,
@@ -215,7 +215,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.sp),
             child: Text(
-              '${results.length} result(s)',
+              "${results.length} result(s)".tr,
               style:
                   AppTextStyle.normalSemiBold13.copyWith(color: subTitleColor),
             ),
@@ -279,7 +279,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                             ),
                             SizedBox(height: 2.sp),
                             Text(
-                              '@${user.username ?? ''}',
+                              "@${user.username ?? ''}",
                               style: AppTextStyle.normalRegular12
                                   .copyWith(color: primaryColor),
                             ),
@@ -313,7 +313,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Text(
-                            'Choose',
+                            "Choose".tr,
                             style: AppTextStyle.normalBold12
                                 .copyWith(color: Colors.white),
                           ),
@@ -340,11 +340,11 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           height10,
-          Text('Share Report',
+          Text("Share Report".tr,
               style: AppTextStyle.normalBold18.copyWith(color: primaryColor)),
           height04,
           Text(
-            'Review the selected user and optionally add a note before sharing.',
+            "Review the selected user and optionally add a note before sharing.".tr,
             style: AppTextStyle.normalRegular13
                 .copyWith(color: subTitleColor, height: 1.4),
           ),
@@ -369,7 +369,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Selected User Details',
+                  "Selected User Details".tr,
                   style: AppTextStyle.normalSemiBold13
                       .copyWith(color: subTitleColor),
                 ),
@@ -389,7 +389,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
           height16,
 
           // ── Note field ────────────────────────────────────────
-          Text('Note (Optional):',
+          Text("Note (Optional):".tr,
               style:
                   AppTextStyle.normalSemiBold13.copyWith(color: primaryBlack)),
           height08,
@@ -399,7 +399,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
             maxLength: 500,
             onChanged: (v) => _noteLength.value = v.length,
             decoration: InputDecoration(
-              hintText: 'Enter a note (max 500 characters)',
+              hintText: "Enter a note (max 500 characters)".tr,
               hintStyle:
                   AppTextStyle.normalRegular13.copyWith(color: borderGreyColor),
               filled: true,
@@ -440,7 +440,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                   ),
                   icon: Icon(Icons.arrow_back_rounded,
                       color: primaryColor, size: 16.sp),
-                  label: Text('Different User',
+                  label: Text("Different User".tr,
                       style: AppTextStyle.normalSemiBold13
                           .copyWith(color: primaryColor)),
                 ),
@@ -466,7 +466,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
                         )
                       : Icon(Icons.share_outlined,
                           color: Colors.white, size: 16.sp),
-                  label: Text('Share Report',
+                  label: Text("Share Report".tr,
                       style: AppTextStyle.normalBold14
                           .copyWith(color: Colors.white)),
                 ),
@@ -488,7 +488,7 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
         children: [
           SizedBox(
             width: 80.sp,
-            child: Text('$label:',
+            child: Text("$label:".tr,
                 style: AppTextStyle.normalSemiBold13
                     .copyWith(color: subTitleColor)),
           ),
@@ -507,8 +507,8 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: 'Share Report',
+      appBar: CommonAppBar(
+        title: "Share Report".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(

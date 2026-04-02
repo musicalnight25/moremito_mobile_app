@@ -73,7 +73,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     return Obx(() {
       return TextFormFieldWidget(
         controller: _searchController,
-        hintText: "Search Audios, Videos & Docs",
+        hintText: "Search Audios, Videos & Docs".tr,
         suffixIcon: controller.isGlobalSearch.value
             ? IconButton(
                 icon: const Icon(Icons.close),
@@ -115,10 +115,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('MoreMito Library', style: AppTextStyle.normalBold20),
+                  Text("MoreMito Library".tr, style: AppTextStyle.normalBold20),
                   const SizedBox(height: 6),
                   Text(
-                    "Browse audio, video, and document files.",
+                    "Browse audio, video, and document files.".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.black54),
                   ),
@@ -145,8 +145,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     }
 
                     if (controller.categoriesFileList.isEmpty) {
-                      return const AlwaysScrollableScrollView(
-                        child: NoDataFound(title: "Files"),
+                      return AlwaysScrollableScrollView(
+                        child: NoDataFound(title: "Files".tr),
                       );
                     }
 
@@ -188,8 +188,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
                   // 📭 Empty Categories
                   if (controller.categoriesList.isEmpty) {
-                    return const AlwaysScrollableScrollView(
-                      child: NoDataFound(title: "Categories"),
+                    return AlwaysScrollableScrollView(
+                      child: NoDataFound(title: "Categories".tr),
                     );
                   }
 

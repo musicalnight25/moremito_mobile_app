@@ -151,14 +151,14 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Activity Tracking Summary (all links)',
+                      "Activity Tracking Summary (all links)".tr,
                       style: AppTextStyle.normalBold14
                           .copyWith(color: primaryBlack),
                     ),
                     SizedBox(height: 4.sp),
                     Text(
-                      'These cards show total recipients and total activity '
-                      'across all shared links for each time range.',
+                      ("These cards show total recipients and total activity " +
+                      'across all shared links for each time range.').tr,
                       style: AppTextStyle.normalRegular12
                           .copyWith(color: subTitleColor, height: 1.4),
                     ),
@@ -222,7 +222,7 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Text(
-                                    'Retry',
+                                    "Retry".tr,
                                     style: AppTextStyle.normalSemiBold13
                                         .copyWith(color: Colors.white),
                                   ),

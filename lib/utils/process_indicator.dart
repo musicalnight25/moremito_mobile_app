@@ -89,7 +89,7 @@ class ProcessIndicator extends StatelessWidget {
     //           alignment: Alignment.center,
     //           children: [
     //             TextAndStyle(
-    //               title: "Loading",
+    //               title: "Loading".tr,
     //               textAlign: TextAlign.center,
     //               color: whiteColor,
     //               fontSize: 8,

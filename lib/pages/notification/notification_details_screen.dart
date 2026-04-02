@@ -61,7 +61,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           }
 
           final data = controller.notificationDetails.value;
-          if (data == null) return NoDataFound(title: "Notification Details");
+          if (data == null) return NoDataFound(title: "Notification Details".tr);
 
           if (data.autoShipComing != null) {
             return _scrollContent(_buildAutoShipDetails(data.autoShipComing!));
@@ -75,7 +75,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
             return _buildFullScreenWebView(data.callAnnoucementDetails!);
           }
 
-          return NoDataFound(title: "Notification Details");
+          return NoDataFound(title: "Notification Details".tr);
         }),
       ),
     );
@@ -239,7 +239,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           SvgPicture.asset(AppAsset.orderDetails,
               color: greenColor, height: 18.sp),
           width16,
-          Text('Order Details for Order No. ',
+          Text("Order Details for Order No. ".tr,
               style: AppTextStyle.normalRegular14),
           Text(orderId,
               style: AppTextStyle.normalRegular14.copyWith(color: greenColor)),
@@ -262,7 +262,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           width08,
           Expanded(
             child: Text(
-              '${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}',
+              "${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}".tr,
               style: AppTextStyle.normalRegular14.copyWith(color: primaryBlack),
             ),
           )
@@ -280,7 +280,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Product(s)",
+          Text("Product(s)".tr,
               style: AppTextStyle.normalRegular14
                   .copyWith(color: lightBlackColor)),
           height08,
@@ -303,7 +303,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
                   ],
                 ),
                 height05,
-                Text("Quantity: ${p.quantity}",
+                Text("Quantity: ${p.quantity}".tr,
                     style: AppTextStyle.normalRegular12
                         .copyWith(color: textGreyColor)),
                 height15,

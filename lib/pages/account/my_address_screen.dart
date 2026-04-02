@@ -5,8 +5,8 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       appBar: CommonAppBar(title: "My Address", visibleBackButton: true),
-//       body: Center(child: Text("My Address Screen")),
+//       appBar: CommonAppBar(title: "My Address".tr, visibleBackButton: true),
+//       body: Center(child: Text("My Address Screen".tr)),
 //     );
 //   }
 // }

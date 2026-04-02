@@ -58,7 +58,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Notifications",
+                      "Notifications".tr,
                       style: AppTextStyle.normalExtraBold.copyWith(
                         fontSize: 26.sp,
                         color: primaryBlack,
@@ -72,7 +72,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               onPressed: () =>
                                   controller.markAllAsRead(context),
                               child: Text(
-                                "Mark all read",
+                                "Mark all read".tr,
                                 style: TextStyle(
                                   color: primaryColor,
                                   fontSize: 14.sp,

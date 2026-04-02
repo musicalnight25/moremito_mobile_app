@@ -88,7 +88,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             child: Column(
               children: [
                 _buildFormSection(
-                  title: "Contact Person",
+                  title: "Contact Person".tr,
                   icon: Icons.person_outline_rounded,
                   children: [
                     Row(
@@ -108,7 +108,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 ),
                 SizedBox(height: 16.h),
                 _buildFormSection(
-                  title: "Address",
+                  title: "Address".tr,
                   icon: Icons.location_on_outlined,
                   children: [
                     _field("Street Address", addressCtrl, maxLines: 2),
@@ -130,7 +130,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                             child: CircularProgressIndicator.adaptive());
                       }
                       return _dropdown(
-                        label: "Country",
+                        label: "Country".tr,
                         value: controller.selectedCountryId.value,
                         items: {
                           for (var c in controller.countries) c.id!: c.name!
@@ -154,7 +154,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         ));
                       }
                       return _dropdown(
-                        label: "State",
+                        label: "State".tr,
                         value: controller.selectedStateId.value,
                         items: {
                           for (var s in controller.states) s.id!: s.name!
@@ -236,7 +236,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             inactiveTrackColor: Colors.grey.shade300,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-            title: Text("Set as primary address",
+            title: Text("Set as primary address".tr,
                 style: AppTextStyle.normalSemiBold14
                     .copyWith(color: Colors.black87)),
             onChanged: (v) {
@@ -260,8 +260,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     if (_formKey.currentState!.validate()) {
                       if (controller.selectedCountryId.value == null ||
                           controller.selectedStateId.value == null) {
-                        CommonMethod.getXSnackBar("Required",
-                            "Please select Country and State", redColor);
+                        CommonMethod.getXSnackBar("Required".tr, "Please select Country and State".tr, redColor);
                         return;
                       }
                       HapticFeedback.mediumImpact();
@@ -352,7 +351,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             icon: Icon(Icons.keyboard_arrow_down_rounded,
                 color: Colors.black54, size: 22.sp),
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.black),
-            hint: Text("Select $label",
+            hint: Text("Select $label".tr,
                 style: AppTextStyle.normalRegular14
                     .copyWith(color: Colors.black54)),
             items: items.entries

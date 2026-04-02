@@ -6,8 +6,8 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar:
-//           CommonAppBar(title: "My Referral Orders", visibleBackButton: true),
-//       body: Center(child: Text("My Referral Orders Screen")),
+//           CommonAppBar(title: "My Referral Orders".tr, visibleBackButton: true),
+//       body: Center(child: Text("My Referral Orders Screen".tr)),
 //     );
 //   }
 // }

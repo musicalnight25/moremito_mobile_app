@@ -47,8 +47,8 @@ class _MyReferralOrderDetailScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Order Details",
+      appBar: CommonAppBar(
+        title: "Order Details".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -62,7 +62,7 @@ class _MyReferralOrderDetailScreenState
           if (data == null) {
             return Center(
               child: Text(
-                "No order details found",
+                "No order details found".tr,
                 style:
                     AppTextStyle.normalRegular14.copyWith(color: Colors.grey),
               ),
@@ -95,7 +95,7 @@ class _MyReferralOrderDetailScreenState
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Billing Address", style: AppTextStyle.normalBold16),
+          Text("Billing Address".tr, style: AppTextStyle.normalBold16),
           SizedBox(height: 10.sp),
           _row("Name", "${order.firstName ?? ""} ${order.lastName ?? ""}"),
           _row("Email", order.email ?? "-"),
@@ -121,7 +121,7 @@ class _MyReferralOrderDetailScreenState
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Products", style: AppTextStyle.normalBold16),
+          Text("Products".tr, style: AppTextStyle.normalBold16),
           SizedBox(height: 10.sp),
           ...items.map((e) => _productRow(e)).toList(),
         ],
@@ -150,7 +150,7 @@ class _MyReferralOrderDetailScreenState
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Order Summary", style: AppTextStyle.normalBold16),
+          Text("Order Summary".tr, style: AppTextStyle.normalBold16),
           SizedBox(height: 10.sp),
           _row("Sub Total",
               "\$${order?.orderTotal?.toStringAsFixed(2) ?? '0.00'}"),

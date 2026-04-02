@@ -35,7 +35,7 @@ class _StartSurveyScreenState extends State<StartSurveyScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.sp),
             child: Text(
-              'To continue, please take a moment to complete a brief survey. Your feedback helps us improve your experience!',
+              "To continue, please take a moment to complete a brief survey. Your feedback helps us improve your experience!".tr,
               style: AppTextStyle.normalSemiBold18,
               textAlign: TextAlign.center,
             ),
@@ -44,7 +44,7 @@ class _StartSurveyScreenState extends State<StartSurveyScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.sp),
             child: PrimaryTextButton(
-                title: "Start Survey",
+                title: "Start Survey".tr,
                 onPressed: () {
                   Get.to(() => SurveyScreen(
                         isFromOnboarding: true,

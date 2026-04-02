@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,7 +29,7 @@ class SvgDisplayWidget extends StatelessWidget {
       }
     } catch (e) {
       print('Error displaying SVG: $e');
-      return Text('Error', style: TextStyle(color: Colors.red));
+      return Text("Error".tr, style: TextStyle(color: Colors.red));
     }
   }
 

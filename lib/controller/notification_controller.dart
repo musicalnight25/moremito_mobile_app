@@ -159,8 +159,7 @@ class NotificationController extends GetxController {
         // Option 1: Refresh from API
         await refreshNotifications(context);
 
-        CommonMethod.getXSnackBar(
-            "Success", "All notifications marked as read", greenColor);
+        CommonMethod.getXSnackBar("Success".tr, "All notifications marked as read".tr, greenColor);
       }
     } catch (e, stack) {
       await ErrorLogger.logErrorToServer(

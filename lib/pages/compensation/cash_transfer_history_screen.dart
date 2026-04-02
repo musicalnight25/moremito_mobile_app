@@ -22,8 +22,8 @@ class CashTransferHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Transfer History",
+      appBar: CommonAppBar(
+        title: "Transfer History".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -43,7 +43,7 @@ class CashTransferHistoryScreen extends StatelessWidget {
                       size: 48.sp, color: Colors.grey),
                   height10,
                   Text(
-                    "No transfer history found",
+                    "No transfer history found".tr,
                     style: AppTextStyle.normalRegular14
                         .copyWith(color: Colors.grey),
                   ),
@@ -58,11 +58,11 @@ class CashTransferHistoryScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("MoreMito Cash Transfer History",
+                Text("MoreMito Cash Transfer History".tr,
                     style: AppTextStyle.normalBold20),
                 const SizedBox(height: 6),
                 Text(
-                  "Below is the history of the MoreMito Cash you have received.",
+                  "Below is the history of the MoreMito Cash you have received.".tr,
                   style: AppTextStyle.normalRegular14
                       .copyWith(color: Colors.black54),
                 ),
@@ -107,14 +107,14 @@ class CashTransferHistoryScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "MoreMito Cash Transferred To You",
+            "MoreMito Cash Transferred To You".tr,
             style: AppTextStyle.normalRegular16.copyWith(color: Colors.black54),
           ),
           SizedBox(height: 6.sp),
           Row(
             children: [
               Text(
-                "Total Received: ",
+                "Total Received: ".tr,
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: hintGreyColor,
                   letterSpacing: 0.3,
@@ -146,20 +146,20 @@ class CashTransferHistoryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _dataRow(
-              label: "Date Received",
+              label: "Date Received".tr,
               value: CommonMethod.formatDateFromDateTime(item.transferDate),
             ),
             _dataRow(
-              label: "Sent By",
+              label: "Sent By".tr,
               value: item.uName ?? "-",
             ),
             _dataRow(
-              label: "Amount",
+              label: "Amount".tr,
               value: "\$${item.transferAmount?.toStringAsFixed(2) ?? '0.00'}",
             ),
             if ((item.message ?? "").isNotEmpty)
               _dataRow(
-                label: "Message",
+                label: "Message".tr,
                 value: item.message!,
                 isMultiline: true,
               ),

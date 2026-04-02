@@ -34,7 +34,7 @@
 //                   buttonColor: controller.selectedAnswersList.isNotEmpty
 //                       ? null
 //                       : disableButtonColor,
-//                   title: "Close",
+//                   title: "Close".tr,
 //                   onPressed: () async {
 //                     await controller.saveSurvey(context);
 //                   }),
@@ -72,7 +72,7 @@
 //                 children: [
 //                   TextFormFieldWidget(
 //                     controller: reviewTextController,
-//                     hintText: "Penny for your thoughts?",
+//                     hintText: "Penny for your thoughts?".tr,
 //                     maxLines: 8,
 //                   )
 //                 ]),

@@ -34,8 +34,8 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(
-        title: "Compensation Spent On Orders",
+      appBar: CommonAppBar(
+        title: "Compensation Spent On Orders".tr,
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -150,7 +150,7 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
               textInputAction: TextInputAction.search,
               onSubmitted: (_) => controller.searchByOrder(),
               decoration: InputDecoration(
-                hintText: "Search by Order No.",
+                hintText: "Search by Order No.".tr,
                 hintStyle:
                     AppTextStyle.normalRegular14.copyWith(color: Colors.grey),
                 prefixIcon: Icon(Icons.search,
@@ -183,7 +183,7 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
               ),
             ),
             child: Text(
-              "Go",
+              "Go".tr,
               style:
                   AppTextStyle.normalSemiBold14.copyWith(color: Colors.white),
             ),
@@ -215,7 +215,7 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Total Amount",
+            "Total Amount".tr,
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.black54),
           ),
           SizedBox(height: 6.sp),
@@ -260,7 +260,7 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
         borderRadius: BorderRadius.circular(6.r),
       ),
       child: Text(
-        "Refunded",
+        "Refunded".tr,
         style: AppTextStyle.normalSemiBold12.copyWith(color: primaryColor),
       ),
     );
@@ -314,7 +314,7 @@ class _CommissionSpentScreenState extends State<CommissionSpentScreen> {
           ),
           height10,
           Text(
-            "No records found",
+            "No records found".tr,
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.grey),
           ),
         ],

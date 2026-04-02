@@ -59,16 +59,16 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "My Info",
+              title: "My Info".tr,
               icon: PhosphorIcons.user(PhosphorIconsStyle.regular),
               items: [
                 MenuItem(
-                  title: "My Account Settings",
+                  title: "My Account Settings".tr,
                   icon: PhosphorIcons.userCircle(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => const MyProfileScreen()),
                 ),
                 MenuItem(
-                  title: "My Personals",
+                  title: "My Personals".tr,
                   icon: PhosphorIcons.users(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -76,13 +76,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyPersonals",
                       onSuccess: (url) {
                         Get.to(() =>
-                            CommonWebView(url: url, title: "My Personals"));
+                            CommonWebView(url: url, title: "My Personals".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "My Support Network",
+                  title: "My Support Network".tr,
                   icon: PhosphorIcons.usersFour(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -90,13 +90,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyRep",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "My Support Network"));
+                            url: url, title: "My Support Network".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "Email Notification Settings",
+                  title: "Email Notification Settings".tr,
                   icon:
                       PhosphorIcons.envelopeSimple(PhosphorIconsStyle.regular),
                   onTap: () async {
@@ -105,13 +105,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "NotificationSettings",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "Email Notification Settings"));
+                            url: url, title: "Email Notification Settings".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "Text Notification Settings",
+                  title: "Text Notification Settings".tr,
                   icon: PhosphorIcons.chatText(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -119,13 +119,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "SMSNotificationSettings",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "Text Notification Settings"));
+                            url: url, title: "Text Notification Settings".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "User Survey",
+                  title: "User Survey".tr,
                   icon: PhosphorIcons.chartBar(PhosphorIconsStyle.regular),
                   onTap: () =>
                       Get.to(() => SurveyScreen(isFromOnboarding: false)),
@@ -141,11 +141,11 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "My Network",
+              title: "My Network".tr,
               icon: PhosphorIcons.shareNetwork(PhosphorIconsStyle.regular),
               items: [
                 MenuItem(
-                  title: "My Personals",
+                  title: "My Personals".tr,
                   icon: PhosphorIcons.users(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -153,13 +153,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyPersonals",
                       onSuccess: (url) {
                         Get.to(() =>
-                            CommonWebView(url: url, title: "My Personals"));
+                            CommonWebView(url: url, title: "My Personals".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "My Tree View",
+                  title: "My Tree View".tr,
                   icon: PhosphorIcons.treeStructure(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -167,13 +167,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "Genealogy",
                       onSuccess: (url) {
                         Get.to(() =>
-                            CommonWebView(url: url, title: "My Tree View"));
+                            CommonWebView(url: url, title: "My Tree View".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "My Star Tree View",
+                  title: "My Star Tree View".tr,
                   icon: PhosphorIcons.star(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -181,13 +181,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "treeview",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "My Star Tree View"));
+                            url: url, title: "My Star Tree View".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "Search My Network",
+                  title: "Search My Network".tr,
                   icon:
                       PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular),
                   onTap: () async {
@@ -196,13 +196,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "GenealogySearch",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "Search My Network"));
+                            url: url, title: "Search My Network".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "My Support Network",
+                  title: "My Support Network".tr,
                   icon: PhosphorIcons.usersFour(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -210,7 +210,7 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyRep",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "My Support Network"));
+                            url: url, title: "My Support Network".tr));
                       },
                     );
                   },
@@ -225,7 +225,7 @@ class MenuScreen extends StatelessWidget {
       if (isAll(role)) {
         menuList.add(
           SettingsTile(
-            title: "Shop MoreMito Products",
+            title: "Shop MoreMito Products".tr,
             icon: Icons.shopping_cart_outlined,
             onTap: () => Get.to(() => const ShopMoremitoScreen()),
           ),
@@ -237,11 +237,11 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "Orders",
+              title: "Orders".tr,
               icon: PhosphorIcons.shoppingBag(PhosphorIconsStyle.regular),
               items: [
                 MenuItem(
-                  title: "My Orders",
+                  title: "My Orders".tr,
                   icon: PhosphorIcons.receipt(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -249,7 +249,7 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyOrders",
                       onSuccess: (url) {
                         Get.to(
-                            () => CommonWebView(url: url, title: "My Orders"));
+                            () => CommonWebView(url: url, title: "My Orders".tr));
                       },
                     );
                   },
@@ -260,12 +260,12 @@ class MenuScreen extends StatelessWidget {
                   onTap: () => Get.to(() => const MyReferralOrdersScreen()),
                 ),
                 MenuItem(
-                  title: "Downline Orders",
+                  title: "Downline Orders".tr,
                   icon: PhosphorIcons.treeStructure(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => const DownlineOrdersScreen()),
                 ),
                 MenuItem(
-                  title: "Create A New Autoship Order",
+                  title: "Create A New Autoship Order".tr,
                   icon: PhosphorIcons.calendarPlus(PhosphorIconsStyle.regular),
                   onTap: () async {
                     await WebviewHelper.getDynamicWebviewURL(
@@ -273,13 +273,13 @@ class MenuScreen extends StatelessWidget {
                       actionName: "autoshiporder",
                       onSuccess: (url) {
                         Get.to(() => CommonWebView(
-                            url: url, title: "Create A New Autoship Order"));
+                            url: url, title: "Create A New Autoship Order".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "Recurring Orders",
+                  title: "Recurring Orders".tr,
                   icon:
                       PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.regular),
                   onTap: () async {
@@ -288,7 +288,7 @@ class MenuScreen extends StatelessWidget {
                       actionName: "AutoShip",
                       onSuccess: (url) {
                         Get.to(() =>
-                            CommonWebView(url: url, title: "Recurring Orders"));
+                            CommonWebView(url: url, title: "Recurring Orders".tr));
                       },
                     );
                   },
@@ -304,22 +304,22 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "Compensation",
+              title: "Compensation".tr,
               icon: PhosphorIcons.coins(PhosphorIconsStyle.regular),
               items: [
                 // 1. My Compensations
                 MenuItem(
-                  title: "My Compensations",
+                  title: "My Compensations".tr,
                   icon: PhosphorIcons.money(PhosphorIconsStyle.regular),
                   children: [
                     MenuItem(
-                      title: "My Daily Compensation Log",
+                      title: "My Daily Compensation Log".tr,
                       icon: PhosphorIcons.notebook(PhosphorIconsStyle.regular),
                       onTap: () =>
                           Get.to(() => const MyDailyCompensationLogScreen()),
                     ),
                     MenuItem(
-                      title: "My Compensation History",
+                      title: "My Compensation History".tr,
                       icon: PhosphorIcons.clockCounterClockwise(
                           PhosphorIconsStyle.regular),
                       onTap: () =>
@@ -330,13 +330,13 @@ class MenuScreen extends StatelessWidget {
 
                 // 2. Request Payouts And Make Transfers
                 MenuItem(
-                  title: "Request Payouts And Make Transfers",
+                  title: "Request Payouts And Make Transfers".tr,
                   icon:
                       PhosphorIcons.arrowsLeftRight(PhosphorIconsStyle.regular),
                   children: [
                     if (isMember(role))
                       MenuItem(
-                        title: "Request A Payout",
+                        title: "Request A Payout".tr,
                         icon:
                             PhosphorIcons.handCoins(PhosphorIconsStyle.regular),
                         onTap: () async {
@@ -345,20 +345,20 @@ class MenuScreen extends StatelessWidget {
                             actionName: "payout",
                             onSuccess: (url) {
                               Get.to(() => CommonWebView(
-                                  url: url, title: "Request A Payout"));
+                                  url: url, title: "Request A Payout".tr));
                             },
                           );
                         },
                       ),
                     MenuItem(
-                      title: "Commission Payout History",
+                      title: "Commission Payout History".tr,
                       icon: PhosphorIcons.clockCounterClockwise(
                           PhosphorIconsStyle.regular),
                       onTap: () =>
                           Get.to(() => const CommissionPayoutHistoryScreen()),
                     ),
                     MenuItem(
-                      title: "Transfer History",
+                      title: "Transfer History".tr,
                       icon: PhosphorIcons.clockCounterClockwise(
                           PhosphorIconsStyle.regular),
                       onTap: () =>
@@ -369,23 +369,23 @@ class MenuScreen extends StatelessWidget {
 
                 // 3. History Of Compensation Spent
                 MenuItem(
-                  title: "History Of Compensation Spent",
+                  title: "History Of Compensation Spent".tr,
                   icon: PhosphorIcons.clockCounterClockwise(
                       PhosphorIconsStyle.regular),
                   children: [
                     MenuItem(
-                      title: "Compensation Spent On Orders",
+                      title: "Compensation Spent On Orders".tr,
                       icon: PhosphorIcons.bag(PhosphorIconsStyle.regular),
                       onTap: () => Get.to(() => const CommissionSpentScreen()),
                     ),
                     MenuItem(
-                      title: "MoreMito Cash Sent To Others",
+                      title: "MoreMito Cash Sent To Others".tr,
                       icon: PhosphorIcons.paperPlaneTilt(
                           PhosphorIconsStyle.regular),
                       onTap: () => Get.to(() => const CashSentHistoryScreen()),
                     ),
                     MenuItem(
-                      title: "Commission Payout History",
+                      title: "Commission Payout History".tr,
                       icon: PhosphorIcons.clockCounterClockwise(
                           PhosphorIconsStyle.regular),
                       onTap: () =>
@@ -396,11 +396,11 @@ class MenuScreen extends StatelessWidget {
 
                 // 4. My Rank Management
                 MenuItem(
-                  title: "My Rank Management",
+                  title: "My Rank Management".tr,
                   icon: PhosphorIcons.medal(PhosphorIconsStyle.regular),
                   children: [
                     MenuItem(
-                      title: "My Tree View",
+                      title: "My Tree View".tr,
                       icon: PhosphorIcons.treeStructure(
                           PhosphorIconsStyle.regular),
                       onTap: () async {
@@ -409,13 +409,13 @@ class MenuScreen extends StatelessWidget {
                           actionName: "Genealogy",
                           onSuccess: (url) {
                             Get.to(() =>
-                                CommonWebView(url: url, title: "My Tree View"));
+                                CommonWebView(url: url, title: "My Tree View".tr));
                           },
                         );
                       },
                     ),
                     MenuItem(
-                      title: "My Star Tree View",
+                      title: "My Star Tree View".tr,
                       icon: PhosphorIcons.star(PhosphorIconsStyle.regular),
                       onTap: () async {
                         await WebviewHelper.getDynamicWebviewURL(
@@ -423,7 +423,7 @@ class MenuScreen extends StatelessWidget {
                           actionName: "treeview",
                           onSuccess: (url) {
                             Get.to(() => CommonWebView(
-                                url: url, title: "My Star Tree View"));
+                                url: url, title: "My Star Tree View".tr));
                           },
                         );
                       },
@@ -440,7 +440,7 @@ class MenuScreen extends StatelessWidget {
       if (isAll(role)) {
         menuList.add(
           SettingsTile(
-            title: "Direct Links",
+            title: "Direct Links".tr,
             icon: Icons.link_outlined,
             onTap: () => Get.to(() => const MyDeepLinksScreen()),
           ),
@@ -452,11 +452,11 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "Share MoreMito Info",
+              title: "Share MoreMito Info".tr,
               icon: PhosphorIcons.megaphone(PhosphorIconsStyle.regular),
               items: [
                 MenuItem(
-                  title: "Customize And Share My Flyers",
+                  title: "Customize And Share My Flyers".tr,
                   icon:
                       PhosphorIcons.paintBrushBroad(PhosphorIconsStyle.regular),
                   onTap: () async {
@@ -466,28 +466,28 @@ class MenuScreen extends StatelessWidget {
                       id: "1",
                       onSuccess: (url) {
                         Get.to(
-                            () => CommonWebView(url: url, title: "My Flyers"));
+                            () => CommonWebView(url: url, title: "My Flyers".tr));
                       },
                     );
                   },
                 ),
                 MenuItem(
-                  title: "Share Audios, Videos & Docs Files",
+                  title: "Share Audios, Videos & Docs Files".tr,
                   icon: PhosphorIcons.files(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => CategoriesScreen(isFromMenu: true)),
                 ),
                 MenuItem(
-                  title: "Allow Others To Request MoreMito Info From Me",
+                  title: "Allow Others To Request MoreMito Info From Me".tr,
                   icon: PhosphorIcons.userPlus(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => TmrisInfoScreen()),
                 ),
                 MenuItem(
-                  title: "See My Generated Leads",
+                  title: "See My Generated Leads".tr,
                   icon: PhosphorIcons.trendUp(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => MyLeadsScreen()),
                 ),
                 MenuItem(
-                  title: "See & Track Activity From My Shared Links",
+                  title: "See & Track Activity From My Shared Links".tr,
                   icon: PhosphorIcons.target(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => MySharedFlyersScreen()),
                 ),
@@ -502,21 +502,21 @@ class MenuScreen extends StatelessWidget {
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
-              title: "Support",
+              title: "Support".tr,
               icon: PhosphorIcons.headset(PhosphorIconsStyle.regular),
               items: [
                 MenuItem(
-                  title: "Support Ticket List",
+                  title: "Support Ticket List".tr,
                   icon: PhosphorIcons.listBullets(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => SupportTicketsListScreen()),
                 ),
                 MenuItem(
-                  title: "Create Support Ticket",
+                  title: "Create Support Ticket".tr,
                   icon: PhosphorIcons.plusCircle(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => CreateSupportTicketScreen()),
                 ),
                 MenuItem(
-                  title: "Order Comments",
+                  title: "Order Comments".tr,
                   icon:
                       PhosphorIcons.chatCircleDots(PhosphorIconsStyle.regular),
                   onTap: () async {
@@ -525,7 +525,7 @@ class MenuScreen extends StatelessWidget {
                       actionName: "MyOrders",
                       onSuccess: (url) {
                         Get.to(
-                            () => CommonWebView(url: url, title: "My Orders"));
+                            () => CommonWebView(url: url, title: "My Orders".tr));
                       },
                     );
                   },
@@ -538,7 +538,7 @@ class MenuScreen extends StatelessWidget {
 
       return Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: CommonAppBar(title: "Menu", visibleBackButton: true),
+        appBar: CommonAppBar(title: "Menu".tr, visibleBackButton: true),
         body: BaseBackgroundWidget(
           child: ListView(
             padding: EdgeInsets.all(10.sp),
