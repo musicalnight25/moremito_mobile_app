@@ -31,17 +31,12 @@ class WebviewHelper {
             if (id != null) 'id': id,
           },
         ).toString();
-
-        processIndicator.hide(Get.context);
         onSuccess(finalUrl);
       } else {
-        processIndicator.hide(Get.context);
-
         CommonMethod.getXSnackBar("Error",
             response?['Message'] ?? "Failed to generate token", redColor);
       }
     } catch (e) {
-      processIndicator.hide(Get.context);
       CommonMethod.getXSnackBar("Error".tr, "Connection Error: $e".tr, redColor);
     } finally {
       processIndicator.hide(Get.context);

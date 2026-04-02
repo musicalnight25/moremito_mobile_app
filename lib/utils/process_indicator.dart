@@ -12,10 +12,7 @@ class Circle {
   Circle.internal();
 
   static bool entry = false;
-  static OverlayEntry viewEntry =
-      new OverlayEntry(builder: (BuildContext context) {
-    return ProcessIndicator();
-  });
+  static OverlayEntry? _viewEntry;
 
   InternetError internetError = new InternetError();
 
@@ -34,7 +31,10 @@ class Circle {
   addOverlayEntry(context) async {
     if (entry == true) return;
     entry = true;
-    return addOverlay(viewEntry, context);
+    _viewEntry = OverlayEntry(builder: (BuildContext context) {
+      return ProcessIndicator();
+    });
+    return addOverlay(_viewEntry!, context);
   }
 
   //
@@ -61,11 +61,20 @@ class Circle {
   }
 
   removeOverlay() async {
-    try {
+    if (!entry) return;
+    final currentEntry = _viewEntry;
+    if (currentEntry == null) {
       entry = false;
-      viewEntry.remove();
-    } catch (e) {
-      return Future.error(e);
+      return;
+    }
+
+    try {
+      currentEntry.remove();
+    } catch (_) {
+      // Ignore "removed only once" style races.
+    } finally {
+      _viewEntry = null;
+      entry = false;
     }
   }
 }
