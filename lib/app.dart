@@ -72,8 +72,14 @@ class _MoreMitoAppState extends State<MoreMitoApp> with WidgetsBindingObserver {
     Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
 
     if (userToken != null) {
+      debugPrint("📱 App loading with authenticated user...");
+      // Fetch and apply saved language preference BEFORE building UI
+      final controller = Get.find<LoginController>();
+      await controller.fetchAndSetLanguage();
+      debugPrint("📱 Language initialization complete. Building UI...");
       initialPage = isSurveyCompleted ? MainHomeScreen() : StartSurveyScreen();
     } else {
+      debugPrint("📱 No user token found. Loading login screen.");
       initialPage = LoginScreen();
     }
 

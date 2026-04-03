@@ -97,6 +97,12 @@ class NetworkRepository {
   Future<dynamic> getTicketPriorities(BuildContext? context) =>
       getRequest(context, AppConstants.getTicketPriorities);
 
+  Future<dynamic> getLanguage(BuildContext? context) =>
+      getRequest(context, AppConstants.getLanguage);
+
+  Future<dynamic> saveLanguage(BuildContext? context, var data) =>
+      postRequest(context, AppConstants.saveLanguage, data: data);
+
   Future<dynamic> getTicketModules(BuildContext? context) =>
       getRequest(context, AppConstants.getTicketModules);
 
@@ -496,11 +502,15 @@ class NetworkRepository {
     // Check if already on LoginScreen
     final isAlreadyOnLogin = Get.currentRoute.toLowerCase().contains('login');
     if (isAlreadyOnLogin) {
-      CommonMethod.getXSnackBar("Error".tr, "Invalid username or password.".tr,
+      CommonMethod.getXSnackBar(
+        "Error".tr,
+        "Invalid username or password.".tr,
         redColor,
       );
     } else {
-      CommonMethod.getXSnackBar("Access Denied!".tr, "Session expired. Please log in again.".tr,
+      CommonMethod.getXSnackBar(
+        "Access Denied!".tr,
+        "Session expired. Please log in again.".tr,
         redColor,
       );
     }

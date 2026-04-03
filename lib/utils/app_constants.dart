@@ -1,6 +1,6 @@
 class AppConstants {
   //live
-  // static String apiEndPoint = "http://mormito.com/api/mobile/"; //DEV
+  //static String apiEndPoint = "http://mormito.com/api/mobile/"; //DEV
   static String apiEndPoint = "https://moremito.com/api/mobile/"; //LIVE
 
   static String netWorkFileUrl = "${AppConstants.apiEndPoint}file/";
@@ -58,6 +58,8 @@ class AppConstants {
   static const String saveAddress = 'save-address';
   static const String updateWelcomeTag = 'update-welcome-tag';
   static const String getWelcomeTag = 'welcome-tag';
+  static const String getLanguage = 'language';
+  static const String saveLanguage = 'language';
   static const String getUserRoleInfo = 'user-role-info';
   static const String changePassword = 'change-password';
   static const String changeUserRole = 'change-user-role';

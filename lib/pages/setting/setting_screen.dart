@@ -5,10 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Your App Imports
 import 'package:more_mitro_app/controller/login_controller.dart';
 import 'package:more_mitro_app/pages/setting/widget/app_version_text.dart';
+import 'package:more_mitro_app/service/network_repository.dart';
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/colors.dart';
 import 'package:more_mitro_app/utils/common_app_bar.dart';
 import 'package:more_mitro_app/utils/common_method.dart';
+import 'package:more_mitro_app/utils/preferences_util.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../profile/change_password_screen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final loginController = Get.put(LoginController());
+  final networkRepository = NetworkRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,24 @@ class _SettingScreenState extends State<SettingScreen> {
 
                     SizedBox(height: 16.h), // Reduced spacing between groups
 
-                    // --- SECTION 2: ACTIONS ---
+                    // --- SECTION 2: LANGUAGE & PREFERENCES ---
+                    _CompactSettingsGroup(
+                      title: "Settings".tr,
+                      children: [
+                        _SleekSettingsTile(
+                          icon: PhosphorIcons.globe(PhosphorIconsStyle.regular),
+                          title: "Language".tr,
+                          subtitle: Get.locale?.languageCode == 'zh'
+                              ? '中文 (Simplified)'
+                              : 'English',
+                          onTap: () => _showLanguageBottomSheet(context),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 16.h), // Reduced spacing between groups
+
+                    // --- SECTION 3: ACTIONS ---
                     _CompactSettingsGroup(
                       title: "Actions".tr,
                       children: [
@@ -96,6 +117,182 @@ class _SettingScreenState extends State<SettingScreen> {
         loginController.logout(context);
         CommonMethod.logOutUser();
       },
+    );
+  }
+
+  void _showLanguageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      builder: (context) {
+        final currentLocale = Get.locale ?? const Locale('en', 'US');
+        final isEnglish = currentLocale.languageCode == 'en';
+
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Text(
+                  'Change Language'.tr,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+
+                // English Option
+                _buildLanguageOption(
+                  context: context,
+                  language: 'English',
+                  code: 'en_US',
+                  isSelected: isEnglish,
+                  onTap: () async {
+                    // Save language preference to API
+                    try {
+                      final response = await networkRepository.saveLanguage(
+                        context,
+                        {'Language': 'en'},
+                      );
+                      await PreferencesUtil.saveLanguagePreference('en');
+
+                      Navigator.pop(context);
+                      Future.delayed(const Duration(milliseconds: 200), () {
+                        Get.updateLocale(const Locale('en', 'US'));
+                      });
+                    } catch (e) {
+                      debugPrint("Error saving language: $e");
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+
+                SizedBox(height: 16.h),
+
+                // Chinese Option
+                _buildLanguageOption(
+                  context: context,
+                  language: '中文 (简体)',
+                  code: 'zh_CN',
+                  isSelected: !isEnglish,
+                  onTap: () async {
+                    // Save language preference to API
+                    try {
+                      final response = await networkRepository.saveLanguage(
+                        context,
+                        {'Language': 'zh'},
+                      );
+                      await PreferencesUtil.saveLanguagePreference('zh');
+
+                      Navigator.pop(context);
+                      Future.delayed(const Duration(milliseconds: 200), () {
+                        Get.updateLocale(const Locale('zh', 'CN'));
+                      });
+                    } catch (e) {
+                      debugPrint("Error saving language: $e");
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+
+                SizedBox(height: 20.h),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required BuildContext context,
+    required String language,
+    required String code,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.shade50 : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: isSelected ? Colors.blue.shade400 : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Radio Button
+            Container(
+              height: 24.w,
+              width: 24.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color:
+                      isSelected ? Colors.blue.shade400 : Colors.grey.shade400,
+                  width: 2,
+                ),
+                color: isSelected ? Colors.blue.shade400 : Colors.transparent,
+              ),
+              child: isSelected
+                  ? Center(
+                      child: Icon(
+                        Icons.check,
+                        size: 14.sp,
+                        color: Colors.white,
+                      ),
+                    )
+                  : null,
+            ),
+            SizedBox(width: 16.w),
+            // Language Text
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    language,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    code,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                size: 24.sp,
+                color: Colors.blue.shade400,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -157,6 +354,7 @@ class _CompactSettingsGroup extends StatelessWidget {
 
 class _SleekSettingsTile extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final IconData icon;
   final VoidCallback onTap;
   final bool showDivider;
@@ -167,6 +365,7 @@ class _SleekSettingsTile extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.onTap,
+    this.subtitle,
     this.showDivider = true,
     this.isDestructive = false,
     this.showTrailing = true,
@@ -213,13 +412,30 @@ class _SleekSettingsTile extends StatelessWidget {
 
                   // --- Text Content ---
                   Expanded(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 14.sp, // Reduced from 16 for cleaner look
-                        fontWeight: FontWeight.w600,
-                        color: textColor,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                        ),
+                        if (subtitle != null)
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.h),
+                            child: Text(
+                              subtitle!,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: hintGreyColor,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
 

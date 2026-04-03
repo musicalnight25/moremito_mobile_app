@@ -24,7 +24,6 @@ import '../marketing/my_leads_screen.dart';
 import '../marketing/my_shared_flyers_screen.dart';
 import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
-import '../notification/notification_settings_screen.dart';
 import '../order/downline_orders_screen.dart';
 import '../order/my_referral_orders_screen.dart';
 import '../profile/my_profile_screen.dart';
@@ -248,8 +247,8 @@ class MenuScreen extends StatelessWidget {
                       page: "MemberPage",
                       actionName: "MyOrders",
                       onSuccess: (url) {
-                        Get.to(
-                            () => CommonWebView(url: url, title: "My Orders".tr));
+                        Get.to(() =>
+                            CommonWebView(url: url, title: "My Orders".tr));
                       },
                     );
                   },
@@ -287,8 +286,8 @@ class MenuScreen extends StatelessWidget {
                       page: "MemberPage",
                       actionName: "AutoShip",
                       onSuccess: (url) {
-                        Get.to(() =>
-                            CommonWebView(url: url, title: "Recurring Orders".tr));
+                        Get.to(() => CommonWebView(
+                            url: url, title: "Recurring Orders".tr));
                       },
                     );
                   },
@@ -408,8 +407,8 @@ class MenuScreen extends StatelessWidget {
                           page: "MemberPage",
                           actionName: "Genealogy",
                           onSuccess: (url) {
-                            Get.to(() =>
-                                CommonWebView(url: url, title: "My Tree View".tr));
+                            Get.to(() => CommonWebView(
+                                url: url, title: "My Tree View".tr));
                           },
                         );
                       },
@@ -465,8 +464,8 @@ class MenuScreen extends StatelessWidget {
                       page: "FlyerPage",
                       id: "1",
                       onSuccess: (url) {
-                        Get.to(
-                            () => CommonWebView(url: url, title: "My Flyers".tr));
+                        Get.to(() =>
+                            CommonWebView(url: url, title: "My Flyers".tr));
                       },
                     );
                   },
@@ -497,8 +496,40 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
-      // ================= 8. SUPPORT =================
+      // ================= 8. APP SETTINGS =================
       if (isAll(role)) {
+        menuList.add(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 16.h),
+            child: Text(
+              "Settings".tr,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        );
+      }
+
+      // ================= 9. SUPPORT =================
+      if (isAll(role)) {
+        menuList.add(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 16.h),
+            child: Text(
+              "Help & Support".tr,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        );
         menuList.add(
           MenuSectionWidget(
             section: MenuSection(
@@ -524,8 +555,8 @@ class MenuScreen extends StatelessWidget {
                       page: "MemberPage",
                       actionName: "MyOrders",
                       onSuccess: (url) {
-                        Get.to(
-                            () => CommonWebView(url: url, title: "My Orders".tr));
+                        Get.to(() =>
+                            CommonWebView(url: url, title: "My Orders".tr));
                       },
                     );
                   },

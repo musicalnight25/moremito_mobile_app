@@ -170,6 +170,27 @@ class PreferencesUtil {
     }
   }
 
+  // -------- LANGUAGE PREFERENCE --------
+  static const _languageKey = "app_language";
+
+  static Future<void> saveLanguagePreference(String languageCode) async {
+    try {
+      await _prefs?.setString(_languageKey, languageCode);
+      print('✅ Language preference saved: $languageCode');
+    } catch (e) {
+      print('Error saving language preference: $e');
+    }
+  }
+
+  static Future<String?> getLanguagePreference() async {
+    try {
+      return _prefs?.getString(_languageKey);
+    } catch (e) {
+      print('Error getting language preference: $e');
+      return null;
+    }
+  }
+
   static bool isLoggedIn() {
     final String? token = getUserToken();
     return token != null && token.isNotEmpty;

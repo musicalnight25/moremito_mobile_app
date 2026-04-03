@@ -43,6 +43,67 @@ class LoginController extends GetxController {
     }
   }
 
+  Future<void> fetchAndSetLanguage() async {
+    try {
+      debugPrint("🌐 Fetching language preference from API...");
+      // Call GET /api/mobile/language to fetch saved language preference
+      final response = await _networkRepository.getLanguage(null);
+
+      debugPrint("📋 Full API Response: $response");
+
+      if (response != null && response is Map) {
+        debugPrint("📋 Response Data: ${response['Data']}");
+        debugPrint("📋 Response data (lowercase): ${response['data']}");
+
+        // Try different response field names (API uses LanguageCode in Data object)
+        final languageCode = response['Data']?['LanguageCode']?.toString() ??
+            response['data']?['LanguageCode']?.toString();
+
+        debugPrint("📋 Extracted LanguageCode: $languageCode");
+
+        final language = languageCode?.toLowerCase() ?? 'en';
+
+        debugPrint("✅ Language preference from API: $language");
+
+        if (language == 'zh') {
+          Get.updateLocale(const Locale('zh', 'CN'));
+          await PreferencesUtil.saveLanguagePreference('zh');
+          debugPrint("✅ ✅ ✅ Language loaded: Chinese (中文) 🇨🇳");
+        } else {
+          Get.updateLocale(const Locale('en', 'US'));
+          await PreferencesUtil.saveLanguagePreference('en');
+          debugPrint("✅ ✅ ✅ Language loaded: English 🇬🇧");
+        }
+      } else {
+        // Fallback to cached preference
+        debugPrint(
+            "⚠️ No response from GET language API, using cached preference");
+        await _setLanguageFromCache();
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching language: $e");
+      // Fallback to cached preference
+      await _setLanguageFromCache();
+    }
+  }
+
+  Future<void> _setLanguageFromCache() async {
+    try {
+      final cachedLanguage = await PreferencesUtil.getLanguagePreference();
+      if (cachedLanguage == 'zh') {
+        Get.updateLocale(const Locale('zh', 'CN'));
+        debugPrint("✅ ✅ ✅ Language loaded from cache: Chinese (中文) 🇨🇳");
+      } else {
+        Get.updateLocale(const Locale('en', 'US'));
+        debugPrint("✅ ✅ ✅ Language loaded from cache: English 🇬🇧");
+      }
+    } catch (e) {
+      debugPrint("❌ Error loading cached language: $e");
+      Get.updateLocale(Get.deviceLocale ?? const Locale('en', 'US'));
+      debugPrint("✅ Language set to device locale");
+    }
+  }
+
   Future<void> logout(BuildContext context) async {
     try {
       await _networkRepository.logout(context);
@@ -83,7 +144,9 @@ class LoginController extends GetxController {
       }
     } catch (e, stack) {
       debugPrint("Error in loginWithPassword: $e");
-      CommonMethod.getXSnackBar("Login Failed".tr, "Please check your credentials.".tr,
+      CommonMethod.getXSnackBar(
+        "Login Failed".tr,
+        "Please check your credentials.".tr,
         redColor,
       );
 
