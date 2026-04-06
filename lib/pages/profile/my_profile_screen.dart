@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shimmer/shimmer.dart'; // Add this
 import 'package:more_mitro_app/utils/base_background_widget.dart';
 import 'package:more_mitro_app/utils/primary_text_button.dart';
@@ -17,6 +18,8 @@ import '../../utils/app_text_style.dart';
 import '../../utils/colors.dart';
 import '../../utils/common_app_bar.dart';
 import '../../utils/static_decoration.dart';
+import '../../service/network_repository.dart';
+import '../../utils/preferences_util.dart';
 import 'manage_addresses_screen.dart';
 import 'welcome_tag_screen.dart';
 
@@ -41,6 +44,10 @@ class MyProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// --- SECTION 0: LANGUAGE CHANGE ---
+              _buildLanguageChangeSection(context),
+              height20,
+
               /// --- SECTION 1: ACCOUNT & PERSONAL INFO ---
               Obx(() {
                 if (profileController.isLoading.value) {
@@ -88,7 +95,8 @@ class MyProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Note: Changing your address here does not change your address on already created recurring orders.".tr,
+                      "Note: Changing your address here does not change your address on already created recurring orders."
+                          .tr,
                       style: AppTextStyle.normalRegular12
                           .copyWith(color: Colors.red.shade700),
                     ),
@@ -113,9 +121,7 @@ class MyProfileScreen extends StatelessWidget {
                       return Column(
                         children: [
                           _dataRow(
-                              "Address",
-                              "${defaultAddress.address1}\n${defaultAddress.city}, ${defaultAddress.stateName} ${defaultAddress.zipPostalCode}" ??
-                                  "-"),
+                              "Address", _buildAddressText(defaultAddress)),
                           _dataRow("City", defaultAddress.city ?? "-"),
                           _dataRow(
                               "Country", defaultAddress.countryName ?? "-"),
@@ -238,7 +244,7 @@ class MyProfileScreen extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4))
         ],
@@ -323,5 +329,270 @@ class MyProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildLanguageChangeSection(BuildContext context) {
+    final currentLocale = Get.locale ?? const Locale('en', 'US');
+    final isEnglish = currentLocale.languageCode == 'en';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 8.w, bottom: 6.h),
+          child: Text(
+            "Settings".tr.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
+              color: subTitleColor,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: primaryWhite,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: borderGreyColor.withValues(alpha: 0.4)),
+            boxShadow: [
+              BoxShadow(
+                color: bgPrimaryShadowColor.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _showLanguageBottomSheet(context),
+              borderRadius: BorderRadius.circular(12.r),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 34.w,
+                      height: 34.w,
+                      decoration: BoxDecoration(
+                        color: paleYellowColor,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(
+                        PhosphorIcons.globe(PhosphorIconsStyle.regular),
+                        size: 18.sp,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(width: 14.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Language".tr,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: lightBlackColor,
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            isEnglish ? 'English' : '中文 (简体)',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: hintGreyColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14.sp,
+                      color: hintGreyColor.withValues(alpha: 0.6),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _changeLanguage({
+    required BuildContext context,
+    required String languageCode,
+  }) async {
+    final networkRepository = NetworkRepository();
+    try {
+      await networkRepository.saveLanguage(context, {'Language': languageCode});
+      await PreferencesUtil.saveLanguagePreference(languageCode);
+      Navigator.pop(context);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (languageCode == 'zh') {
+          Get.updateLocale(const Locale('zh', 'CN'));
+        } else {
+          Get.updateLocale(const Locale('en', 'US'));
+        }
+      });
+    } catch (e) {
+      debugPrint("Error saving language: $e");
+      Navigator.pop(context);
+    }
+  }
+
+  void _showLanguageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      builder: (context) {
+        final currentLocale = Get.locale ?? const Locale('en', 'US');
+        final isEnglish = currentLocale.languageCode == 'en';
+
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Change Language'.tr,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                _buildLanguageOption(
+                  context: context,
+                  language: 'English',
+                  code: 'en_US',
+                  isSelected: isEnglish,
+                  onTap: () =>
+                      _changeLanguage(context: context, languageCode: 'en'),
+                ),
+                SizedBox(height: 16.h),
+                _buildLanguageOption(
+                  context: context,
+                  language: '中文 (简体)',
+                  code: 'zh_CN',
+                  isSelected: !isEnglish,
+                  onTap: () =>
+                      _changeLanguage(context: context, languageCode: 'zh'),
+                ),
+                SizedBox(height: 20.h),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required BuildContext context,
+    required String language,
+    required String code,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.shade50 : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: isSelected ? Colors.blue.shade400 : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 24.w,
+              width: 24.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color:
+                      isSelected ? Colors.blue.shade400 : Colors.grey.shade400,
+                  width: 2,
+                ),
+                color: isSelected ? Colors.blue.shade400 : Colors.transparent,
+              ),
+              child: isSelected
+                  ? Center(
+                      child: Icon(
+                        Icons.check,
+                        size: 14.sp,
+                        color: Colors.white,
+                      ),
+                    )
+                  : null,
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    language,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    code,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                size: 24.sp,
+                color: Colors.blue.shade400,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _buildAddressText(MyAddressModel address) {
+    final firstLine = (address.address1 ?? '').trim();
+    final city = (address.city ?? '').trim();
+    final state = (address.stateName ?? '').trim();
+    final zip = (address.zipPostalCode ?? '').trim();
+
+    final secondParts = [city, state, zip].where((part) => part.isNotEmpty);
+    final secondLine = secondParts.join(', ').replaceAll(', ,', ',');
+
+    final lines = [firstLine, secondLine].where((line) => line.isNotEmpty);
+    return lines.isEmpty ? '-' : lines.join('\n');
   }
 }

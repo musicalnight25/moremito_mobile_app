@@ -26,6 +26,7 @@ import '../marketing/shop_moremito_screen.dart';
 import '../marketing/tmris_info_screen.dart';
 import '../order/downline_orders_screen.dart';
 import '../order/my_referral_orders_screen.dart';
+import '../profile/manage_addresses_screen.dart';
 import '../profile/my_profile_screen.dart';
 import '../support/create_support_ticket_screen.dart';
 import '../support/support_tickets_list_screen.dart';
@@ -65,6 +66,11 @@ class MenuScreen extends StatelessWidget {
                   title: "My Account Settings".tr,
                   icon: PhosphorIcons.userCircle(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => const MyProfileScreen()),
+                ),
+                MenuItem(
+                  title: "Manage Addresses".tr,
+                  icon: PhosphorIcons.mapPin(PhosphorIconsStyle.regular),
+                  onTap: () => Get.to(() => const ManageAddressesScreen()),
                 ),
                 MenuItem(
                   title: "My Personals".tr,
@@ -306,7 +312,7 @@ class MenuScreen extends StatelessWidget {
               title: "Compensation".tr,
               icon: PhosphorIcons.coins(PhosphorIconsStyle.regular),
               items: [
-                // 1. My Compensations
+                // 0. My Compensations
                 MenuItem(
                   title: "My Compensations".tr,
                   icon: PhosphorIcons.money(PhosphorIconsStyle.regular),
@@ -325,6 +331,22 @@ class MenuScreen extends StatelessWidget {
                           Get.to(() => const MyCompensationHistoryScreen()),
                     ),
                   ],
+                ),
+                // 1. My Currently Available Balance
+                MenuItem(
+                  title: "My Currently Available Balance".tr,
+                  icon: PhosphorIcons.wallet(PhosphorIconsStyle.regular),
+                  onTap: () async {
+                    await WebviewHelper.getDynamicWebviewURL(
+                      page: "MemberPage",
+                      actionName: "MyMoreMitoCash",
+                      onSuccess: (url) {
+                        Get.to(() => CommonWebView(
+                            url: url,
+                            title: "My Currently Available Balance".tr));
+                      },
+                    );
+                  },
                 ),
 
                 // 2. Request Payouts And Make Transfers
@@ -393,7 +415,23 @@ class MenuScreen extends StatelessWidget {
                   ],
                 ),
 
-                // 4. My Rank Management
+                // 4. The Compensation Plan
+                MenuItem(
+                  title: "The Compensation Plan".tr,
+                  icon: PhosphorIcons.file(PhosphorIconsStyle.regular),
+                  onTap: () async {
+                    await WebviewHelper.getDynamicWebviewURL(
+                      page: "MemberPage",
+                      actionName: "CompensationPlanPdf",
+                      onSuccess: (url) {
+                        Get.to(() => CommonWebView(
+                            url: url, title: "The Compensation Plan".tr));
+                      },
+                    );
+                  },
+                ),
+
+                // 5. My Rank Management
                 MenuItem(
                   title: "My Rank Management".tr,
                   icon: PhosphorIcons.medal(PhosphorIconsStyle.regular),
@@ -423,6 +461,20 @@ class MenuScreen extends StatelessWidget {
                           onSuccess: (url) {
                             Get.to(() => CommonWebView(
                                 url: url, title: "My Star Tree View".tr));
+                          },
+                        );
+                      },
+                    ),
+                    MenuItem(
+                      title: "Rank Management Report".tr,
+                      icon: PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
+                      onTap: () async {
+                        await WebviewHelper.getDynamicWebviewURL(
+                          page: "MemberPage",
+                          actionName: "MyRankManagementReport",
+                          onSuccess: (url) {
+                            Get.to(() => CommonWebView(
+                                url: url, title: "Rank Management Report".tr));
                           },
                         );
                       },

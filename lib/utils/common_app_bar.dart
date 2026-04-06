@@ -24,6 +24,23 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.visibleBackButton = false,
   }) : super(key: key);
 
+  void _handleLeadingTap(BuildContext context) {
+    if (!visibleBackButton) {
+      Get.to(() => MenuScreen());
+      return;
+    }
+
+    // Avoid Get.back() here because GetX may try to close snackbar overlays
+    // and can crash when its snackbar controller is not initialized.
+    FocusManager.instance.primaryFocus?.unfocus();
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else if (Get.key.currentState?.canPop() ?? false) {
+      Get.key.currentState?.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -43,7 +60,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leading ??
           IconButton(
             onPressed: () {
-              visibleBackButton ? Get.back() : Get.to(() => MenuScreen());
+              _handleLeadingTap(context);
             },
             icon: Icon(
               visibleBackButton ? Icons.arrow_back_ios_new : Icons.menu_rounded,
