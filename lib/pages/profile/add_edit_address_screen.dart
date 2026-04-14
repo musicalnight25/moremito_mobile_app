@@ -260,7 +260,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     if (_formKey.currentState!.validate()) {
                       if (controller.selectedCountryId.value == null ||
                           controller.selectedStateId.value == null) {
-                        CommonMethod.getXSnackBar("Required".tr, "Please select Country and State".tr, redColor);
+                        CommonMethod.getXSnackBar("Required".tr,
+                            "Please select Country and State".tr, redColor);
                         return;
                       }
                       HapticFeedback.mediumImpact();
@@ -351,7 +352,10 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             icon: Icon(Icons.keyboard_arrow_down_rounded,
                 color: Colors.black54, size: 22.sp),
             style: AppTextStyle.normalRegular14.copyWith(color: Colors.black),
-            hint: Text("Select $label".tr,
+            hint: Text(
+                "Select {label}".trParams({
+                  "label": label,
+                }),
                 style: AppTextStyle.normalRegular14
                     .copyWith(color: Colors.black54)),
             items: items.entries
@@ -376,7 +380,11 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                   borderRadius: BorderRadius.circular(8.r),
                   borderSide: const BorderSide(color: Colors.red)),
             ),
-            validator: (val) => val == null ? "Select $label" : null,
+            validator: (val) => val == null
+                ? "Select {label}".trParams({
+                    "label": label,
+                  })
+                : null,
           ),
         ],
       ),

@@ -277,7 +277,9 @@ class _SharedFlyersScreenState extends State<SharedFlyersScreen> {
                         size: 16.sp, color: Colors.green.shade700),
                     SizedBox(width: 6.sp),
                     Text(
-                      "Total Activities : ${item.totalInteractions ?? 0}".tr,
+                      "Total Activities : {total}".trParams({
+                        "total": "${item.totalInteractions ?? 0}",
+                      }),
                       style: AppTextStyle.normalSemiBold12
                           .copyWith(color: Colors.green.shade900),
                     ),

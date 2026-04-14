@@ -30,8 +30,8 @@ class ShopMoremitoScreen extends StatelessWidget {
           child: Column(
             children: [
               _buildHealthBanner(
-                title: "People Health\nProducts",
-                subText: "Buy Now",
+                title: "People Health\nProducts".tr,
+                subText: "Buy Now".tr,
                 imageUrl:
                     "https://moremito.com/Images/thumbnail/bb-bundle-1.jpeg",
                 onTap: () =>
@@ -39,8 +39,8 @@ class ShopMoremitoScreen extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
               _buildHealthBanner(
-                title: "Pet Health\nProducts",
-                subText: "Buy Now",
+                title: "Pet Health\nProducts".tr,
+                subText: "Buy Now".tr,
                 imageUrl: "https://moremito.com/Images/thumbnail/pet-life.jpeg",
                 onTap: () =>
                     controller.getShopMoremitoWebview("PetHealthProducts"),

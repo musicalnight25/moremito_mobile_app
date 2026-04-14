@@ -75,7 +75,9 @@ class _TicketCommentScreenState extends State<TicketCommentScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: primaryWhite,
       appBar: CommonAppBar(
-        title: "Ticket #${widget.ticketId}".tr,
+        title: "Ticket #{ticketId}".trParams({
+          "ticketId": "${widget.ticketId}",
+        }),
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(

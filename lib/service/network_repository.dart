@@ -100,6 +100,80 @@ class NetworkRepository {
   Future<dynamic> getLanguage(BuildContext? context) =>
       getRequest(context, AppConstants.getLanguage);
 
+  Future<dynamic> getLanguageCodes(BuildContext? context) =>
+      getRequest(context, AppConstants.getLanguageCodes);
+
+  Future<List<Map<String, String>>> getLanguageList(
+      BuildContext? context) async {
+    final response = await getLanguageCodes(context);
+    final List<Map<String, String>> options = [];
+
+    if (response is! Map) {
+      return const [
+        {'code': 'en', 'name': 'English'}
+      ];
+    }
+
+    final data = response['Data'] ?? response['data'];
+    final seenCodes = <String>{};
+
+    void addOption(dynamic item) {
+      if (item is! Map) return;
+
+      final code = (item['LanguageCode'] ??
+              item['languageCode'] ??
+              item['Code'] ??
+              item['code'] ??
+              '')
+          .toString()
+          .trim();
+
+      if (code.isEmpty) return;
+
+      final normalizedCode = code.toLowerCase();
+      if (seenCodes.contains(normalizedCode)) return;
+
+      var name = (item['LanguageName'] ??
+              item['languageName'] ??
+              item['Name'] ??
+              item['name'] ??
+              code)
+          .toString()
+          .trim();
+
+      if (name.isEmpty || name == code) {
+        if (normalizedCode.startsWith('zh')) {
+          name = 'Chinese';
+        } else if (normalizedCode.startsWith('en')) {
+          name = 'English';
+        }
+      }
+
+      seenCodes.add(normalizedCode);
+      options.add({
+        'code': code,
+        'name': name.isEmpty ? code : name,
+      });
+    }
+
+    if (data is List) {
+      for (final item in data) {
+        addOption(item);
+      }
+    } else if (data is Map) {
+      addOption(data);
+    }
+
+    if (options.isEmpty) {
+      options.add({
+        'code': 'en',
+        'name': 'English',
+      });
+    }
+
+    return options;
+  }
+
   Future<dynamic> saveLanguage(BuildContext? context, var data) =>
       postRequest(context, AppConstants.saveLanguage, data: data);
 
@@ -172,6 +246,9 @@ class NetworkRepository {
 
   Future<dynamic> getSubCategories(BuildContext? context, String categoryID) =>
       getRequest(null, AppConstants.getSubCategories + categoryID);
+
+  Future<dynamic> getCallAnnouncementShareFileId({BuildContext? context}) =>
+      getRequest(context, AppConstants.getCallAnnouncementShareFileId);
 
   Future<dynamic> getSubCategoriesFiles(
     BuildContext? context,

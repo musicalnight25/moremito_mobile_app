@@ -111,7 +111,8 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "Track and monitor all your shared links activity.\nView recipient activity and interaction details.",
+                "Track and monitor all your shared links activity.\nView recipient activity and interaction details."
+                    .tr,
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: Colors.black87,
                   height: 1.3,
@@ -127,28 +128,31 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
                 children: [
                   Expanded(
                     child: _buildSmallActionCard(
-                      title: "Share\nActivity",
+                      title: "Share\nActivity".tr,
                       icon: Icons.ios_share_rounded,
                       isPrimary: true,
-                      onTap: () => Get.to(() => const ShareYourActivityScreen()),
+                      onTap: () =>
+                          Get.to(() => const ShareYourActivityScreen()),
                     ),
                   ),
                   SizedBox(width: 10.sp),
                   Expanded(
                     child: _buildSmallActionCard(
-                      title: "Shared\nby Me",
+                      title: "Shared\nby Me".tr,
                       icon: Icons.people_alt_outlined,
                       isPrimary: false,
-                      onTap: () => Get.to(() => const SharedReportsUsersScreen()),
+                      onTap: () =>
+                          Get.to(() => const SharedReportsUsersScreen()),
                     ),
                   ),
                   SizedBox(width: 10.sp),
                   Expanded(
                     child: _buildSmallActionCard(
-                      title: "Shared\nwith Me",
+                      title: "Shared\nwith Me".tr,
                       icon: Icons.mark_as_unread_outlined,
                       isPrimary: false,
-                      onTap: () => Get.to(() => const SharedReportsWithMeScreen()),
+                      onTap: () =>
+                          Get.to(() => const SharedReportsWithMeScreen()),
                     ),
                   ),
                 ],
@@ -214,7 +218,9 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
         decoration: BoxDecoration(
           color: isPrimary ? primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(10.r),
-          border: isPrimary ? null : Border.all(color: Colors.grey.shade200, width: 1),
+          border: isPrimary
+              ? null
+              : Border.all(color: Colors.grey.shade200, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.02),
@@ -265,20 +271,23 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: 14.sp,
-              width: 80.sp,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4.r)
-              )
-            ),
+                height: 14.sp,
+                width: 80.sp,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r))),
             Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(height: 10.sp, width: 60.sp, color: Colors.white),
-                    Container(height: 14.sp, width: 20.sp, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4.r))),
+                    Container(
+                        height: 14.sp,
+                        width: 20.sp,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r))),
                   ],
                 ),
                 SizedBox(height: 8.sp),
@@ -286,7 +295,12 @@ class _MySharedFlyersScreenState extends State<MySharedFlyersScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(height: 10.sp, width: 60.sp, color: Colors.white),
-                    Container(height: 14.sp, width: 20.sp, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4.r))),
+                    Container(
+                        height: 14.sp,
+                        width: 20.sp,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r))),
                   ],
                 ),
               ],

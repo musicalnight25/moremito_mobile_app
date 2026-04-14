@@ -146,7 +146,7 @@ class TicketItemCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "#${ticket.ticketId}".tr,
+                      "#${ticket.ticketId}",
                       style: AppTextStyle.normalSemiBold18,
                     ),
                     SizedBox(height: 4.sp),

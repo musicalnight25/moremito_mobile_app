@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:more_mitro_app/controller/home_controller.dart';
 import 'package:more_mitro_app/pages/auth/login_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
@@ -70,34 +71,68 @@ class CommonMethod {
 
   static getXSnackBar(String title, String message, Color? color,
       {SnackPosition? snackPosition}) {
-    Get.snackbar(
-      title,
-      message,
-      backgroundColor: color?.withOpacity(0.9) ?? primaryBlack.withOpacity(0.8),
-      colorText: primaryWhite,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      duration: const Duration(seconds: 3),
-      borderRadius: 15,
-      barBlur: 20,
-      borderColor: Colors.white.withOpacity(0.5),
-      borderWidth: 1,
-      snackPosition: snackPosition ?? SnackPosition.TOP,
-      titleText: Text(title,
-          style: AppTextStyle.normalBold18.copyWith(color: primaryWhite)),
-      messageText: Text(
+    final BuildContext? currentContext =
+        Get.key.currentContext ?? Get.context ?? Get.overlayContext;
+
+    if (currentContext == null) {
+      debugPrint("Snackbar skipped (no overlay): $title - $message");
+      return;
+    }
+
+    final scaffoldMessenger = ScaffoldMessenger.maybeOf(currentContext);
+    if (scaffoldMessenger != null) {
+      scaffoldMessenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor:
+                color?.withOpacity(0.9) ?? primaryBlack.withOpacity(0.8),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      return;
+    }
+
+    if (Get.key.currentState?.overlay == null) {
+      debugPrint("Snackbar skipped (overlay unavailable): $title - $message");
+      return;
+    }
+
+    try {
+      Get.snackbar(
+        title,
         message,
-        style: AppTextStyle.normalRegular16.copyWith(
-          color: Colors.white70,
+        backgroundColor:
+            color?.withOpacity(0.9) ?? primaryBlack.withOpacity(0.8),
+        colorText: primaryWhite,
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        duration: const Duration(seconds: 3),
+        borderRadius: 15,
+        barBlur: 20,
+        borderColor: Colors.white.withOpacity(0.5),
+        borderWidth: 1,
+        snackPosition: snackPosition ?? SnackPosition.TOP,
+        titleText: Text(title,
+            style: AppTextStyle.normalBold18.copyWith(color: primaryWhite)),
+        messageText: Text(
+          message,
+          style: AppTextStyle.normalRegular16.copyWith(
+            color: Colors.white70,
+          ),
         ),
-      ),
-      icon: Icon(
-        Icons.info_outline,
-        color: primaryWhite,
-      ),
-      animationDuration: const Duration(milliseconds: 300),
-      forwardAnimationCurve: Curves.easeInOut,
-      reverseAnimationCurve: Curves.easeInOut,
-    );
+        icon: Icon(
+          Icons.info_outline,
+          color: primaryWhite,
+        ),
+        animationDuration: const Duration(milliseconds: 300),
+        forwardAnimationCurve: Curves.easeInOut,
+        reverseAnimationCurve: Curves.easeInOut,
+      );
+    } catch (e) {
+      debugPrint("Snackbar failed: $e");
+    }
   }
 
   static String getFileNameFromPath(String filePath) {
@@ -174,6 +209,16 @@ class CommonMethod {
   }
 
   static Future logOutUser() async {
+    // Reset dashboard data if HomeController exists
+    try {
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().resetDashboard();
+        Get.delete<HomeController>();
+      }
+    } catch (e) {
+      debugPrint("⚠ Error resetting HomeController on logout: $e");
+    }
+
     await PreferencesUtil.clear();
     PreferencesUtil.clearRememberMe();
     final isAlreadyOnLogin = Get.currentRoute.toLowerCase().contains('login');
@@ -226,7 +271,11 @@ class CommonMethod {
           }
         } catch (e) {
           log("⚠️ iOS token fetch error: $e");
-          CommonMethod.getXSnackBar("Test".tr, "⚠️ iOS token fetch error: $e".tr,
+          CommonMethod.getXSnackBar(
+            "Test".tr,
+            "⚠️ iOS token fetch error: {error}".trParams({
+              "error": e.toString(),
+            }),
             primaryColor,
           );
         }
@@ -443,7 +492,11 @@ class CommonMethod {
   static void _showPermissionDeniedDialog(String permission) {
     Get.defaultDialog(
       title: "Permission Required".tr,
-      content: Text("Please grant $permission permission in the settings.".tr),
+      content: Text(
+        "Please grant {permission} permission in the settings.".trParams({
+          "permission": permission,
+        }),
+      ),
       actions: [
         TextButton(
           onPressed: () {

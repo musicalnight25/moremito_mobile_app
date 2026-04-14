@@ -55,17 +55,27 @@ class LoginController extends GetxController {
         debugPrint("📋 Response Data: ${response['Data']}");
         debugPrint("📋 Response data (lowercase): ${response['data']}");
 
-        // Try different response field names (API uses LanguageCode in Data object)
-        final languageCode = response['Data']?['LanguageCode']?.toString() ??
-            response['data']?['LanguageCode']?.toString();
+        // Try different response shapes:
+        // 1) Data as object with selected LanguageCode
+        // 2) Data as list (language options) -> fallback to cache
+        final data = response['Data'] ?? response['data'];
+        String? languageCode;
+        if (data is Map) {
+          languageCode = data['LanguageCode']?.toString();
+        }
 
         debugPrint("📋 Extracted LanguageCode: $languageCode");
 
-        final language = languageCode?.toLowerCase() ?? 'en';
+        if (languageCode == null || languageCode.isEmpty) {
+          await _setLanguageFromCache();
+          return;
+        }
+
+        final language = languageCode.toLowerCase();
 
         debugPrint("✅ Language preference from API: $language");
 
-        if (language == 'zh') {
+        if (language.startsWith('zh')) {
           Get.updateLocale(const Locale('zh', 'CN'));
           await PreferencesUtil.saveLanguagePreference('zh');
           debugPrint("✅ ✅ ✅ Language loaded: Chinese (中文) 🇨🇳");

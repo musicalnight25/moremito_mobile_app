@@ -47,6 +47,16 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     super.initState();
   }
 
+  void _safeCloseCurrentOverlay() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else if (Get.key.currentState?.canPop() ?? false) {
+      Get.key.currentState?.pop();
+    }
+  }
+
   /// Pull-to-refresh functionality
   Future<void> _onRefresh() async {
     // Refresh document/file details from the API
@@ -107,7 +117,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         () => FullScreenImageViewer(imageUrl: data.filePath!));
                   } else if (GetUtils.isAudio(data.filePath!) ||
                       data.fileType == '.m4a') {
-                    CommonMethod.getXSnackBar("Audio".tr, "Playing audio file.".tr, primaryBlack);
+                    CommonMethod.getXSnackBar(
+                        "Audio".tr, "Playing audio file.".tr, primaryBlack);
                   } else {
                     Get.to(() => DocumentViewerWidget(
                           filePath: data.filePath!,
@@ -154,7 +165,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                   onPressed: () async {
                     CommonMethod.showCustomBottomSheet(
                       title: "Select an Option".tr,
-                      message: "Please choose how you would like to share.",
+                      message: "Please choose how you would like to share.".tr,
                       showCancelButton: true,
                       cancelButtonTextColor: redColor,
                       customWidget: SizedBox(
@@ -164,7 +175,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             PrimaryTextButton(
                               title: "Choose from Contacts".tr,
                               onPressed: () async {
-                                Get.back();
+                                _safeCloseCurrentOverlay();
                                 Get.to(() => ContactScreen())!.then((value) {
                                   if (contactController
                                       .selectedContact.value.isNotEmpty) {
@@ -183,7 +194,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             PrimaryTextButton(
                               title: "Enter Name Manually".tr,
                               onPressed: () {
-                                Get.back();
+                                _safeCloseCurrentOverlay();
                                 nameTextController.clear();
                                 phoneTextController.clear();
                                 selectedEmail = null;
@@ -223,7 +234,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       title: "Generate Link To Share".tr,
       message: null,
       showCancelButton: true,
-      cancelButtonTitle: "Close",
+      cancelButtonTitle: "Close".tr,
       cancelButtonTextColor: redColor,
       customWidget: SizedBox(
         width: Get.width,
@@ -233,10 +244,14 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             children: [
               /// ================= STEP 1 =================
               if (generatedLink.value.isEmpty) ...[
-                _instruction("1",
-                    "Enter the name to track the responses from this person with."),
-                _instruction("2",
-                    "Click on \"Generate a Link\" button to create a link that you are going to send to this person."),
+                _instruction(
+                    "1",
+                    "Enter the name to track the responses from this person with."
+                        .tr),
+                _instruction(
+                    "2",
+                    "Click on \"Generate a Link\" button to create a link that you are going to send to this person."
+                        .tr),
                 height15,
                 TextFormFieldWidget(
                   controller: nameTextController,
@@ -249,31 +264,45 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                   title: "Generate a Link".tr,
                   onPressed: () async {
                     if (nameTextController.text.trim().isEmpty) {
-                      CommonMethod.getXSnackBar("Error".tr, "Please enter recipient name".tr, redColor);
+                      CommonMethod.getXSnackBar("Error".tr,
+                          "Please enter recipient name".tr, redColor);
                       return;
                     }
 
-                    final link = await controller.generateLink(
+                    final linkData = await controller.generateLink(
                       context: context,
                       fileId: data.id.toString(),
                       SharedTo: nameTextController.text.trim(),
                     );
 
-                    if (link == null || link.isEmpty) {
-                      CommonMethod.getXSnackBar("Error".tr, "Failed to generate link".tr, redColor);
+                    if (linkData == null || linkData['shareUrl'] == null) {
+                      CommonMethod.getXSnackBar(
+                          "Error".tr, "Failed to generate link".tr, redColor);
                       return;
                     }
 
-                    generatedLink.value = link;
+                    final shareUrl = linkData['shareUrl'] as String;
+                    final savedShareId = linkData['savedShareId'];
+
+                    generatedLink.value = shareUrl;
+
+                    // Store savedShareId for later use when sharing
+                    Get.put<dynamic>(savedShareId,
+                        tag: 'savedShareId_${data.id}');
 
                     final dashboard = homeController.dashboardModel.value;
                     final senderName = (dashboard?.name ?? "").trim().isNotEmpty
                         ? (dashboard?.name ?? "").trim()
                         : (dashboard?.userName ?? "Someone");
+                    final recipientName = nameTextController.text.trim();
 
                     messageTextController.text =
-                        "Hey ${nameTextController.text}, $senderName has shared some information with you. "
-                        "Visit the link to view it. $link";
+                        "Hey {name}, {sender} has invited you to the MoreMito health and wellness call. Visit the link to see more. {url}"
+                            .trParams({
+                      "name": recipientName,
+                      "sender": senderName,
+                      "url": shareUrl,
+                    });
                   },
                 ),
               ],
@@ -304,9 +333,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                 /// Web-style bullets
                 _bullet(
-                    "A personalized message has been created for the recipient."),
-                _bullet("You can review and edit the message if needed."),
-                _bullet("Click Share to send the message to the recipient."),
+                    "A personalized message has been created for the recipient."
+                        .tr),
+                _bullet("You can review and edit the message if needed.".tr),
+                _bullet("Click Share to send the message to the recipient.".tr),
 
                 height15,
 
@@ -322,7 +352,11 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 PrimaryTextButton(
                   title: "Share".tr,
                   onPressed: () {
-                    Get.back();
+                    _safeCloseCurrentOverlay();
+
+                    // Retrieve the saved share ID that was stored earlier
+                    final savedShareId =
+                        Get.find<dynamic>(tag: 'savedShareId_${data.id}');
 
                     controller.shareFileUsingBottomSheet(
                       context: context,
@@ -331,6 +365,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       message: messageTextController.text.trim(),
                       sharedUrl: generatedLink.value,
                       email: selectedEmail,
+                      savedShareId: savedShareId,
                     );
                   },
                 ),

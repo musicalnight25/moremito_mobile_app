@@ -37,7 +37,13 @@ class WebviewHelper {
             response?['Message'] ?? "Failed to generate token", redColor);
       }
     } catch (e) {
-      CommonMethod.getXSnackBar("Error".tr, "Connection Error: $e".tr, redColor);
+      CommonMethod.getXSnackBar(
+        "Error".tr,
+        "Connection Error: {error}".trParams({
+          "error": e.toString(),
+        }),
+        redColor,
+      );
     } finally {
       processIndicator.hide(Get.context);
     }

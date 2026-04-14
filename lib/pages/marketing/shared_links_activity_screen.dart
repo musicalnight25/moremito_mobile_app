@@ -93,11 +93,14 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
   @override
   Widget build(BuildContext context) {
     final handle = widget.userHandle != null ? ' (${widget.userHandle})' : '';
+    final userNameWithHandle = "${widget.userName}$handle";
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(
-        title: "${widget.userName}'s Activity",
+        title: "{name}'s Activity".trParams({
+          "name": widget.userName,
+        }),
         visibleBackButton: true,
       ),
       body: BaseBackgroundWidget(
@@ -109,7 +112,9 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                "${widget.userName}$handle\nShared Links Activity Tracking",
+                "{nameWithHandle}\nShared Links Activity Tracking".trParams({
+                  "nameWithHandle": userNameWithHandle,
+                }),
                 style: AppTextStyle.normalBold18.copyWith(
                   color: primaryColor,
                   height: 1.3,
@@ -120,8 +125,8 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Text(
-                'View shared links activity report shared with you.\n'
-                'View recipient activity and interaction details.',
+                "View shared links activity report shared with you.\nView recipient activity and interaction details."
+                    .tr,
                 style: AppTextStyle.normalRegular13.copyWith(
                   color: Colors.black87,
                   height: 1.4,
@@ -158,7 +163,8 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
                     SizedBox(height: 4.sp),
                     Text(
                       ("These cards show total recipients and total activity " +
-                      'across all shared links for each time range.').tr,
+                              'across all shared links for each time range.')
+                          .tr,
                       style: AppTextStyle.normalRegular12
                           .copyWith(color: subTitleColor, height: 1.4),
                     ),
@@ -205,7 +211,8 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
                                   size: 56.sp, color: borderGreyColor),
                               height12,
                               Text(
-                                'No activity data available.\nPull down to refresh.',
+                                "No activity data available.\nPull down to refresh."
+                                    .tr,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyle.normalRegular14
                                     .copyWith(color: subTitleColor),
@@ -251,14 +258,14 @@ class _SharedLinksActivityScreenState extends State<SharedLinksActivityScreen> {
                     childAspectRatio: 1.25,
                     children: _labelMap.entries.map((entry) {
                       return _tile(
-                        title: entry.value,
+                        title: entry.value.tr,
                         recipients: _getValue(stats, entry.key, false),
                         activity: _getValue(stats, entry.key, true),
                         headerColor: _headerColor(entry.key),
                         onTap: () {
                           Get.to(
                             () => SharedFlyersScreen(
-                              title: entry.value,
+                              title: entry.value.tr,
                               filterKey: entry.key,
                               viewUserId: widget.userId,
                               viewUserName: widget.userName,

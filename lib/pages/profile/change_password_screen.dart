@@ -41,7 +41,8 @@ class ChangePasswordScreen extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                "Your new password must be different from previously used passwords.".tr,
+                "Your new password must be different from previously used passwords."
+                    .tr,
                 style: AppTextStyle.normalRegular14.copyWith(
                   color: textGreyColor,
                   height: 1.5,
@@ -99,7 +100,9 @@ class ChangePasswordScreen extends StatelessWidget {
           PasswordWidget(
             controller: controller,
             labelText: label,
-            hintText: "Please Enter $label".tr,
+            hintText: "Please Enter {label}".trParams({
+              "label": label,
+            }),
             // Add hint text or styles if your widget supports it for better UX
           ),
         ],

@@ -131,13 +131,20 @@ class CategoriesController extends GetxController {
     required String fileId,
     required String sharedBy,
     required String sharedUrl,
+    dynamic savedShareId,
   }) async {
     try {
-      var data = {
+      final Map<String, dynamic> data = {
         "FileId": fileId,
         "SharedBy": sharedBy,
         "SharedUrl": sharedUrl
       };
+
+      // Add savedShareId to payload if provided
+      if (savedShareId != null) {
+        data["Id"] = savedShareId;
+      }
+
       var response =
           await _networkRepository.mobileSaveFileShare(context, data);
       if (response != null) {}
@@ -146,7 +153,7 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<String?> generateLink({
+  Future<Map<String, dynamic>?> generateLink({
     required BuildContext context,
     required String fileId,
     required String SharedTo,
@@ -155,12 +162,36 @@ class CategoriesController extends GetxController {
       var data = {"FileId": fileId, "SharedTo": SharedTo};
       var response = await _networkRepository.generateLink(context, data);
       if (response != null && response['Data'] != null) {
-        return response['Data'];
+        // Return both shareUrl and savedShareId from the response
+        return {
+          'shareUrl': response['Data']['shareUrl'] ?? response['Data'],
+          'savedShareId': response['Data']['savedShareId'],
+        };
       }
     } catch (e) {
       print("Error in generateLink: $e");
     }
     return null;
+  }
+
+  Future<int?> getCallAnnouncementShareFileId({
+    BuildContext? context,
+  }) async {
+    try {
+      final response = await _networkRepository.getCallAnnouncementShareFileId(
+        context: context,
+      );
+
+      final data = response?['Data'];
+      final dynamic fileIdRaw = data is Map ? data['fileId'] : null;
+      if (fileIdRaw == null) return null;
+
+      if (fileIdRaw is int) return fileIdRaw;
+      return int.tryParse(fileIdRaw.toString());
+    } catch (e) {
+      print("Error in getCallAnnouncementShareFileId: $e");
+      return null;
+    }
   }
 
   Future<void> shareFileUsingBottomSheet({
@@ -170,6 +201,7 @@ class CategoriesController extends GetxController {
     required String sharedUrl,
     required String phoneNumber,
     String? email,
+    dynamic savedShareId,
   }) async {
     ShareBottomSheet.show(
       context: context,
@@ -182,9 +214,14 @@ class CategoriesController extends GetxController {
           fileId: data.id.toString(),
           sharedUrl: sharedUrl,
           sharedBy: platform,
+          savedShareId: savedShareId,
         );
 
-        CommonMethod.getXSnackBar("Success 🎉".tr, "Thanks for sharing via $platform".tr,
+        CommonMethod.getXSnackBar(
+          "Success 🎉".tr,
+          "Thanks for sharing via {platform}".trParams({
+            "platform": platform,
+          }),
           greenColor,
         );
       },

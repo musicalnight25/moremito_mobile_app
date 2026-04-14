@@ -26,6 +26,21 @@ import 'welcome_tag_screen.dart';
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
 
+  String _toAppLanguageCode(String code) {
+    return code.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  }
+
+  Locale _toLocale(String code) {
+    final appCode = _toAppLanguageCode(code);
+    return appCode == 'zh'
+        ? const Locale('zh', 'CN')
+        : const Locale('en', 'US');
+  }
+
+  bool _isLanguageSelected(Locale currentLocale, String optionCode) {
+    return currentLocale.languageCode == _toAppLanguageCode(optionCode);
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileController = Get.put(MyProfileController());
@@ -269,7 +284,7 @@ class MyProfileScreen extends StatelessWidget {
         children: [
           SizedBox(
               width: 80.w,
-              child: Text(label, style: AppTextStyle.normalSemiBold14)),
+              child: Text(label.tr, style: AppTextStyle.normalSemiBold14)),
           Expanded(child: Text(value, style: AppTextStyle.normalRegular14)),
         ],
       ),
@@ -282,7 +297,7 @@ class MyProfileScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AppTextStyle.normalSemiBold14),
+          Text(label.tr, style: AppTextStyle.normalSemiBold14),
           height04,
           Container(
             width: double.infinity,
@@ -307,7 +322,7 @@ class MyProfileScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AppTextStyle.normalSemiBold14),
+          Text(label.tr, style: AppTextStyle.normalSemiBold14),
           height04,
           TextField(
             controller: controller,
@@ -433,17 +448,16 @@ class MyProfileScreen extends StatelessWidget {
     final networkRepository = NetworkRepository();
     try {
       await networkRepository.saveLanguage(context, {'Language': languageCode});
-      await PreferencesUtil.saveLanguagePreference(languageCode);
+      final appCode = _toAppLanguageCode(languageCode);
+      await PreferencesUtil.saveLanguagePreference(appCode);
+      if (!context.mounted) return;
       Navigator.pop(context);
       Future.delayed(const Duration(milliseconds: 200), () {
-        if (languageCode == 'zh') {
-          Get.updateLocale(const Locale('zh', 'CN'));
-        } else {
-          Get.updateLocale(const Locale('en', 'US'));
-        }
+        Get.updateLocale(_toLocale(languageCode));
       });
     } catch (e) {
       debugPrint("Error saving language: $e");
+      if (!context.mounted) return;
       Navigator.pop(context);
     }
   }
@@ -460,43 +474,71 @@ class MyProfileScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       builder: (context) {
         final currentLocale = Get.locale ?? const Locale('en', 'US');
-        final isEnglish = currentLocale.languageCode == 'en';
 
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.all(20.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Change Language'.tr,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                _buildLanguageOption(
-                  context: context,
-                  language: 'English',
-                  code: 'en_US',
-                  isSelected: isEnglish,
-                  onTap: () =>
-                      _changeLanguage(context: context, languageCode: 'en'),
-                ),
-                SizedBox(height: 16.h),
-                _buildLanguageOption(
-                  context: context,
-                  language: '中文 (简体)',
-                  code: 'zh_CN',
-                  isSelected: !isEnglish,
-                  onTap: () =>
-                      _changeLanguage(context: context, languageCode: 'zh'),
-                ),
-                SizedBox(height: 20.h),
-              ],
+            child: FutureBuilder<List<Map<String, String>>>(
+              future: NetworkRepository().getLanguageList(null),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildLanguageSheetShimmer();
+                }
+
+                final options = snapshot.data ?? const [];
+                if (options.isEmpty) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    child: Text(
+                      "No language options available".tr,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Change Language'.tr,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                    ...options.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final option = entry.value;
+                      final code = option['code'] ?? '';
+                      final name = option['name'] ?? code;
+                      return Column(
+                        children: [
+                          _buildLanguageOption(
+                            context: context,
+                            language: name,
+                            code: code,
+                            isSelected:
+                                _isLanguageSelected(currentLocale, code),
+                            onTap: () => _changeLanguage(
+                              context: context,
+                              languageCode: code,
+                            ),
+                          ),
+                          if (index != options.length - 1)
+                            SizedBox(height: 16.h),
+                        ],
+                      );
+                    }),
+                    SizedBox(height: 20.h),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -594,5 +636,72 @@ class MyProfileScreen extends StatelessWidget {
 
     final lines = [firstLine, secondLine].where((line) => line.isNotEmpty);
     return lines.isEmpty ? '-' : lines.join('\n');
+  }
+
+  Widget _buildLanguageSheetShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 140.w,
+            height: 20.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6.r),
+            ),
+          ),
+          SizedBox(height: 24.h),
+          ...List.generate(
+            2,
+            (index) => Padding(
+              padding: EdgeInsets.only(bottom: index == 1 ? 0 : 16.h),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24.w,
+                      height: 24.w,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 120.w,
+                            height: 14.h,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 6.h),
+                          Container(
+                            width: 72.w,
+                            height: 10.h,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+        ],
+      ),
+    );
   }
 }

@@ -137,7 +137,9 @@ class TmrisLeadDetailsScreen extends StatelessWidget {
           SizedBox(
             width: 130.sp,
             child: Text(
-              "$label:".tr,
+              "{label}:".trParams({
+                "label": label,
+              }),
               style: AppTextStyle.normalBold14,
             ),
           ),

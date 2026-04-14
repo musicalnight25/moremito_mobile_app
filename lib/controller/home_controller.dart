@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:more_mitro_app/model/dashboard_model.dart';
 import 'package:more_mitro_app/service/fcm_service.dart';
 import 'package:more_mitro_app/service/network_repository.dart';
-import '../pages/main_dashboard_screen.dart';
-import '../utils/preferences_util.dart';
 
 class HomeController extends GetxController {
   final NetworkRepository _networkRepository = NetworkRepository();
@@ -14,48 +11,68 @@ class HomeController extends GetxController {
   Rxn<DashboardModel> dashboardModel = Rxn<DashboardModel>();
   RxBool isLoading = false.obs;
   RxString loginUserRole = ''.obs;
+  RxInt unreadNotificationCount = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 500));
       getDashboard();
     });
   }
 
-  Future<void> getUserRoleFromToken() async {
-    final String? token = await PreferencesUtil.getUserToken();
-
-    if (token != null) {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-
-      loginUserRole.value = (decodedToken['UserRole'] ?? '');
-
-      debugPrint("UserRole from token: ${loginUserRole.value}");
-    }
-  }
-
   Future<void> getDashboard() async {
-    await getUserRoleFromToken();
-
     isLoading.value = true;
-    try {
-      var response = await _networkRepository.getDashboard(null);
-      if (response != null) {
-        final model = dashboardResponseModelFromJson(json.encode(response));
-        if (model.status == true) {
-          dashboardModel.value = model.data;
-          final count = dashboardModel.value?.unreadNotificationCount ?? 0;
-          unreadNotificationCount.value = count;
+    int retryCount = 0;
+    const maxRetries = 2;
 
-          // Sync launcher icon badge with real count from server
-          await FcmService.syncBadgeFromApiCount(count);
+    while (retryCount < maxRetries) {
+      try {
+        var response = await _networkRepository.getDashboard(null);
+        if (response != null) {
+          final model = dashboardResponseModelFromJson(json.encode(response));
+          if (model.status == true && model.data != null) {
+            dashboardModel.value = model.data;
+
+            // Get user role from dashboard API response
+            loginUserRole.value = (model.data?.role ?? '');
+            debugPrint("✓ UserRole from dashboard: ${loginUserRole.value}");
+
+            final count = dashboardModel.value?.unreadNotificationCount ?? 0;
+            unreadNotificationCount.value = count;
+
+            // Sync launcher icon badge with real count from server
+            await FcmService.syncBadgeFromApiCount(count);
+            break; // Success - exit retry loop
+          } else {
+            debugPrint("⚠ Dashboard response status false or data null");
+            retryCount++;
+          }
+        } else {
+          debugPrint("⚠ Dashboard response is null");
+          retryCount++;
+        }
+      } catch (e) {
+        debugPrint(
+            "✗ Error in getDashboard (attempt ${retryCount + 1}/$maxRetries): $e");
+        retryCount++;
+
+        if (retryCount < maxRetries) {
+          // Wait before retrying
+          await Future.delayed(const Duration(seconds: 1));
         }
       }
-    } catch (e) {
-      debugPrint("Error in getDashboard: $e");
-    } finally {
-      isLoading.value = false;
     }
+
+    isLoading.value = false;
+  }
+
+  /// Reset dashboard data (called on logout)
+  void resetDashboard() {
+    dashboardModel.value = null;
+    loginUserRole.value = '';
+    unreadNotificationCount.value = 0;
+    debugPrint("✓ Dashboard reset on logout");
   }
 }

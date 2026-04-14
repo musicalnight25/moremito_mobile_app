@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:more_mitro_app/utils/colors.dart';
-import 'package:more_mitro_app/utils/common_method.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -193,26 +191,17 @@ class ShareBottomSheet {
                     "com.minds.mobile": "Minds",
                     "com.weverse.app": "Weverse",
                   };
+                  final rawResult = result.raw;
                   platformMap.forEach((key, value) {
-                    if (result.raw.contains(key)) {
+                    if ((rawResult ?? "").contains(key)) {
                       platform = value;
                     }
                   });
-                  if (platform != '') {
-                    if (result.status == ShareResultStatus.success) {
-                      onShared("other");
-                      CommonMethod.getXSnackBar(
-                        "Success 🎉".tr, 
-                        "You're amazing! 🌟 Thank you for sharing on $platform. We truly appreciate your support! 🙌😊".tr,
-                        greenColor,
-                      );
-                    } else if (result.status == ShareResultStatus.dismissed) {
-                      CommonMethod.getXSnackBar(
-                        "No Share 😕".tr, 
-                        "Looks like the share wasn’t completed. No worries! You can try again whenever you're ready. We appreciate you! ❤️".tr,
-                        primaryBlack,
-                      );
-                    }
+                  if (result.status == ShareResultStatus.success) {
+                    // Always notify caller so save-file-share can be called.
+                    // If app package is unknown, fall back to generic "other".
+                    onShared(
+                        platform.isNotEmpty ? platform.toLowerCase() : "other");
                   }
                 },
               ),

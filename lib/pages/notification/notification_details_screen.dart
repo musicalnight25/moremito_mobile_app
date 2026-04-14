@@ -61,7 +61,8 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           }
 
           final data = controller.notificationDetails.value;
-          if (data == null) return NoDataFound(title: "Notification Details".tr);
+          if (data == null)
+            return NoDataFound(title: "Notification Details".tr);
 
           if (data.autoShipComing != null) {
             return _scrollContent(_buildAutoShipDetails(data.autoShipComing!));
@@ -262,7 +263,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           width08,
           Expanded(
             child: Text(
-              "${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}".tr,
+              "${address.address1}, ${address.city}, ${address.stateName}, ${address.countryName} - ${address.zip}",
               style: AppTextStyle.normalRegular14.copyWith(color: primaryBlack),
             ),
           )
@@ -303,7 +304,10 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
                   ],
                 ),
                 height05,
-                Text("Quantity: ${p.quantity}".tr,
+                Text(
+                    "Quantity: {quantity}".trParams({
+                      "quantity": "${p.quantity ?? 0}",
+                    }),
                     style: AppTextStyle.normalRegular12
                         .copyWith(color: textGreyColor)),
                 height15,

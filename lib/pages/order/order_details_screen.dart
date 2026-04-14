@@ -167,12 +167,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Order Number - ${_value(info?.customOrderNumber)}".tr,
+            "Order Number - {orderNumber}".trParams({
+              "orderNumber": _value(info?.customOrderNumber),
+            }),
             style: AppTextStyle.normalSemiBold18.copyWith(color: primaryBlack),
           ),
           height06,
           Text(
-            "Order Date: $date (UTC)".tr,
+            "Order Date: {date} (UTC)".trParams({
+              "date": date,
+            }),
             style: AppTextStyle.normalRegular14.copyWith(color: textGreyColor),
           ),
         ],

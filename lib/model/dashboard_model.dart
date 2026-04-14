@@ -47,6 +47,7 @@ class DashboardModel {
   String? currentRank;
   String? highestRank;
   String? userRole;
+  String? role;
   int? unreadNotificationCount;
 
   CallDetails? callDetails;
@@ -63,13 +64,13 @@ class DashboardModel {
     this.currentRank,
     this.highestRank,
     this.userRole,
+    this.role,
     this.unreadNotificationCount,
     this.callDetails,
     this.announcementDetails,
   });
 
-  factory DashboardModel.fromJson(Map<String, dynamic> json) =>
-      DashboardModel(
+  factory DashboardModel.fromJson(Map<String, dynamic> json) => DashboardModel(
         id: json["Id"],
         name: json["Name"],
         userName: json["UserName"],
@@ -80,38 +81,38 @@ class DashboardModel {
         currentRank: json["CurrentRank"],
         highestRank: json["HighestRank"],
         userRole: json["UserRole"],
+        role: json["Role"],
         unreadNotificationCount:
-        int.tryParse(json["UnreadNotificationCount"].toString()) ?? 0,
-
+            int.tryParse(json["UnreadNotificationCount"].toString()) ?? 0,
         callDetails: json["CallDetails"] == null
             ? null
             : CallDetails.fromJson(json["CallDetails"]),
-
         announcementDetails: json["AnnouncementDetails"] == null
             ? []
             : List<AnnouncementDetails>.from(
-          json["AnnouncementDetails"].map(
-                (x) => AnnouncementDetails.fromJson(x),
-          ),
-        ),
+                json["AnnouncementDetails"].map(
+                  (x) => AnnouncementDetails.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
-    "Id": id,
-    "Name": name,
-    "UserName": userName,
-    "FirstName": firstName,
-    "LastName": lastName,
-    "Email": email,
-    "Phone": phone,
-    "CurrentRank": currentRank,
-    "HighestRank": highestRank,
-    "UserRole": userRole,
-    "UnreadNotificationCount": unreadNotificationCount,
-    "CallDetails": callDetails?.toJson(),
-    "AnnouncementDetails":
-    announcementDetails?.map((x) => x.toJson()).toList(),
-  };
+        "Id": id,
+        "Name": name,
+        "UserName": userName,
+        "FirstName": firstName,
+        "LastName": lastName,
+        "Email": email,
+        "Phone": phone,
+        "CurrentRank": currentRank,
+        "HighestRank": highestRank,
+        "UserRole": userRole,
+        "Role": role,
+        "UnreadNotificationCount": unreadNotificationCount,
+        "CallDetails": callDetails?.toJson(),
+        "AnnouncementDetails":
+            announcementDetails?.map((x) => x.toJson()).toList(),
+      };
 }
 
 class CallDetails {
@@ -132,22 +133,22 @@ class CallDetails {
   });
 
   factory CallDetails.fromJson(Map<String, dynamic> json) => CallDetails(
-    emailTemplate: json["EmailTemplate"],
-    title: json["Title"],
-    subject: json["Subject"],
-    phone: json["Phone"],
-    internetLink: json["InternetLink"],
-    previousCallLink: json["PreviousCallLink"],
-  );
+        emailTemplate: json["EmailTemplate"],
+        title: json["Title"],
+        subject: json["Subject"],
+        phone: json["Phone"],
+        internetLink: json["InternetLink"],
+        previousCallLink: json["PreviousCallLink"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "EmailTemplate": emailTemplate,
-    "Title": title,
-    "Subject": subject,
-    "Phone": phone,
-    "InternetLink": internetLink,
-    "PreviousCallLink": previousCallLink,
-  };
+        "EmailTemplate": emailTemplate,
+        "Title": title,
+        "Subject": subject,
+        "Phone": phone,
+        "InternetLink": internetLink,
+        "PreviousCallLink": previousCallLink,
+      };
 }
 
 class AnnouncementDetails {
@@ -163,7 +164,7 @@ class AnnouncementDetails {
       );
 
   Map<String, dynamic> toJson() => {
-    "Id": id,
-    "AnnouncementName": announcementName,
-  };
+        "Id": id,
+        "AnnouncementName": announcementName,
+      };
 }

@@ -215,7 +215,9 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.sp),
             child: Text(
-              "${results.length} result(s)".tr,
+              "{count} result(s)".trParams({
+                "count": "${results.length}",
+              }),
               style:
                   AppTextStyle.normalSemiBold13.copyWith(color: subTitleColor),
             ),
@@ -344,7 +346,8 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
               style: AppTextStyle.normalBold18.copyWith(color: primaryColor)),
           height04,
           Text(
-            "Review the selected user and optionally add a note before sharing.".tr,
+            "Review the selected user and optionally add a note before sharing."
+                .tr,
             style: AppTextStyle.normalRegular13
                 .copyWith(color: subTitleColor, height: 1.4),
           ),
@@ -488,7 +491,10 @@ class _ShareYourActivityScreenState extends State<ShareYourActivityScreen> {
         children: [
           SizedBox(
             width: 80.sp,
-            child: Text("$label:".tr,
+            child: Text(
+                "{label}:".trParams({
+                  "label": label,
+                }),
                 style: AppTextStyle.normalSemiBold13
                     .copyWith(color: subTitleColor)),
           ),

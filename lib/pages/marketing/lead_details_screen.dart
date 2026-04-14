@@ -129,7 +129,12 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
         children: [
           SizedBox(
             width: 130.sp,
-            child: Text("$label:".tr, style: AppTextStyle.normalBold14),
+            child: Text(
+              "{label}:".trParams({
+                "label": label,
+              }),
+              style: AppTextStyle.normalBold14,
+            ),
           ),
           Expanded(
             child: Text(value ?? ".tr-", style: AppTextStyle.normalRegular14),
@@ -203,7 +208,9 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                 isSaving.value = false;
 
                 if (success) {
-                  CommonMethod.getXSnackBar("Success".tr, "Notes saved successfully".tr,
+                  CommonMethod.getXSnackBar(
+                    "Success".tr,
+                    "Notes saved successfully".tr,
                     greenColor,
                   );
 

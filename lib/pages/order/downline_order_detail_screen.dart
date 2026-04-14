@@ -70,7 +70,9 @@ class _DownlineOrderDetailScreenState extends State<DownlineOrderDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Order #${data.myOrders.orderId}".tr,
+                        "Order #{orderId}".trParams({
+                          "orderId": "${data.myOrders.orderId}",
+                        }),
                         style: AppTextStyle.normalSemiBold16
                             .copyWith(color: primaryBlack),
                       ),

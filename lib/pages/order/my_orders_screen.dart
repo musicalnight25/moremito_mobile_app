@@ -166,7 +166,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Order Number : ${order.orderId}".tr,
+                    "Order Number : {orderId}".trParams({
+                      "orderId": "${order.orderId ?? '-'}",
+                    }),
                     style: AppTextStyle.normalSemiBold18,
                   ),
                 ),

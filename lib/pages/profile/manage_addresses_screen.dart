@@ -77,7 +77,8 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
-              "Note: Changing your address here does not update existing recurring orders. Please update those manually in the Orders tab.".tr,
+              "Note: Changing your address here does not update existing recurring orders. Please update those manually in the Orders tab."
+                  .tr,
               style: AppTextStyle.normalRegular13.copyWith(
                 color: Colors.orange.shade900,
                 height: 1.4,
@@ -126,7 +127,7 @@ class ManageAddressesScreen extends GetView<MyAddressesController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "${address.firstName} ${address.lastName}".tr,
+                              "${address.firstName} ${address.lastName}",
                               style: AppTextStyle.normalBold16,
                             ),
                             if (isDefault) _buildDefaultBadge(),

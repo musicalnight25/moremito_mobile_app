@@ -44,7 +44,7 @@ class OrderCompensationDetailScreen extends StatelessWidget {
             children: [
               /// Order Header
               Text(
-                "$orderId".tr,
+                "$orderId",
                 style:
                     AppTextStyle.normalSemiBold16.copyWith(color: primaryColor),
               ),

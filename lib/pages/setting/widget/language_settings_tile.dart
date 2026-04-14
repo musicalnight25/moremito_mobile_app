@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:more_mitro_app/service/network_repository.dart';
+import 'package:more_mitro_app/utils/preferences_util.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LanguageSettingsTile extends StatelessWidget {
   const LanguageSettingsTile({super.key});
+
+  String _toAppLanguageCode(String code) {
+    return code.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  }
+
+  Locale _toLocale(String code) {
+    final appCode = _toAppLanguageCode(code);
+    return appCode == 'zh'
+        ? const Locale('zh', 'CN')
+        : const Locale('en', 'US');
+  }
+
+  bool _isLanguageSelected(Locale currentLocale, String optionCode) {
+    return currentLocale.languageCode == _toAppLanguageCode(optionCode);
+  }
+
+  Future<void> _changeLanguage({
+    required BuildContext context,
+    required String languageCode,
+  }) async {
+    try {
+      await NetworkRepository()
+          .saveLanguage(context, {'Language': languageCode});
+      await PreferencesUtil.saveLanguagePreference(
+          _toAppLanguageCode(languageCode));
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        Get.updateLocale(_toLocale(languageCode));
+      });
+    } catch (_) {
+      if (!context.mounted) return;
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,54 +106,71 @@ class LanguageSettingsTile extends StatelessWidget {
       backgroundColor: Colors.white,
       builder: (context) {
         final currentLocale = Get.locale ?? const Locale('en', 'US');
-        final isEnglish = currentLocale.languageCode == 'en';
 
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.all(20.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Text(
-                  'Change Language'.tr,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 24.h),
+            child: FutureBuilder<List<Map<String, String>>>(
+              future: NetworkRepository().getLanguageList(null),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildLanguageSheetShimmer();
+                }
 
-                // English Option
-                _buildLanguageOption(
-                  context: context,
-                  language: 'English',
-                  code: 'en_US',
-                  isSelected: isEnglish,
-                  onTap: () {
-                    Get.updateLocale(const Locale('en', 'US'));
-                    Navigator.pop(context);
-                  },
-                ),
+                final options = snapshot.data ?? const [];
+                if (options.isEmpty) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    child: Text(
+                      "No language options available".tr,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  );
+                }
 
-                SizedBox(height: 16.h),
-
-                // Chinese Option
-                _buildLanguageOption(
-                  context: context,
-                  language: '中文 (简体)',
-                  code: 'zh_CN',
-                  isSelected: !isEnglish,
-                  onTap: () {
-                    Get.updateLocale(const Locale('zh', 'CN'));
-                    Navigator.pop(context);
-                  },
-                ),
-
-                SizedBox(height: 20.h),
-              ],
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Change Language'.tr,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                    ...options.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final option = entry.value;
+                      final code = option['code'] ?? '';
+                      final name = option['name'] ?? code;
+                      return Column(
+                        children: [
+                          _buildLanguageOption(
+                            context: context,
+                            language: name,
+                            code: code,
+                            isSelected:
+                                _isLanguageSelected(currentLocale, code),
+                            onTap: () => _changeLanguage(
+                              context: context,
+                              languageCode: code,
+                            ),
+                          ),
+                          if (index != options.length - 1)
+                            SizedBox(height: 16.h),
+                        ],
+                      );
+                    }),
+                    SizedBox(height: 20.h),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -200,6 +255,73 @@ class LanguageSettingsTile extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSheetShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 140.w,
+            height: 20.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6.r),
+            ),
+          ),
+          SizedBox(height: 24.h),
+          ...List.generate(
+            2,
+            (index) => Padding(
+              padding: EdgeInsets.only(bottom: index == 1 ? 0 : 16.h),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24.w,
+                      height: 24.w,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 120.w,
+                            height: 14.h,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 6.h),
+                          Container(
+                            width: 72.w,
+                            height: 10.h,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+        ],
       ),
     );
   }
