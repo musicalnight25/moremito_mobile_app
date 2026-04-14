@@ -9,10 +9,12 @@ import '../document_viewer_screen.dart';
 
 class CategoryFileTile extends StatelessWidget {
   final CategoryFileModel data;
+  final String? categoryName;
 
   const CategoryFileTile({
     super.key,
     required this.data,
+    this.categoryName,
   });
 
   @override
@@ -33,7 +35,8 @@ class CategoryFileTile extends StatelessWidget {
         padding: 16,
         widget: InkWell(
           onTap: () {
-            Get.to(() => DocumentViewerScreen(data: data));
+            Get.to(() =>
+                DocumentViewerScreen(data: data, categoryName: categoryName));
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

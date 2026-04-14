@@ -166,7 +166,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           );
                         }
                         final file = controller.categoriesFileList[index];
-                        return CategoryFileTile(data: file);
+                        return CategoryFileTile(data: file, categoryName: null);
                       },
                     );
                   }

@@ -699,25 +699,7 @@ class MenuScreen extends StatelessWidget {
         );
       }
 
-      // ================= 9. APP SETTINGS =================
-      if (isAll(role)) {
-        menuList.add(
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 16.h),
-            child: Text(
-              "Settings".tr,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        );
-      }
-
-      // ================= 10. SUPPORT =================
+      // ================= 9. SUPPORT =================
       if (isAll(role)) {
         menuList.add(
           Padding(
@@ -739,6 +721,20 @@ class MenuScreen extends StatelessWidget {
               title: "Support".tr,
               icon: PhosphorIcons.headset(PhosphorIconsStyle.regular),
               items: [
+                MenuItem(
+                  title: "Customer Service Journal".tr,
+                  icon: PhosphorIcons.notepad(PhosphorIconsStyle.regular),
+                  onTap: () async {
+                    await WebviewHelper.getDynamicWebviewURL(
+                      page: "MemberPage",
+                      actionName: "journalreport",
+                      onSuccess: (url) {
+                        Get.to(() => CommonWebView(
+                            url: url, title: "Customer Service Journal".tr));
+                      },
+                    );
+                  },
+                ),
                 MenuItem(
                   title: "Support Ticket List".tr,
                   icon: PhosphorIcons.listBullets(PhosphorIconsStyle.regular),

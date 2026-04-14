@@ -187,7 +187,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                           );
                         }
                         final file = controller.categoriesFileList[index];
-                        return CategoryFileTile(data: file);
+                        return CategoryFileTile(
+                          data: file,
+                          categoryName: widget.data.categoryName,
+                        );
                       },
                     );
                   }
@@ -232,7 +235,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                       return GestureDetector(
                         onTap: () {
                           controller.categoriesFileList.clear();
-                          Get.to(() => CategoryDetailsScreen(data: subCategory));
+                          Get.to(
+                              () => CategoryDetailsScreen(data: subCategory));
                         },
                         child: CategoryWidget(
                           category: subCategory,

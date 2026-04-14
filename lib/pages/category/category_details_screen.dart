@@ -79,7 +79,10 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                             );
                           }
 
-                          return CategoryFileTile(data: list[index]);
+                          return CategoryFileTile(
+                            data: list[index],
+                            categoryName: widget.data.categoryName,
+                          );
                         },
                       ),
               ),

@@ -26,8 +26,10 @@ import 'contact_screen.dart';
 
 class DocumentViewerScreen extends StatefulWidget {
   final CategoryFileModel data;
+  final String? categoryName;
 
-  const DocumentViewerScreen({super.key, required this.data});
+  const DocumentViewerScreen(
+      {super.key, required this.data, this.categoryName});
 
   @override
   State<DocumentViewerScreen> createState() => _DocumentViewerScreenState();
@@ -295,14 +297,12 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         ? (dashboard?.name ?? "").trim()
                         : (dashboard?.userName ?? "Someone");
                     final recipientName = nameTextController.text.trim();
+                    final categoryInfo = widget.categoryName?.isNotEmpty == true
+                        ? " about ${widget.categoryName}"
+                        : "";
 
                     messageTextController.text =
-                        "Hey {name}, {sender} has invited you to the MoreMito health and wellness call. Visit the link to see more. {url}"
-                            .trParams({
-                      "name": recipientName,
-                      "sender": senderName,
-                      "url": shareUrl,
-                    });
+                        "Hey $recipientName, $senderName has shared some information with you$categoryInfo. Visit the link to view the information.\n$shareUrl";
                   },
                 ),
               ],
