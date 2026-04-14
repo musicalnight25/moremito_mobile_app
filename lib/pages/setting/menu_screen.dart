@@ -486,6 +486,20 @@ class MenuScreen extends StatelessWidget {
                   icon: PhosphorIcons.medal(PhosphorIconsStyle.regular),
                   children: [
                     MenuItem(
+                      title: "Rank Management Report".tr,
+                      icon: PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
+                      onTap: () async {
+                        await WebviewHelper.getDynamicWebviewURL(
+                          page: "MemberPage",
+                          actionName: "MyRankManagementReport",
+                          onSuccess: (url) {
+                            Get.to(() => CommonWebView(
+                                url: url, title: "Rank Management Report".tr));
+                          },
+                        );
+                      },
+                    ),
+                    MenuItem(
                       title: "My Tree View".tr,
                       icon: PhosphorIcons.treeStructure(
                           PhosphorIconsStyle.regular),
@@ -510,20 +524,6 @@ class MenuScreen extends StatelessWidget {
                           onSuccess: (url) {
                             Get.to(() => CommonWebView(
                                 url: url, title: "My Star Tree View".tr));
-                          },
-                        );
-                      },
-                    ),
-                    MenuItem(
-                      title: "Rank Management Report".tr,
-                      icon: PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
-                      onTap: () async {
-                        await WebviewHelper.getDynamicWebviewURL(
-                          page: "MemberPage",
-                          actionName: "MyRankManagementReport",
-                          onSuccess: (url) {
-                            Get.to(() => CommonWebView(
-                                url: url, title: "Rank Management Report".tr));
                           },
                         );
                       },
@@ -663,20 +663,6 @@ class MenuScreen extends StatelessWidget {
                   title: "Share Audios, Videos & Docs Files".tr,
                   icon: PhosphorIcons.files(PhosphorIconsStyle.regular),
                   onTap: () => Get.to(() => CategoriesScreen(isFromMenu: true)),
-                ),
-                MenuItem(
-                  title: "Share MoreMito Content".tr,
-                  icon: PhosphorIcons.share(PhosphorIconsStyle.regular),
-                  onTap: () {
-                    ShareLinkHelper.showShareLinkDialog(
-                      context: context,
-                      contentId: 'moremito_info',
-                      contentTitle: "Share MoreMito Info".tr,
-                      messageTemplate:
-                          "Hey {recipient}, I'd like to share some valuable MoreMito information with you. "
-                          "Check it out at: {link}",
-                    );
-                  },
                 ),
                 MenuItem(
                   title: "Allow Others To Request MoreMito Info From Me".tr,
